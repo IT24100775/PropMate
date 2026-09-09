@@ -10,10 +10,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("36853d63-fe1a-4195-976e-e5e58d61597e")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("PropMate.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9a8af401f165b67522040405d8b92838ff2dd7b5")]
 [assembly: System.Reflection.AssemblyProductAttribute("PropMate.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PropMate.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
