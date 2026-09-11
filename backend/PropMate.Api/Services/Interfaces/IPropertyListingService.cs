@@ -18,4 +18,9 @@ public interface IPropertyListingService
         UpdatePropertyListingDto dto);
 
     Task<bool> DeleteAsync(int id, int ownerId);
+
+    Task<PropertyListingResponseDto?> SubmitAsync(
+    int id,
+    int ownerId);
+
 }

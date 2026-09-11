@@ -154,6 +154,53 @@ public class PropertyListingService : IPropertyListingService
         return true;
     }
 
+    public async Task<PropertyListingResponseDto?> SubmitAsync(
+    int id,
+    int ownerId)
+    {
+        var listing = await _context.PropertyListings
+            .Include(x => x.Images)
+            .FirstOrDefaultAsync(x =>
+                x.Id == id &&
+                x.OwnerId == ownerId);
+
+        if (listing == null)
+        {
+            return null;
+        }
+
+        if (listing.Status != ListingStatus.Draft &&
+            listing.Status != ListingStatus.RevisionRequired)
+        {
+            throw new InvalidOperationException(
+                "Only draft or revision-required listings can be submitted.");
+        }
+
+        if (listing.Images.Count == 0)
+        {
+            throw new InvalidOperationException(
+                "At least one property image is required before submission.");
+        }
+
+        var previousStatus = listing.Status;
+
+        listing.Status = ListingStatus.Submitted;
+        listing.UpdatedAt = DateTime.UtcNow;
+
+        listing.StatusHistory.Add(new ListingStatusHistory
+        {
+            PreviousStatus = previousStatus,
+            NewStatus = ListingStatus.Submitted,
+            Reason = "Listing submitted by owner for verification.",
+            ChangedByUserId = ownerId,
+            ChangedAt = DateTime.UtcNow
+        });
+
+        await _context.SaveChangesAsync();
+
+        return MapToDto(listing);
+    }
+
     private static PropertyListingResponseDto MapToDto(
         PropertyListing listing)
     {

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PropMate.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f71ecc029fd143bfaeeef71a4955dc3c168ae2ae")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9b9d8521d051ebf1e0b7102c47a5d5f8077c44de")]
 [assembly: System.Reflection.AssemblyProductAttribute("PropMate.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PropMate.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
