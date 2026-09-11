@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PropMate.Api.Data;
+using PropMate.Api.Services;
+using PropMate.Api.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")
     ));
+
+builder.Services.AddScoped<IPropertyListingService, PropertyListingService>();
 
 var app = builder.Build();
 
