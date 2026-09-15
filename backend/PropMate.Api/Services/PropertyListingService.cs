@@ -201,6 +201,255 @@ public class PropertyListingService : IPropertyListingService
         return MapToDto(listing);
     }
 
+    public async Task<PropertyListingResponseDto?> StartReviewAsync(
+    int id,
+    int adminUserId)
+    {
+        var listing = await _context.PropertyListings
+            .Include(x => x.Images)
+            .Include(x => x.StatusHistory)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (listing == null)
+        {
+            return null;
+        }
+
+        if (listing.Status != ListingStatus.Submitted)
+        {
+            throw new InvalidOperationException(
+                "Only submitted listings can enter review.");
+        }
+
+        var previousStatus = listing.Status;
+
+        listing.Status = ListingStatus.UnderReview;
+        listing.UpdatedAt = DateTime.UtcNow;
+
+        listing.StatusHistory.Add(new ListingStatusHistory
+        {
+            PreviousStatus = previousStatus,
+            NewStatus = ListingStatus.UnderReview,
+            Reason = "Listing moved to administrative review.",
+            ChangedByUserId = adminUserId,
+            ChangedAt = DateTime.UtcNow
+        });
+
+        await _context.SaveChangesAsync();
+
+        return MapToDto(listing);
+    }
+
+    public async Task<PropertyListingResponseDto?> ApproveAsync(
+    int id,
+    int adminUserId,
+    string? reason)
+    {
+        var listing = await _context.PropertyListings
+            .Include(x => x.Images)
+            .Include(x => x.StatusHistory)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (listing == null)
+        {
+            return null;
+        }
+
+        if (listing.Status != ListingStatus.UnderReview)
+        {
+            throw new InvalidOperationException(
+                "Only listings under review can be approved.");
+        }
+
+        var previousStatus = listing.Status;
+
+        listing.Status = ListingStatus.Approved;
+        listing.UpdatedAt = DateTime.UtcNow;
+
+        listing.StatusHistory.Add(new ListingStatusHistory
+        {
+            PreviousStatus = previousStatus,
+            NewStatus = ListingStatus.Approved,
+            Reason = reason ?? "Listing approved by administrator.",
+            ChangedByUserId = adminUserId,
+            ChangedAt = DateTime.UtcNow
+        });
+
+        await _context.SaveChangesAsync();
+
+        return MapToDto(listing);
+    }
+
+    public async Task<PropertyListingResponseDto?> RejectAsync(
+    int id,
+    int adminUserId,
+    string reason)
+    {
+        var listing = await _context.PropertyListings
+            .Include(x => x.Images)
+            .Include(x => x.StatusHistory)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (listing == null)
+        {
+            return null;
+        }
+
+        if (listing.Status != ListingStatus.UnderReview)
+        {
+            throw new InvalidOperationException(
+                "Only listings under review can be rejected.");
+        }
+
+        if (string.IsNullOrWhiteSpace(reason))
+        {
+            throw new InvalidOperationException(
+                "A rejection reason is required.");
+        }
+
+        var previousStatus = listing.Status;
+
+        listing.Status = ListingStatus.Rejected;
+        listing.UpdatedAt = DateTime.UtcNow;
+
+        listing.StatusHistory.Add(new ListingStatusHistory
+        {
+            PreviousStatus = previousStatus,
+            NewStatus = ListingStatus.Rejected,
+            Reason = reason.Trim(),
+            ChangedByUserId = adminUserId,
+            ChangedAt = DateTime.UtcNow
+        });
+
+        await _context.SaveChangesAsync();
+
+        return MapToDto(listing);
+    }
+
+    public async Task<PropertyListingResponseDto?> RequestRevisionAsync(
+    int id,
+    int adminUserId,
+    string reason)
+    {
+        var listing = await _context.PropertyListings
+            .Include(x => x.Images)
+            .Include(x => x.StatusHistory)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (listing == null)
+        {
+            return null;
+        }
+
+        if (listing.Status != ListingStatus.UnderReview)
+        {
+            throw new InvalidOperationException(
+                "Only listings under review can be sent for revision.");
+        }
+
+        if (string.IsNullOrWhiteSpace(reason))
+        {
+            throw new InvalidOperationException(
+                "A revision reason is required.");
+        }
+
+        var previousStatus = listing.Status;
+
+        listing.Status = ListingStatus.RevisionRequired;
+        listing.UpdatedAt = DateTime.UtcNow;
+
+        listing.StatusHistory.Add(new ListingStatusHistory
+        {
+            PreviousStatus = previousStatus,
+            NewStatus = ListingStatus.RevisionRequired,
+            Reason = reason.Trim(),
+            ChangedByUserId = adminUserId,
+            ChangedAt = DateTime.UtcNow
+        });
+
+        await _context.SaveChangesAsync();
+
+        return MapToDto(listing);
+    }
+
+    public async Task<PropertyListingResponseDto?> PublishAsync(
+    int id,
+    int adminUserId)
+    {
+        var listing = await _context.PropertyListings
+            .Include(x => x.Images)
+            .Include(x => x.StatusHistory)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (listing == null)
+        {
+            return null;
+        }
+
+        if (listing.Status != ListingStatus.Approved)
+        {
+            throw new InvalidOperationException(
+                "Only approved listings can be published.");
+        }
+
+        var previousStatus = listing.Status;
+
+        listing.Status = ListingStatus.Published;
+        listing.UpdatedAt = DateTime.UtcNow;
+
+        listing.StatusHistory.Add(new ListingStatusHistory
+        {
+            PreviousStatus = previousStatus,
+            NewStatus = ListingStatus.Published,
+            Reason = "Listing published by administrator.",
+            ChangedByUserId = adminUserId,
+            ChangedAt = DateTime.UtcNow
+        });
+
+        await _context.SaveChangesAsync();
+
+        return MapToDto(listing);
+    }
+
+    public async Task<PropertyListingResponseDto?> UnpublishAsync(
+    int id,
+    int adminUserId)
+    {
+        var listing = await _context.PropertyListings
+            .Include(x => x.Images)
+            .Include(x => x.StatusHistory)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (listing == null)
+        {
+            return null;
+        }
+
+        if (listing.Status != ListingStatus.Published)
+        {
+            throw new InvalidOperationException(
+                "Only published listings can be unpublished.");
+        }
+
+        var previousStatus = listing.Status;
+
+        listing.Status = ListingStatus.Unpublished;
+        listing.UpdatedAt = DateTime.UtcNow;
+
+        listing.StatusHistory.Add(new ListingStatusHistory
+        {
+            PreviousStatus = previousStatus,
+            NewStatus = ListingStatus.Unpublished,
+            Reason = "Listing unpublished by administrator.",
+            ChangedByUserId = adminUserId,
+            ChangedAt = DateTime.UtcNow
+        });
+
+        await _context.SaveChangesAsync();
+
+        return MapToDto(listing);
+    }
+
     private static PropertyListingResponseDto MapToDto(
         PropertyListing listing)
     {

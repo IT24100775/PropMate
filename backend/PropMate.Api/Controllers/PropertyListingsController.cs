@@ -145,4 +145,188 @@ public class PropertyListingsController : ControllerBase
         }
     }
 
+    [HttpPost("{id:int}/review")]
+    public async Task<ActionResult<PropertyListingResponseDto>> StartReview(int id)
+    {
+        // Temporary until JWT authentication and admin roles are added
+        var adminUserId = 999;
+
+        try
+        {
+            var listing = await _service.StartReviewAsync(id, adminUserId);
+
+            if (listing == null)
+            {
+                return NotFound(new
+                {
+                    message = "Property listing not found."
+                });
+            }
+
+            return Ok(listing);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new
+            {
+                message = ex.Message
+            });
+        }
+    }
+
+    [HttpPost("{id:int}/approve")]
+    public async Task<ActionResult<PropertyListingResponseDto>> Approve(
+        int id,
+        [FromBody] AdminListingDecisionDto? dto)
+    {
+        var adminUserId = 999;
+
+        try
+        {
+            var listing = await _service.ApproveAsync(
+                id,
+                adminUserId,
+                dto?.Reason);
+
+            if (listing == null)
+            {
+                return NotFound(new
+                {
+                    message = "Property listing not found."
+                });
+            }
+
+            return Ok(listing);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new
+            {
+                message = ex.Message
+            });
+        }
+    }
+
+    [HttpPost("{id:int}/reject")]
+    public async Task<ActionResult<PropertyListingResponseDto>> Reject(
+        int id,
+        [FromBody] AdminListingDecisionDto dto)
+    {
+        var adminUserId = 999;
+
+        try
+        {
+            var listing = await _service.RejectAsync(
+                id,
+                adminUserId,
+                dto.Reason);
+
+            if (listing == null)
+            {
+                return NotFound(new
+                {
+                    message = "Property listing not found."
+                });
+            }
+
+            return Ok(listing);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new
+            {
+                message = ex.Message
+            });
+        }
+    }
+
+    [HttpPost("{id:int}/request-revision")]
+    public async Task<ActionResult<PropertyListingResponseDto>> RequestRevision(
+        int id,
+        [FromBody] AdminListingDecisionDto dto)
+    {
+        var adminUserId = 999;
+
+        try
+        {
+            var listing = await _service.RequestRevisionAsync(
+                id,
+                adminUserId,
+                dto.Reason);
+
+            if (listing == null)
+            {
+                return NotFound(new
+                {
+                    message = "Property listing not found."
+                });
+            }
+
+            return Ok(listing);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new
+            {
+                message = ex.Message
+            });
+        }
+    }
+
+    [HttpPost("{id:int}/publish")]
+    public async Task<ActionResult<PropertyListingResponseDto>> Publish(int id)
+    {
+        var adminUserId = 999;
+
+        try
+        {
+            var listing = await _service.PublishAsync(id, adminUserId);
+
+            if (listing == null)
+            {
+                return NotFound(new
+                {
+                    message = "Property listing not found."
+                });
+            }
+
+            return Ok(listing);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new
+            {
+                message = ex.Message
+            });
+        }
+    }
+
+    [HttpPost("{id:int}/unpublish")]
+    public async Task<ActionResult<PropertyListingResponseDto>> Unpublish(int id)
+    {
+        var adminUserId = 999;
+
+        try
+        {
+            var listing = await _service.UnpublishAsync(id, adminUserId);
+
+            if (listing == null)
+            {
+                return NotFound(new
+                {
+                    message = "Property listing not found."
+                });
+            }
+
+            return Ok(listing);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new
+            {
+                message = ex.Message
+            });
+        }
+    }
+
 }

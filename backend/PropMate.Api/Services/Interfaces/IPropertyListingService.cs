@@ -23,4 +23,31 @@ public interface IPropertyListingService
     int id,
     int ownerId);
 
+    Task<PropertyListingResponseDto?> StartReviewAsync(
+    int id,
+    int adminUserId);
+
+    Task<PropertyListingResponseDto?> ApproveAsync(
+        int id,
+        int adminUserId,
+        string? reason);
+
+    Task<PropertyListingResponseDto?> RejectAsync(
+        int id,
+        int adminUserId,
+        string reason);
+
+    Task<PropertyListingResponseDto?> RequestRevisionAsync(
+        int id,
+        int adminUserId,
+        string reason);
+
+    Task<PropertyListingResponseDto?> PublishAsync(
+        int id,
+        int adminUserId);
+
+    Task<PropertyListingResponseDto?> UnpublishAsync(
+        int id,
+        int adminUserId);
+
 }
