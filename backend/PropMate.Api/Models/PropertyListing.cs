@@ -37,4 +37,7 @@ public class PropertyListing
 
     public ICollection<ListingStatusHistory> StatusHistory { get; set; }
         = new List<ListingStatusHistory>();
+
+    public ICollection<PropertyListingVerification> Verifications { get; set; }
+        = new List<PropertyListingVerification>();
 }

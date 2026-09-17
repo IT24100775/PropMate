@@ -19,6 +19,9 @@ public class AppDbContext : DbContext
 
     public DbSet<User> Users => Set<User>();
 
+    public DbSet<PropertyListingVerification> PropertyListingVerifications =>
+        Set<PropertyListingVerification>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -102,5 +105,15 @@ public class AppDbContext : DbContext
             entity.HasIndex(x => x.Email)
                 .IsUnique();
         });
+
+        modelBuilder.Entity<PropertyListingVerification>()
+            .HasOne(x => x.PropertyListing)
+            .WithMany(x => x.Verifications)
+            .HasForeignKey(x => x.PropertyListingId)
+            .OnDelete(DeleteBehavior.Cascade);
+    
+        modelBuilder.Entity<PropertyListingVerification>()
+            .HasIndex(x => x.PropertyListingId);
+
     }
 }
