@@ -53,4 +53,6 @@ public interface IPropertyListingService
     Task<PagedResultDto<PropertyListingResponseDto>> SearchAsync(
     PropertyListingQueryDto query);
 
+    Task<PropertyListingResponseDto?> GetPublishedByIdAsync(int id);
+
 }

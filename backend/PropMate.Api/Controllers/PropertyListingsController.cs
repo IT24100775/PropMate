@@ -17,16 +17,17 @@ public class PropertyListingsController : ControllerBase
         _service = service;
     }
 
+    [AllowAnonymous]
     [HttpGet("{id:int}")]
     public async Task<ActionResult<PropertyListingResponseDto>> GetById(int id)
     {
-        var listing = await _service.GetByIdAsync(id);
+        var listing = await _service.GetPublishedByIdAsync(id);
 
         if (listing == null)
         {
             return NotFound(new
             {
-                message = "Property listing not found."
+                message = "Published property listing not found."
             });
         }
 
@@ -351,10 +352,7 @@ public class PropertyListingsController : ControllerBase
 
         var listing = await _service.CreateAsync(ownerId, dto);
 
-        return CreatedAtAction(
-            nameof(GetById),
-            new { id = listing.Id },
-            listing);
+        return StatusCode(StatusCodes.Status201Created, listing);
     }
 
     private int GetCurrentUserId()

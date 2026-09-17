@@ -546,6 +546,18 @@ public class PropertyListingService : IPropertyListingService
         };
     }
 
+    public async Task<PropertyListingResponseDto?> GetPublishedByIdAsync(int id)
+    {
+        var listing = await _context.PropertyListings
+            .AsNoTracking()
+            .Include(x => x.Images)
+            .FirstOrDefaultAsync(x =>
+                x.Id == id &&
+                x.Status == ListingStatus.Published);
+
+        return listing == null ? null : MapToDto(listing);
+    }
+
     private static PropertyListingResponseDto MapToDto(
         PropertyListing listing)
     {
