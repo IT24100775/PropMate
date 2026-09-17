@@ -450,6 +450,102 @@ public class PropertyListingService : IPropertyListingService
         return MapToDto(listing);
     }
 
+    public async Task<PagedResultDto<PropertyListingResponseDto>> SearchAsync(
+    PropertyListingQueryDto query)
+    {
+        var listings = _context.PropertyListings
+            .AsNoTracking()
+            .Include(x => x.Images)
+            .AsQueryable();
+
+        // Only public/published listings should appear in public search
+        listings = listings.Where(x =>
+            x.Status == ListingStatus.Published);
+
+        if (!string.IsNullOrWhiteSpace(query.Search))
+        {
+            var search = query.Search.Trim().ToLower();
+
+            listings = listings.Where(x =>
+                x.Title.ToLower().Contains(search) ||
+                x.Description.ToLower().Contains(search) ||
+                x.City.ToLower().Contains(search));
+        }
+
+        if (!string.IsNullOrWhiteSpace(query.City))
+        {
+            var city = query.City.Trim().ToLower();
+
+            listings = listings.Where(x =>
+                x.City.ToLower() == city);
+        }
+
+        if (query.Purpose.HasValue)
+        {
+            listings = listings.Where(x =>
+                x.Purpose == query.Purpose.Value);
+        }
+
+        if (query.PropertyType.HasValue)
+        {
+            listings = listings.Where(x =>
+                x.PropertyType == query.PropertyType.Value);
+        }
+
+        if (query.MinPrice.HasValue)
+        {
+            listings = listings.Where(x =>
+                x.Price >= query.MinPrice.Value);
+        }
+
+        if (query.MaxPrice.HasValue)
+        {
+            listings = listings.Where(x =>
+                x.Price <= query.MaxPrice.Value);
+        }
+
+        var totalCount = await listings.CountAsync();
+
+        var sortBy = query.SortBy.ToLower();
+        var sortOrder = query.SortOrder.ToLower();
+
+        listings = (sortBy, sortOrder) switch
+        {
+            ("price", "asc") =>
+                listings.OrderBy(x => x.Price),
+
+            ("price", "desc") =>
+                listings.OrderByDescending(x => x.Price),
+
+            ("title", "asc") =>
+                listings.OrderBy(x => x.Title),
+
+            ("title", "desc") =>
+                listings.OrderByDescending(x => x.Title),
+
+            ("createdat", "asc") =>
+                listings.OrderBy(x => x.CreatedAt),
+
+            _ =>
+                listings.OrderByDescending(x => x.CreatedAt)
+        };
+
+        var items = await listings
+            .Skip((query.Page - 1) * query.PageSize)
+            .Take(query.PageSize)
+            .ToListAsync();
+
+        return new PagedResultDto<PropertyListingResponseDto>
+        {
+            Items = items.Select(MapToDto),
+            Page = query.Page,
+            PageSize = query.PageSize,
+            TotalCount = totalCount,
+            TotalPages = (int)Math.Ceiling(
+                totalCount / (double)query.PageSize)
+        };
+    }
+
     private static PropertyListingResponseDto MapToDto(
         PropertyListing listing)
     {

@@ -50,4 +50,7 @@ public interface IPropertyListingService
         int id,
         int adminUserId);
 
+    Task<PagedResultDto<PropertyListingResponseDto>> SearchAsync(
+    PropertyListingQueryDto query);
+
 }

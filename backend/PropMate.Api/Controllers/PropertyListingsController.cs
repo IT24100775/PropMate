@@ -329,4 +329,23 @@ public class PropertyListingsController : ControllerBase
         }
     }
 
+    [HttpGet]
+    public async Task<ActionResult<PagedResultDto<PropertyListingResponseDto>>> Search(
+        [FromQuery] PropertyListingQueryDto query)
+    {
+        if (query.MinPrice.HasValue &&
+            query.MaxPrice.HasValue &&
+            query.MinPrice > query.MaxPrice)
+        {
+            return BadRequest(new
+            {
+                message = "Minimum price cannot be greater than maximum price."
+            });
+        }
+
+        var result = await _service.SearchAsync(query);
+
+        return Ok(result);
+    }
+
 }
