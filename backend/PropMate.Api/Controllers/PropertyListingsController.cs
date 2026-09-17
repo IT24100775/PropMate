@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using PropMate.Api.DTOs.Listings;
 using PropMate.Api.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace PropMate.Api.Controllers;
 
@@ -13,22 +15,6 @@ public class PropertyListingsController : ControllerBase
     public PropertyListingsController(IPropertyListingService service)
     {
         _service = service;
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<PropertyListingResponseDto>> Create(
-        [FromBody] CreatePropertyListingDto dto)
-    {
-        // Temporary owner ID until JWT authentication is added
-        var ownerId = 1;
-
-        var listing = await _service.CreateAsync(ownerId, dto);
-
-        return CreatedAtAction(
-            nameof(GetById),
-            new { id = listing.Id },
-            listing
-        );
     }
 
     [HttpGet("{id:int}")]
@@ -47,23 +33,25 @@ public class PropertyListingsController : ControllerBase
         return Ok(listing);
     }
 
+    [Authorize(Roles = "OwnerAgent")]
     [HttpGet("owner")]
-    public async Task<ActionResult<IEnumerable<PropertyListingResponseDto>>> GetOwnerListings()
+    public async Task<ActionResult<IEnumerable<PropertyListingResponseDto>>>
+        GetOwnerListings()
     {
-        // Temporary owner ID until JWT authentication is added
-        var ownerId = 1;
+        var ownerId = GetCurrentUserId();
 
         var listings = await _service.GetByOwnerAsync(ownerId);
 
         return Ok(listings);
     }
 
+    [Authorize(Roles = "OwnerAgent")]
     [HttpPut("{id:int}")]
     public async Task<ActionResult<PropertyListingResponseDto>> Update(
         int id,
         [FromBody] UpdatePropertyListingDto dto)
     {
-        var ownerId = 1;
+        var ownerId = GetCurrentUserId();;
 
         try
         {
@@ -88,10 +76,11 @@ public class PropertyListingsController : ControllerBase
         }
     }
 
+    [Authorize(Roles = "OwnerAgent")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var ownerId = 1;
+        var ownerId = GetCurrentUserId();;
 
         try
         {
@@ -116,11 +105,11 @@ public class PropertyListingsController : ControllerBase
         }
     }
 
+    [Authorize(Roles = "OwnerAgent")]
     [HttpPost("{id:int}/submit")]
     public async Task<ActionResult<PropertyListingResponseDto>> Submit(int id)
     {
-        // Temporary until JWT authentication is implemented
-        var ownerId = 1;
+        var ownerId = GetCurrentUserId();;
 
         try
         {
@@ -145,11 +134,11 @@ public class PropertyListingsController : ControllerBase
         }
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost("{id:int}/review")]
     public async Task<ActionResult<PropertyListingResponseDto>> StartReview(int id)
     {
-        // Temporary until JWT authentication and admin roles are added
-        var adminUserId = 999;
+        var adminUserId = GetCurrentUserId();
 
         try
         {
@@ -174,12 +163,13 @@ public class PropertyListingsController : ControllerBase
         }
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost("{id:int}/approve")]
     public async Task<ActionResult<PropertyListingResponseDto>> Approve(
         int id,
         [FromBody] AdminListingDecisionDto? dto)
     {
-        var adminUserId = 999;
+        var adminUserId = GetCurrentUserId();
 
         try
         {
@@ -207,12 +197,13 @@ public class PropertyListingsController : ControllerBase
         }
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost("{id:int}/reject")]
     public async Task<ActionResult<PropertyListingResponseDto>> Reject(
         int id,
         [FromBody] AdminListingDecisionDto dto)
     {
-        var adminUserId = 999;
+        var adminUserId = GetCurrentUserId();
 
         try
         {
@@ -240,12 +231,13 @@ public class PropertyListingsController : ControllerBase
         }
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost("{id:int}/request-revision")]
     public async Task<ActionResult<PropertyListingResponseDto>> RequestRevision(
         int id,
         [FromBody] AdminListingDecisionDto dto)
     {
-        var adminUserId = 999;
+        var adminUserId = GetCurrentUserId();
 
         try
         {
@@ -273,10 +265,11 @@ public class PropertyListingsController : ControllerBase
         }
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost("{id:int}/publish")]
     public async Task<ActionResult<PropertyListingResponseDto>> Publish(int id)
     {
-        var adminUserId = 999;
+        var adminUserId = GetCurrentUserId();
 
         try
         {
@@ -301,10 +294,11 @@ public class PropertyListingsController : ControllerBase
         }
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost("{id:int}/unpublish")]
     public async Task<ActionResult<PropertyListingResponseDto>> Unpublish(int id)
     {
-        var adminUserId = 999;
+        var adminUserId = GetCurrentUserId();
 
         try
         {
@@ -346,6 +340,34 @@ public class PropertyListingsController : ControllerBase
         var result = await _service.SearchAsync(query);
 
         return Ok(result);
+    }
+
+    [Authorize(Roles = "OwnerAgent")]
+    [HttpPost]
+    public async Task<ActionResult<PropertyListingResponseDto>> Create(
+        [FromBody] CreatePropertyListingDto dto)
+    {
+        var ownerId = GetCurrentUserId();
+
+        var listing = await _service.CreateAsync(ownerId, dto);
+
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = listing.Id },
+            listing);
+    }
+
+    private int GetCurrentUserId()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (!int.TryParse(userId, out var id))
+        {
+            throw new UnauthorizedAccessException(
+                "User ID could not be determined.");
+        }
+
+        return id;
     }
 
 }
