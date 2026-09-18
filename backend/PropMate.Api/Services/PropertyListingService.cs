@@ -695,6 +695,10 @@ public class PropertyListingService : IPropertyListingService
             .Take(5)
             .ToListAsync();
 
+        var owner = await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == listing.OwnerId);
+
         return new PropertyVerificationRequest
         {
             ListingId = listing.Id,
@@ -718,7 +722,7 @@ public class PropertyListingService : IPropertyListingService
                 .ToList(),
 
             // Temporary until owner verification is implemented
-            OwnerVerified = false,
+            OwnerVerified = owner?.IsVerified ?? false,
 
             DuplicateCandidates = duplicateCandidates
                 .Select(x => new DuplicateCandidateRequest
@@ -738,6 +742,69 @@ public class PropertyListingService : IPropertyListingService
                     PropertyType = x.PropertyType.ToString()
                 })
                 .ToList()
+        };
+    }
+
+    public async Task<PropertyVerificationReviewDto?> GetVerificationReviewAsync(
+        int id)
+    {
+        var listing = await _context.PropertyListings
+            .AsNoTracking()
+            .Include(x => x.Images)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (listing == null)
+        {
+            return null;
+        }
+
+        var verification = await _context.PropertyListingVerifications
+            .AsNoTracking()
+            .Where(x => x.PropertyListingId == id)
+            .OrderByDescending(x => x.CreatedAt)
+            .FirstOrDefaultAsync();
+
+        if (verification == null)
+        {
+            return null;
+        }
+
+        var reasons =
+            JsonSerializer.Deserialize<List<string>>(
+                verification.ReasonsJson)
+            ?? [];
+
+        var evidence =
+            JsonSerializer.Deserialize<List<VerificationEvidenceResponse>>(
+                verification.EvidenceJson)
+            ?? [];
+
+        return new PropertyVerificationReviewDto
+        {
+            ListingId = listing.Id,
+            OwnerId = listing.OwnerId,
+            Title = listing.Title,
+            Description = listing.Description,
+            Purpose = listing.Purpose.ToString(),
+            PropertyType = listing.PropertyType.ToString(),
+            Price = listing.Price,
+            Address = listing.Address,
+            City = listing.City,
+            Bedrooms = listing.Bedrooms,
+            Bathrooms = listing.Bathrooms,
+            Status = listing.Status.ToString(),
+
+            ImageUrls = listing.Images
+                .Select(x => x.ImageUrl)
+                .ToList(),
+
+            Recommendation = verification.Recommendation,
+            Confidence = verification.Confidence,
+            RiskScore = verification.RiskScore,
+            Reasons = reasons,
+            Evidence = evidence,
+            RequiresHumanReview = verification.RequiresHumanReview,
+            VerifiedAt = verification.CreatedAt
         };
     }
 

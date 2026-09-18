@@ -355,6 +355,25 @@ public class PropertyListingsController : ControllerBase
         return StatusCode(StatusCodes.Status201Created, listing);
     }
 
+    [HttpGet("{id}/verification-review")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetVerificationReview(int id)
+    {
+        var review =
+            await _service.GetVerificationReviewAsync(id);
+
+        if (review == null)
+        {
+            return NotFound(new
+            {
+                message =
+                    "Listing or verification result was not found."
+            });
+        }
+
+        return Ok(review);
+    }
+
     private int GetCurrentUserId()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

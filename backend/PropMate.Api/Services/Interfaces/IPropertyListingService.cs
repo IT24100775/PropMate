@@ -1,4 +1,5 @@
 using PropMate.Api.DTOs.Listings;
+using PropMate.Api.DTOs.Verification;
 
 namespace PropMate.Api.Services.Interfaces;
 
@@ -54,5 +55,7 @@ public interface IPropertyListingService
     PropertyListingQueryDto query);
 
     Task<PropertyListingResponseDto?> GetPublishedByIdAsync(int id);
+
+    Task<PropertyVerificationReviewDto?> GetVerificationReviewAsync(int id);
 
 }
