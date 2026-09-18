@@ -6,11 +6,14 @@ import {
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import OwnerDashboard from "./pages/OwnerDashboard";
+import OwnerDashboard from "./pages/owner/OwnerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import Unauthorized from "./pages/Unauthorized";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./context/authContext";
+import CreateListing from "./pages/owner/CreateListing";
+import MyListings from "./pages/owner/MyListings";
+import EditListing from "./pages/owner/EditListing";  
 
 function HomeRedirect() {
   const { user } = useAuth();
@@ -55,6 +58,33 @@ function App() {
             allowedRoles={["OwnerAgent"]}
           >
             <OwnerDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/owner/listings"
+        element={
+          <ProtectedRoute allowedRoles={["OwnerAgent"]}>
+            <MyListings />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/owner/listings/new"
+        element={
+          <ProtectedRoute allowedRoles={["OwnerAgent"]}>
+            <CreateListing />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/owner/listings/:id/edit"
+        element={
+          <ProtectedRoute allowedRoles={["OwnerAgent"]}>
+            <EditListing />
           </ProtectedRoute>
         }
       />
