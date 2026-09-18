@@ -9,6 +9,22 @@ from app.tools.owner_verifier import verify_owner
 from app.tools.duplicate_checker import check_duplicates
 from app.tools.price_comparator import compare_market_price
 
+def calculate_risk_score(
+    risk_scores: list[float],
+) -> float:
+
+    if not risk_scores:
+        return 0.0
+
+    average_risk = sum(risk_scores) / len(risk_scores)
+    maximum_risk = max(risk_scores)
+
+    combined_risk = (
+        0.7 * maximum_risk
+        + 0.3 * average_risk
+    )
+
+    return round(combined_risk, 2)
 
 def run_verification(
     listing: PropertyListingInput,
@@ -31,13 +47,11 @@ def run_verification(
 
     # Calculate overall deterministic risk score
     if state.evidence:
-        state.risk_score = round(
-            sum(
+        state.risk_score = calculate_risk_score(
+            [
                 item.risk_score
                 for item in state.evidence
-            )
-            / len(state.evidence),
-            2,
+            ]
         )
 
     # Send the collected evidence to Gemini for reasoning
