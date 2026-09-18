@@ -13,7 +13,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./context/authContext";
 import CreateListing from "./pages/owner/CreateListing";
 import MyListings from "./pages/owner/MyListings";
-import EditListing from "./pages/owner/EditListing";  
+import EditListing from "./pages/owner/EditListing"; 
+import AdminReviewListing from "./pages/AdminReviewListing"; 
 
 function HomeRedirect() {
   const { user } = useAuth();
@@ -96,6 +97,15 @@ function App() {
             allowedRoles={["Admin"]}
           >
             <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/listings/:id/review"
+        element={
+          <ProtectedRoute allowedRoles={["Admin"]}>
+            <AdminReviewListing />
           </ProtectedRoute>
         }
       />

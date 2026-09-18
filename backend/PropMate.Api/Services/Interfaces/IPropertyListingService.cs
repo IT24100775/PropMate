@@ -13,6 +13,8 @@ public interface IPropertyListingService
 
     Task<IEnumerable<PropertyListingResponseDto>> GetByOwnerAsync(int ownerId);
 
+    Task<IEnumerable<PropertyListingResponseDto>> GetAdminListingsAsync();
+
     Task<PropertyListingResponseDto?> UpdateAsync(
         int id,
         int ownerId,

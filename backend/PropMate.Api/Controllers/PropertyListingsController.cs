@@ -374,6 +374,17 @@ public class PropertyListingsController : ControllerBase
         return Ok(review);
     }
 
+    [Authorize(Roles = "Admin")]
+    [HttpGet("admin")]
+    public async Task<ActionResult<IEnumerable<PropertyListingResponseDto>>>
+        GetAdminListings()
+    {
+        var listings =
+            await _service.GetAdminListingsAsync();
+
+        return Ok(listings);
+    }
+
     private int GetCurrentUserId()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

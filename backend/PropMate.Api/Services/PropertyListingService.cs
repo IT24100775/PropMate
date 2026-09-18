@@ -745,6 +745,25 @@ public class PropertyListingService : IPropertyListingService
         };
     }
 
+    public async Task<IEnumerable<PropertyListingResponseDto>>
+    GetAdminListingsAsync()
+    {
+        var listings = await _context.PropertyListings
+            .AsNoTracking()
+            .Include(x => x.Images)
+            .Where(x =>
+                x.Status == ListingStatus.UnderReview ||
+                x.Status == ListingStatus.Approved ||
+                x.Status == ListingStatus.RevisionRequired ||
+                x.Status == ListingStatus.Rejected ||
+                x.Status == ListingStatus.Published ||
+                x.Status == ListingStatus.Unpublished)
+            .OrderByDescending(x => x.UpdatedAt)
+            .ToListAsync();
+
+        return listings.Select(MapToDto);
+    }
+
     public async Task<PropertyVerificationReviewDto?> GetVerificationReviewAsync(
         int id)
     {
