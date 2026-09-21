@@ -1,0 +1,21 @@
+# .NET
+**/bin/
+**/obj/
+
+# Visual Studio
+.vs/
+
+# User-specific files
+*.user
+*.suo
+
+# Environment files
+.env
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local development settings
+**/appsettings.Development.json
