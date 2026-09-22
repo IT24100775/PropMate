@@ -1,20 +1,25 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PropMate.Api.Data;
 using PropMate.Api.Services;
 using PropMate.Api.Services.Interfaces;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+// ----------------------------------------------------
+// OpenAPI / Swagger
+// ----------------------------------------------------
 
+builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// ----------------------------------------------------
+// Controllers + JSON Enum Configuration
+// ----------------------------------------------------
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -23,18 +28,31 @@ builder.Services.AddControllers()
             new JsonStringEnumConverter());
     });
 
+// ----------------------------------------------------
+// Database
+// ----------------------------------------------------
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")
     ));
+
+// ----------------------------------------------------
+// Application Services
+// ----------------------------------------------------
 
 builder.Services.AddScoped<IPropertyListingService, PropertyListingService>();
 
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+// ----------------------------------------------------
+// JWT Authentication
+// ----------------------------------------------------
+
 var jwtKey = builder.Configuration["Jwt:Key"]
-    ?? throw new InvalidOperationException("JWT key is not configured.");
+    ?? throw new InvalidOperationException(
+        "JWT key is not configured.");
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -59,7 +77,13 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddHttpClient<IPropertyVerificationClient, PropertyVerificationClient>(
+// ----------------------------------------------------
+// Property Verification AI Service
+// ----------------------------------------------------
+
+builder.Services.AddHttpClient<
+    IPropertyVerificationClient,
+    PropertyVerificationClient>(
     client =>
     {
         var baseUrl = builder.Configuration[
@@ -75,22 +99,34 @@ builder.Services.AddHttpClient<IPropertyVerificationClient, PropertyVerification
         client.Timeout = TimeSpan.FromSeconds(15);
     });
 
+// ----------------------------------------------------
+// CORS
+// ----------------------------------------------------
+// Allows React and Flutter Web during local development.
+// Flutter Web uses a changing localhost port, so AllowAnyOrigin()
+// is convenient while developing.
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactApp", policy =>
+    options.AddPolicy("AllowFrontend", policy =>
     {
         policy
-            .WithOrigins("http://localhost:5173")
+            .AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
 });
 
+// ----------------------------------------------------
+// Build Application
+// ----------------------------------------------------
+
 var app = builder.Build();
 
-app.UseCors("AllowReactApp");
+// ----------------------------------------------------
+// Development Tools
+// ----------------------------------------------------
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -99,26 +135,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// ----------------------------------------------------
+// HTTP Pipeline
+// ----------------------------------------------------
+
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -126,8 +149,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
