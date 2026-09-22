@@ -1,0 +1,16 @@
+# Visual Studio / .NET
+bin/
+obj/
+
+# User-specific files
+.vs/
+*.user
+*.suo
+
+# Build output
+[Bb]uild/
+[Bb]uilds/
+
+# OS files
+.DS_Store
+Thumbs.db
