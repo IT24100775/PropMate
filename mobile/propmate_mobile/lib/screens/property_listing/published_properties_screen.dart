@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import '../../models/property_listing.dart';
 import '../../services/property_listing_service.dart';
 import '../../widgets/property_card.dart';
@@ -54,14 +55,19 @@ class _PublishedPropertiesScreenState
     const gold = Color(0xFFCF9E3E);
 
     return Scaffold(
+      // PropMate navigation bar
       appBar: AppBar(
-        title: const Text(
-          'PropMate',
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-          ),
+        backgroundColor: charcoal,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        titleSpacing: 16,
+        title: Image.asset(
+          'assets/images/logo-white.png',
+          height: 52,
+          fit: BoxFit.contain,
         ),
       ),
+
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: _refreshProperties,
@@ -69,6 +75,7 @@ class _PublishedPropertiesScreenState
           child: FutureBuilder<List<PropertyListing>>(
             future: _properties,
             builder: (context, snapshot) {
+              // Loading
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child: CircularProgressIndicator(
@@ -77,6 +84,7 @@ class _PublishedPropertiesScreenState
                 );
               }
 
+              // Error
               if (snapshot.hasError) {
                 return ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -123,6 +131,7 @@ class _PublishedPropertiesScreenState
 
               final properties = snapshot.data ?? [];
 
+              // Empty
               if (properties.isEmpty) {
                 return ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -156,9 +165,15 @@ class _PublishedPropertiesScreenState
                 );
               }
 
+              // Published properties
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(18, 22, 18, 30),
+                padding: const EdgeInsets.fromLTRB(
+                  18,
+                  22,
+                  18,
+                  30,
+                ),
                 children: [
                   Text(
                     'Find Your Next Property',
@@ -179,8 +194,9 @@ class _PublishedPropertiesScreenState
                     ),
                   ),
 
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 7),
 
+                  // Property count
                   Text(
                     '${properties.length} published '
                     '${properties.length == 1 ? 'property' : 'properties'}',
@@ -191,19 +207,9 @@ class _PublishedPropertiesScreenState
                     ),
                   ),
 
-                  const SizedBox(height: 6),
-
-                  Text(
-                    '${properties.length} published '
-                    '${properties.length == 1 ? 'property' : 'properties'}',
-                    style: const TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                    ),
-                  ),
-
                   const SizedBox(height: 22),
 
+                  // Property cards
                   ...properties.map(
                     (property) => PropertyCard(
                       property: property,

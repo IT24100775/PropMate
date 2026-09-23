@@ -57,8 +57,8 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
         title: Row(
             children: [
             Image.asset(
-                'assets/images/logo-full.png',
-                height: 34,
+                'assets/images/logo-white.png',
+                height: 46,
                 fit: BoxFit.contain,
             ),
             const SizedBox(width: 14),
