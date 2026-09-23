@@ -757,7 +757,9 @@ public class PropertyListingService : IPropertyListingService
                 x.Status == ListingStatus.RevisionRequired ||
                 x.Status == ListingStatus.Rejected ||
                 x.Status == ListingStatus.Published ||
-                x.Status == ListingStatus.Unpublished)
+                x.Status == ListingStatus.Unpublished ||
+                x.Status == ListingStatus.Sold ||
+                x.Status == ListingStatus.Rented)
             .OrderByDescending(x => x.UpdatedAt)
             .ToListAsync();
 
