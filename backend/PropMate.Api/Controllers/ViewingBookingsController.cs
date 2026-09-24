@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PropMate.Api.Data;
 using PropMate.Api.Models;
@@ -16,6 +16,28 @@ public class ViewingBookingsController : ControllerBase
         _context = context;
     }
 
+    // GET /api/viewing-bookings
+    [HttpGet]
+    public async Task<IActionResult> GetAllBookings()
+    {
+        var bookings = await _context.ViewingBookings
+            .Include(b => b.ViewingSlot)
+            .ThenInclude(v => v!.Property)
+            .Select(b => new
+            {
+                b.Id,
+                b.UserId,
+                b.ViewingSlotId,
+                b.BookedAt,
+                PropertyId = b.ViewingSlot!.PropertyId,
+                PropertyTitle = b.ViewingSlot.Property!.Title,
+                StartTime = b.ViewingSlot.StartTime,
+                EndTime = b.ViewingSlot.EndTime
+            })
+            .ToListAsync();
+
+        return Ok(bookings);
+    }
     // POST /api/viewing-bookings
     [HttpPost]
     public async Task<IActionResult> BookViewing([FromBody] CreateViewingBookingRequest request)
@@ -93,3 +115,4 @@ public class CreateViewingBookingRequest
     public int ViewingSlotId { get; set; }
     public int UserId { get; set; }
 }
+

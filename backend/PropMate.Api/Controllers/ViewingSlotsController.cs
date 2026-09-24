@@ -15,11 +15,12 @@ public class ViewingSlotsController : ControllerBase
         _context = context;
     }
 
-    // GET /api/properties/{propertyId}/viewing-slots
     [HttpGet("api/properties/{propertyId}/viewing-slots")]
     public async Task<IActionResult> GetViewingSlotsForProperty(int propertyId)
     {
-        var propertyExists = await _context.Properties.AnyAsync(p => p.Id == propertyId);
+        var propertyExists =
+            await _context.Properties.AnyAsync(p => p.Id == propertyId);
+
         if (!propertyExists)
         {
             return NotFound(new { message = "Property not found." });
@@ -40,11 +41,13 @@ public class ViewingSlotsController : ControllerBase
         return Ok(slots);
     }
 
-    // POST /api/viewing-slots
     [HttpPost("api/viewing-slots")]
-    public async Task<IActionResult> CreateViewingSlot([FromBody] CreateViewingSlotRequest request)
+    public async Task<IActionResult> CreateViewingSlot(
+        [FromBody] CreateViewingSlotRequest request)
     {
-        var propertyExists = await _context.Properties.AnyAsync(p => p.Id == request.PropertyId);
+        var propertyExists =
+            await _context.Properties.AnyAsync(p => p.Id == request.PropertyId);
+
         if (!propertyExists)
         {
             return NotFound(new { message = "Property not found." });
@@ -70,6 +73,59 @@ public class ViewingSlotsController : ControllerBase
         await _context.SaveChangesAsync();
 
         return StatusCode(StatusCodes.Status201Created, slot);
+    }
+
+    [HttpPut("api/viewing-slots/{id}")]
+    public async Task<IActionResult> UpdateViewingSlot(
+        int id,
+        [FromBody] CreateViewingSlotRequest request)
+    {
+        var slot = await _context.ViewingSlots.FindAsync(id);
+
+        if (slot == null)
+        {
+            return NotFound(new { message = "Viewing slot not found." });
+        }
+
+        var propertyExists =
+            await _context.Properties.AnyAsync(p => p.Id == request.PropertyId);
+
+        if (!propertyExists)
+        {
+            return NotFound(new { message = "Property not found." });
+        }
+
+        var startTimeUtc = request.StartTime.Kind == DateTimeKind.Unspecified
+            ? DateTime.SpecifyKind(request.StartTime, DateTimeKind.Utc)
+            : request.StartTime.ToUniversalTime();
+
+        var endTimeUtc = request.EndTime.Kind == DateTimeKind.Unspecified
+            ? DateTime.SpecifyKind(request.EndTime, DateTimeKind.Utc)
+            : request.EndTime.ToUniversalTime();
+
+        slot.PropertyId = request.PropertyId;
+        slot.StartTime = startTimeUtc;
+        slot.EndTime = endTimeUtc;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(slot);
+    }
+
+    [HttpDelete("api/viewing-slots/{id}")]
+    public async Task<IActionResult> DeleteViewingSlot(int id)
+    {
+        var slot = await _context.ViewingSlots.FindAsync(id);
+
+        if (slot == null)
+        {
+            return NotFound(new { message = "Viewing slot not found." });
+        }
+
+        _context.ViewingSlots.Remove(slot);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
     }
 }
 

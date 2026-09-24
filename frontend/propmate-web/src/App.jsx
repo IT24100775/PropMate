@@ -1,7 +1,8 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+﻿import { Navigate, Route, Routes } from "react-router-dom";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import PropertyManagement from "./pages/staff/PropertyManagement";
 import PropertyDiscovery from "./pages/discovery/PropertyDiscovery";
 import PropertyDetails from "./pages/discovery/PropertyDetails";
 import PropertyLocation from "./pages/discovery/PropertyLocation";
@@ -23,6 +24,10 @@ function App() {
         element={<Navigate to="/discover" replace />}
       />
 
+      <Route
+        path="/staff/properties"
+        element={<PropertyManagement />}
+      />
       <Route
         path="/discover"
         element={<PropertyDiscovery />}
@@ -52,3 +57,5 @@ function App() {
 }
 
 export default App;
+
+

@@ -48,3 +48,56 @@ export async function getPropertyLocation(id) {
 
     return await response.json();
 }
+// Create a new property
+export async function createProperty(property) {
+    const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(property)
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to create property.");
+    }
+
+    return await response.json();
+}
+// Update an existing property
+export async function updateProperty(id, property) {
+    const response = await fetch(`${API_URL}/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            id: Number(id),
+            title: property.title,
+            description: property.description,
+            price: Number(property.price),
+            bedrooms: Number(property.bedrooms),
+            bathrooms: Number(property.bathrooms),
+            location: property.location,
+            latitude: Number(property.latitude),
+            longitude: Number(property.longitude),
+            isAvailable: property.isAvailable
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to update property.");
+    }
+}
+
+
+// Delete a property
+export async function deleteProperty(id) {
+    const response = await fetch(`${API_URL}/${id}`, {
+        method: "DELETE"
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to delete property.");
+    }
+}
