@@ -73,10 +73,12 @@ builder.Services.AddHttpClient<IAgentWorkflowClient, AgentWorkflowClient>(client
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactApp", policy =>
+    options.AddPolicy("AllowFrontend", policy =>
     {
-        policy
-            .WithOrigins("http://localhost:5173")
+        policy.WithOrigins(
+                "http://localhost:5173",
+                "http://localhost:35481"
+            )
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -94,6 +96,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

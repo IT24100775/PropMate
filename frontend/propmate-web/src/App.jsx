@@ -14,7 +14,12 @@ import { useAuth } from "./context/authContext";
 import CreateListing from "./pages/owner/CreateListing";
 import MyListings from "./pages/owner/MyListings";
 import EditListing from "./pages/owner/EditListing"; 
-import AdminReviewListing from "./pages/AdminReviewListing"; 
+import AdminReviewListing from "./pages/AdminReviewListing";
+import OwnerRentalApplications from "./component3/pages/OwnerRentalApplications";
+import OwnerPurchaseOffers from "./component3/pages/OwnerPurchaseOffers";
+import OwnerTransactionPage from "./component3/pages/OwnerTransactionPage";
+import AdminTransactions from "./component3/pages/AdminTransactions";
+import "./component3/styles/component3.css";
 
 function HomeRedirect() {
   const { user } = useAuth();
@@ -109,6 +114,13 @@ function App() {
           </ProtectedRoute>
         }
       />
+
+
+      <Route path="/owner/component3/rentals" element={<ProtectedRoute allowedRoles={["OwnerAgent"]}><OwnerRentalApplications /></ProtectedRoute>} />
+      <Route path="/owner/component3/purchases" element={<ProtectedRoute allowedRoles={["OwnerAgent"]}><OwnerPurchaseOffers /></ProtectedRoute>} />
+      <Route path="/owner/component3/:type/:id" element={<ProtectedRoute allowedRoles={["OwnerAgent"]}><OwnerTransactionPage /></ProtectedRoute>} />
+
+      <Route path="/admin/component3" element={<ProtectedRoute allowedRoles={["Admin"]}><AdminTransactions /></ProtectedRoute>} />
 
       <Route
         path="/unauthorized"

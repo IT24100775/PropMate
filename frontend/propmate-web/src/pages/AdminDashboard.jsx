@@ -113,6 +113,11 @@ function AdminDashboard() {
               <span>01</span>
               Verification Queue
             </Link>
+
+            <Link to="/admin/component3" className="admin-nav-active">
+              <span>02</span>
+              Component 3 Transactions
+            </Link>
           </nav>
         </div>
 
