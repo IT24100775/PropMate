@@ -24,6 +24,7 @@ function MaintenanceDashboard() {
 
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [history, setHistory] = useState([]);
+  const [expenses, setExpenses] = useState([]);
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -33,6 +34,7 @@ function MaintenanceDashboard() {
 
   const [showRequestForm, setShowRequestForm] = useState(false);
   const [showTechnicianForm, setShowTechnicianForm] = useState(false);
+  const [editingTechnicianId, setEditingTechnicianId] = useState(null);
 
   const [requestForm, setRequestForm] = useState(emptyRequest);
   const [technicianForm, setTechnicianForm] = useState(emptyTechnician);
@@ -84,7 +86,11 @@ function MaintenanceDashboard() {
   };
 
   useEffect(() => {
-    loadData();
+    const initialLoad = async () => {
+      await loadData();
+    };
+
+    void initialLoad();
   }, []);
 
   const filteredRequests = useMemo(() => {
@@ -114,7 +120,10 @@ function MaintenanceDashboard() {
       setError("");
 
       const data = await maintenanceApi.getById(id);
-      const historyData = await maintenanceApi.getHistory(id);
+      const [historyData, expenseData] = await Promise.all([
+        maintenanceApi.getHistory(id),
+        maintenanceApi.getExpenses(id),
+      ]);
 
       setSelectedRequest(data);
 
@@ -123,6 +132,7 @@ function MaintenanceDashboard() {
           ? historyData
           : historyData.items || historyData.data || []
       );
+      setExpenses(Array.isArray(expenseData) ? expenseData : []);
     } catch (err) {
       setError(err.message);
     }
@@ -253,12 +263,41 @@ function MaintenanceDashboard() {
 
       setMessage("Technician created successfully.");
       setTechnicianForm(emptyTechnician);
+      setEditingTechnicianId(null);
       setShowTechnicianForm(false);
 
       await loadData();
     } catch (err) {
       setError(err.message);
     }
+  };
+
+  const saveTechnician = async (event) => {
+    event.preventDefault();
+
+    try {
+      await maintenanceApi.updateTechnician(editingTechnicianId, technicianForm);
+
+      setMessage("Technician updated successfully.");
+      setTechnicianForm(emptyTechnician);
+      setEditingTechnicianId(null);
+      setShowTechnicianForm(false);
+      await loadData();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const openTechnicianEditor = (technician) => {
+    setEditingTechnicianId(technician.id);
+    setTechnicianForm({
+      name: technician.name || "",
+      phone: technician.phone || "",
+      email: technician.email || "",
+      specialization: technician.specialization || "",
+      availabilityStatus: technician.availabilityStatus || "AVAILABLE",
+    });
+    setShowTechnicianForm(true);
   };
 
   const deleteTechnician = async (id) => {
@@ -279,6 +318,19 @@ function MaintenanceDashboard() {
 
   const priorityClass = (priority) =>
     `badge priority-${priority?.toLowerCase()}`;
+
+  const availableStatusTransitions = {
+    PENDING: ["ASSIGNED", "REJECTED"],
+    ASSIGNED: ["SCHEDULED", "CANCELLED"],
+    SCHEDULED: ["IN_PROGRESS", "CANCELLED"],
+    IN_PROGRESS: ["RESOLVED"],
+    RESOLVED: ["REOPENED"],
+    REOPENED: ["ASSIGNED"],
+  };
+
+  const nextStatuses = availableStatusTransitions[
+    selectedRequest?.status?.toUpperCase()
+  ] || [];
 
   return (
     <div className="dashboard">
@@ -506,7 +558,11 @@ function MaintenanceDashboard() {
 
               <button
                 className="primary-button"
-                onClick={() => setShowTechnicianForm(true)}
+                onClick={() => {
+                  setEditingTechnicianId(null);
+                  setTechnicianForm(emptyTechnician);
+                  setShowTechnicianForm(true);
+                }}
               >
                 + Add Technician
               </button>
@@ -534,12 +590,20 @@ function MaintenanceDashboard() {
                     </span>
                   </div>
 
-                  <button
-                    className="delete-button"
-                    onClick={() => deleteTechnician(technician.id)}
-                  >
-                    Delete
-                  </button>
+                  <div className="technician-actions">
+                    <button
+                      className="view-button"
+                      onClick={() => openTechnicianEditor(technician)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="delete-button"
+                      onClick={() => deleteTechnician(technician.id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
               ))}
 
@@ -677,8 +741,8 @@ function MaintenanceDashboard() {
 
             <div className="modal-header">
               <div>
-                <h2>Add Technician</h2>
-                <p>Add a new maintenance technician.</p>
+                <h2>{editingTechnicianId ? "Edit Technician" : "Add Technician"}</h2>
+                <p>{editingTechnicianId ? "Update technician details and availability." : "Add a new maintenance technician."}</p>
               </div>
 
               <button onClick={() => setShowTechnicianForm(false)}>
@@ -686,7 +750,7 @@ function MaintenanceDashboard() {
               </button>
             </div>
 
-            <form onSubmit={createTechnician}>
+            <form onSubmit={editingTechnicianId ? saveTechnician : createTechnician}>
 
               <label>Name</label>
               <input
@@ -763,7 +827,7 @@ function MaintenanceDashboard() {
                 </button>
 
                 <button className="primary-button" type="submit">
-                  Add Technician
+                  {editingTechnicianId ? "Save Changes" : "Add Technician"}
                 </button>
               </div>
 
@@ -832,21 +896,14 @@ function MaintenanceDashboard() {
                 <h3>Update Status</h3>
 
                 <div className="status-buttons">
-                  <button onClick={() => changeStatus("ASSIGNED")}>
-                    Assigned
-                  </button>
-
-                  <button onClick={() => changeStatus("SCHEDULED")}>
-                    Scheduled
-                  </button>
-
-                  <button onClick={() => changeStatus("IN_PROGRESS")}>
-                    In Progress
-                  </button>
-
-                  <button onClick={() => changeStatus("RESOLVED")}>
-                    Resolved
-                  </button>
+                  {nextStatuses.map((status) => (
+                    <button key={status} onClick={() => changeStatus(status)}>
+                      {status === "RESOLVED" ? "Confirm resolution" : status.replace("_", " ")}
+                    </button>
+                  ))}
+                  {nextStatuses.length === 0 && (
+                    <span className="muted">No workflow actions available.</span>
+                  )}
                 </div>
               </div>
 
@@ -894,13 +951,7 @@ function MaintenanceDashboard() {
                 >
                   <option value="">Technician</option>
 
-                  {technicians
-                    .filter(
-                      (t) =>
-                        t.availabilityStatus?.toUpperCase() ===
-                        "AVAILABLE"
-                    )
-                    .map((technician) => (
+                  {technicians.map((technician) => (
                       <option
                         key={technician.id}
                         value={technician.id}
@@ -991,6 +1042,22 @@ function MaintenanceDashboard() {
                 </button>
 
               </form>
+
+              <div className="expense-list">
+                <div className="expense-summary">
+                  <span>Recorded total</span>
+                  <strong>
+                    ${expenses.reduce((total, expense) => total + Number(expense.amount || 0), 0).toFixed(2)}
+                  </strong>
+                </div>
+                {expenses.map((expense) => (
+                  <div className="expense-row" key={expense.id}>
+                    <span>{expense.description}</span>
+                    <strong>${Number(expense.amount).toFixed(2)}</strong>
+                  </div>
+                ))}
+                {expenses.length === 0 && <p className="muted">No expenses recorded yet.</p>}
+              </div>
             </div>
 
             <div className="detail-section ai-section">

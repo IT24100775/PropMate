@@ -45,6 +45,26 @@ namespace PropMate.Api.Controllers
             });
         }
 
+        [HttpGet("tenant/{tenantId}")]
+        public async Task<IActionResult> GetForTenant(int tenantId)
+        {
+            var result = await _maintenanceService.GetAllAsync(new MaintenanceQueryDto
+            {
+                TenantId = tenantId,
+                Page = 1,
+                PageSize = 100
+            });
+
+            return Ok(result.Items);
+        }
+
+        [HttpGet("tenant/{tenantId}/notifications")]
+        public async Task<IActionResult> GetNotificationsForTenant(int tenantId)
+        {
+            var notifications = await _maintenanceService.GetNotificationsForTenantAsync(tenantId);
+            return Ok(notifications);
+        }
+
         // GET: api/Maintenance/1
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -165,6 +185,38 @@ public async Task<IActionResult> AssignTechnician(
     }
 }
 
+[HttpPost("{id}/ai/approve")]
+public async Task<IActionResult> ApproveAiRecommendation(
+    int id,
+    ApproveMaintenanceAiDto dto)
+{
+    try
+    {
+        var result = await _maintenanceService.ApproveAiRecommendationAsync(id, dto);
+
+        if (result == null)
+        {
+            return NotFound(new
+            {
+                message = "Maintenance request not found."
+            });
+        }
+
+        return Ok(new
+        {
+            message = "AI recommendation approved and executed by backend.",
+            result
+        });
+    }
+    catch (Exception ex)
+    {
+        return BadRequest(new
+        {
+            message = ex.Message
+        });
+    }
+}
+
 //Status workflow
 [HttpPatch("{id}/status")]
 public async Task<IActionResult> UpdateStatus(
@@ -251,6 +303,22 @@ public async Task<IActionResult> AddExpense(
             message = ex.Message
         });
     }
+}
+
+[HttpGet("{id}/expenses")]
+public async Task<IActionResult> GetExpenses(int id)
+{
+    var request = await _maintenanceService.GetByIdAsync(id);
+
+    if (request == null)
+    {
+        return NotFound(new
+        {
+            message = "Maintenance request not found."
+        });
+    }
+
+    return Ok(await _maintenanceService.GetExpensesAsync(id));
 }
 
     }

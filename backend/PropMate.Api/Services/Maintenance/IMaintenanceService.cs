@@ -11,6 +11,8 @@ namespace PropMate.Api.Services.Maintenance
         Task<(List<MaintenanceRequest> Items, int TotalCount)>
             GetAllAsync(MaintenanceQueryDto query);
 
+        Task<List<MaintenanceNotification>> GetNotificationsForTenantAsync(int tenantId);
+
         Task<MaintenanceRequest?> GetByIdAsync(int id);
 
         Task<MaintenanceRequest?> UpdateAsync(
@@ -22,6 +24,10 @@ namespace PropMate.Api.Services.Maintenance
         Task<MaintenanceAssignment?> AssignTechnicianAsync(
             int maintenanceRequestId,
             AssignTechnicianDto dto);
+
+        Task<object?> ApproveAiRecommendationAsync(
+            int maintenanceRequestId,
+            ApproveMaintenanceAiDto dto);
 
         Task<RepairSchedule?> ScheduleRepairAsync(
     int maintenanceRequestId,
@@ -40,6 +46,9 @@ namespace PropMate.Api.Services.Maintenance
     Task<MaintenanceExpense?> AddExpenseAsync(
     int maintenanceRequestId,
     CreateMaintenanceExpenseDto dto);
+
+    Task<List<MaintenanceExpense>> GetExpensesAsync(
+    int maintenanceRequestId);
 
     
 

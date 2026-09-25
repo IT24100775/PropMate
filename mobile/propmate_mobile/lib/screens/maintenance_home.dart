@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'create_request.dart';
+import '../services/maintenance_api.dart';
 
 class MaintenanceHome extends StatefulWidget {
   const MaintenanceHome({super.key});
@@ -9,24 +10,40 @@ class MaintenanceHome extends StatefulWidget {
 }
 
 class _MaintenanceHomeState extends State<MaintenanceHome> {
-  // Temporary data for the frontend.
-  // We will connect this to the ASP.NET API next.
-  final List<Map<String, String>> requests = [
-    {
-      'id': '5',
-      'description': 'Water is leaking from the bathroom pipe',
-      'category': 'Plumbing',
-      'priority': 'HIGH',
-      'status': 'PENDING',
-    },
-    {
-      'id': '6',
-      'description': 'Bedroom light is not working',
-      'category': 'Electrical',
-      'priority': 'MEDIUM',
-      'status': 'IN_PROGRESS',
-    },
-  ];
+  static const int tenantId = 1;
+  final MaintenanceApi _api = MaintenanceApi();
+  List<Map<String, dynamic>> requests = [];
+  List<Map<String, dynamic>> notifications = [];
+  bool _loading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    try {
+      final results = await Future.wait<List<Map<String, dynamic>>>([
+        _api.getRequests(tenantId),
+        _api.getNotifications(tenantId),
+      ]);
+      if (!mounted) return;
+      setState(() {
+        requests = results[0];
+        notifications = results[1];
+        _error = null;
+        _loading = false;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _error = 'Could not connect to PropMate.';
+        _loading = false;
+      });
+    }
+  }
 
   Color getPriorityColor(String priority) {
     switch (priority) {
@@ -79,21 +96,39 @@ class _MaintenanceHomeState extends State<MaintenanceHome> {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
         elevation: 0,
+        actions: [
+          IconButton(
+            tooltip: 'Notifications',
+            onPressed: _showNotifications,
+            icon: Badge(
+              isLabelVisible: notifications.isNotEmpty,
+              label: Text(notifications.length.toString()),
+              child: const Icon(Icons.notifications_outlined),
+            ),
+          ),
+        ],
       ),
 
       body: RefreshIndicator(
         onRefresh: () async {
-          // API refresh will be added later.
-          await Future.delayed(
-            const Duration(milliseconds: 500),
-          );
-
-          setState(() {});
+          await _loadData();
         },
 
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
+
+            if (_error != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Text(_error!, style: const TextStyle(color: Colors.red)),
+              ),
+
+            if (_loading)
+              const Padding(
+                padding: EdgeInsets.all(32),
+                child: Center(child: CircularProgressIndicator()),
+              ),
 
             // Header
             const Text(
@@ -160,13 +195,14 @@ class _MaintenanceHomeState extends State<MaintenanceHome> {
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () async {
-                  await Navigator.push(
+                  final created = await Navigator.push<bool>(
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
                           const CreateRequestScreen(),
                     ),
                   );
+                  if (created == true) await _loadData();
                 },
                 icon: const Icon(Icons.add),
                 label: const Text(
@@ -261,11 +297,39 @@ class _MaintenanceHomeState extends State<MaintenanceHome> {
     );
   }
 
+  Future<void> _showNotifications() async {
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: notifications.isEmpty
+            ? const Padding(
+                padding: EdgeInsets.all(32),
+                child: Center(child: Text('No notifications yet.')),
+              )
+            : ListView.builder(
+                shrinkWrap: true,
+                itemCount: notifications.length,
+                itemBuilder: (context, index) {
+                  final notification = notifications[index];
+                  return ListTile(
+                    leading: const CircleAvatar(
+                      child: Icon(Icons.engineering_outlined),
+                    ),
+                    title: Text(notification['title']?.toString() ?? 'Notification'),
+                    subtitle: Text(notification['message']?.toString() ?? ''),
+                  );
+                },
+              ),
+      ),
+    );
+  }
+
   Widget _buildRequestCard(
-    Map<String, String> request,
+    Map<String, dynamic> request,
   ) {
-    final priority = request['priority'] ?? '';
-    final status = request['status'] ?? '';
+    final priority = request['priority']?.toString() ?? '';
+    final status = request['status']?.toString() ?? '';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 14),

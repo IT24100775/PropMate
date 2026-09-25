@@ -19,3 +19,19 @@ Thumbs.db
 
 # Local development settings
 **/appsettings.Development.json
+
+# Generated desktop platform files
+/mobile/propmate_mobile/macos/
+/mobile/propmate_mobile/linux/
+/mobile/propmate_mobile/windows/
+
+# Python generated files
+**/__pycache__/
+.pytest_cache/
+*.pyc
+
+# Python virtual environment
+/ai/venv/
+
+# Local AI workflow state
+/ai/workflow_state.json

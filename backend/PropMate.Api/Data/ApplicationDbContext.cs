@@ -21,5 +21,9 @@ namespace PropMate.Api.Data
         public DbSet<MaintenanceExpense> MaintenanceExpenses { get; set; }
 
         public DbSet<MaintenanceStatusHistory> MaintenanceStatusHistories { get; set; }
+
+        public DbSet<MaintenanceNotification> MaintenanceNotifications { get; set; }
+
+        
     }
 }

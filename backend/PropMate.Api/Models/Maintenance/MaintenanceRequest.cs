@@ -27,9 +27,17 @@ namespace PropMate.Api.Models.Maintenance
 
         public string? AiRecommendation { get; set; }
 
+        public bool ApprovalRequired { get; set; } = false;
+
+        public int? ApprovedBy { get; set; }
+
+        public DateTime? ApprovedAt { get; set; }
+
         public bool AiApproved { get; set; } = false;
-public int? AiApprovedBy { get; set; }
-public DateTime? AiApprovedAt { get; set; }
+
+        public int? AiApprovedBy { get; set; }
+
+        public DateTime? AiApprovedAt { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

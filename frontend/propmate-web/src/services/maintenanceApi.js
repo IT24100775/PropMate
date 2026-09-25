@@ -1,7 +1,8 @@
 const API_URL = "http://localhost:5235/api";
+const AI_API_URL = "http://localhost:8000/api";
 
-async function request(url, options = {}) {
-  const response = await fetch(`${API_URL}${url}`, {
+async function requestTo(baseUrl, url, options = {}) {
+  const response = await fetch(`${baseUrl}${url}`, {
     headers: {
       "Content-Type": "application/json",
       ...(options.headers || {}),
@@ -19,6 +20,10 @@ async function request(url, options = {}) {
   }
 
   return response.json();
+}
+
+async function request(url, options = {}) {
+  return requestTo(API_URL, url, options);
 }
 
 export const maintenanceApi = {
@@ -64,6 +69,9 @@ export const maintenanceApi = {
       body: JSON.stringify(data),
     }),
 
+  getExpenses: (id) =>
+    request(`/maintenance/${id}/expenses`),
+
   getHistory: (id) =>
     request(`/maintenance/${id}/history`),
 
@@ -87,14 +95,14 @@ export const maintenanceApi = {
       method: "DELETE",
     }),
 
-  analyzeAi: (data) =>
-    request("/maintenance-ai/analyze", {
+  runAiWorkflow: (data) =>
+    requestTo(AI_API_URL, "/maintenance-ai/run", {
       method: "POST",
       body: JSON.stringify(data),
     }),
 
-  approveAi: (id, data) =>
-    request(`/maintenance-ai/${id}/approve`, {
+  approveAiWorkflow: (data) =>
+    requestTo(AI_API_URL, "/maintenance-ai/approve", {
       method: "POST",
       body: JSON.stringify(data),
     }),

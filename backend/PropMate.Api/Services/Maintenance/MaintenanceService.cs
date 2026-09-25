@@ -84,6 +84,12 @@ namespace PropMate.Api.Services.Maintenance
                     x.PropertyId == query.PropertyId.Value);
             }
 
+            if (query.TenantId.HasValue)
+            {
+                requests = requests.Where(x =>
+                    x.TenantId == query.TenantId.Value);
+            }
+
             // TOTAL COUNT BEFORE PAGINATION
             var totalCount = await requests.CountAsync();
 
@@ -118,6 +124,15 @@ namespace PropMate.Api.Services.Maintenance
                 .ToListAsync();
 
             return (items, totalCount);
+        }
+
+        public async Task<List<MaintenanceNotification>> GetNotificationsForTenantAsync(int tenantId)
+        {
+            return await _context.MaintenanceNotifications
+                .AsNoTracking()
+                .Where(x => x.TenantId == tenantId)
+                .OrderByDescending(x => x.CreatedAt)
+                .ToListAsync();
         }
 
         // GET BY ID
@@ -188,6 +203,15 @@ namespace PropMate.Api.Services.Maintenance
 
     _context.MaintenanceAssignments.Add(assignment);
 
+    _context.MaintenanceNotifications.Add(new MaintenanceNotification
+    {
+        TenantId = request.TenantId,
+        MaintenanceRequestId = request.Id,
+        Title = "Technician assigned",
+        Message = $"A technician has been assigned to maintenance request #{request.Id}.",
+        CreatedAt = DateTime.UtcNow
+    });
+
     request.Status = "ASSIGNED";
     request.UpdatedAt = DateTime.UtcNow;
 
@@ -198,6 +222,77 @@ namespace PropMate.Api.Services.Maintenance
 
     return assignment;
 }
+
+        public async Task<object?> ApproveAiRecommendationAsync(
+            int maintenanceRequestId,
+            ApproveMaintenanceAiDto dto)
+        {
+            var request = await _context.MaintenanceRequests
+                .FirstOrDefaultAsync(x => x.Id == maintenanceRequestId);
+
+            if (request == null)
+            {
+                return null;
+            }
+
+            if (dto.TechnicianId <= 0)
+            {
+                throw new Exception("Technician ID is required.");
+            }
+
+            if (dto.ScheduledDate == default)
+            {
+                throw new Exception("Scheduled date is required.");
+            }
+
+            if (!TimeSpan.TryParse(dto.StartTime, out var startTime) ||
+                !TimeSpan.TryParse(dto.EndTime, out var endTime))
+            {
+                throw new Exception("Start and end times must be valid time values.");
+            }
+
+            if (startTime >= endTime)
+            {
+                throw new Exception("Start time must be earlier than end time.");
+            }
+
+            var assignment = await AssignTechnicianAsync(
+                maintenanceRequestId,
+                new AssignTechnicianDto
+                {
+                    TechnicianId = dto.TechnicianId,
+                    AssignedBy = dto.ApprovedBy,
+                    Notes = dto.Notes ?? "Approved by manager from AI recommendation."
+                });
+
+            var schedule = await ScheduleRepairAsync(
+                maintenanceRequestId,
+                new ScheduleRepairDto
+                {
+                    TechnicianId = dto.TechnicianId,
+                    ScheduledDate = dto.ScheduledDate,
+                    StartTime = startTime,
+                    EndTime = endTime,
+                    Notes = dto.Notes ?? "Approved by manager from AI recommendation."
+                });
+
+            request.AiApproved = true;
+            request.AiApprovedBy = dto.ApprovedBy;
+            request.AiApprovedAt = DateTime.UtcNow;
+            request.ApprovalRequired = false;
+            request.ApprovedBy = dto.ApprovedBy;
+            request.ApprovedAt = DateTime.UtcNow;
+            request.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return new
+            {
+                assignment,
+                schedule,
+                request
+            };
+        }
 
         // DELETE
         public async Task<bool> DeleteAsync(int id)
@@ -391,6 +486,16 @@ public async Task<MaintenanceExpense?> AddExpenseAsync(
     await _context.SaveChangesAsync();
 
     return expense;
+}
+
+public async Task<List<MaintenanceExpense>> GetExpensesAsync(
+    int maintenanceRequestId)
+{
+    return await _context.MaintenanceExpenses
+        .AsNoTracking()
+        .Where(x => x.MaintenanceRequestId == maintenanceRequestId)
+        .OrderByDescending(x => x.CreatedAt)
+        .ToListAsync();
 }
     }
 }
