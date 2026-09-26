@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PropMate.Api.Data;
 using PropMate.Api.DTOs.Maintenance;
+using PropMate.Api.Enums;
 using PropMate.Api.Models.Maintenance;
 
 namespace PropMate.Api.Services.Maintenance
@@ -8,10 +9,14 @@ namespace PropMate.Api.Services.Maintenance
     public class MaintenanceService : IMaintenanceService
     {
         private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _marketplaceContext;
 
-        public MaintenanceService(ApplicationDbContext context)
+        public MaintenanceService(
+            ApplicationDbContext context,
+            AppDbContext marketplaceContext)
         {
             _context = context;
+            _marketplaceContext = marketplaceContext;
         }
 
         // CREATE
@@ -36,6 +41,37 @@ namespace PropMate.Api.Services.Maintenance
             await _context.SaveChangesAsync();
 
             return request;
+        }
+
+        public async Task<MaintenanceRequest> CreateForTenantAsync(
+            int tenantId,
+            CreateTenantMaintenanceRequestDto dto)
+        {
+            if (tenantId <= 0 || dto.PropertyListingId <= 0)
+            {
+                throw new InvalidOperationException("Tenant and property IDs are required.");
+            }
+
+            var hasActiveRental = await _marketplaceContext.RentalAgreements
+                .AnyAsync(agreement =>
+                    agreement.TenantId == tenantId &&
+                    agreement.PropertyListingId == dto.PropertyListingId &&
+                    agreement.Status == AgreementStatus.Completed);
+
+            if (!hasActiveRental)
+            {
+                throw new UnauthorizedAccessException(
+                    "Maintenance requests are available only for a completed rental agreement.");
+            }
+
+            return await CreateAsync(new CreateMaintenanceRequestDto
+            {
+                PropertyId = dto.PropertyListingId,
+                TenantId = tenantId,
+                Description = dto.Description,
+                Category = dto.Category,
+                Priority = dto.Priority
+            });
         }
 
         // GET ALL WITH SEARCH, FILTER, SORT AND PAGINATION

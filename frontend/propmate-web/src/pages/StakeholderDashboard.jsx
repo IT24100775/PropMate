@@ -76,7 +76,8 @@ function StakeholderDashboard() {
   };
 
   useEffect(() => {
-    void loadData();
+    const timer = window.setTimeout(() => void loadData(), 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -100,8 +101,11 @@ function StakeholderDashboard() {
         setSectionLoading(false);
       }
     };
-    if (requests.length) void loadSectionData();
-    else setSectionLoading(false);
+    const timer = window.setTimeout(() => {
+      if (requests.length) void loadSectionData();
+      else setSectionLoading(false);
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [activeView, requests]);
 
   const filteredRequests = useMemo(() => requests.filter((request) => {

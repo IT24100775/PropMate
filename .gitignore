@@ -1,37 +1,37 @@
 # .NET
 **/bin/
 **/obj/
-
-# Visual Studio
 .vs/
-
-# User-specific files
 *.user
 *.suo
 
-# Environment files
-.env
-.env.*
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Local development settings
+# Environment files and local configuration
+**/.env
+**/.env.*
 **/appsettings.Development.json
 
-# Generated desktop platform files
+# React
+**/node_modules/
+**/dist/
+
+# Flutter / Dart
+**/.dart_tool/
+**/build/
 /mobile/propmate_mobile/macos/
 /mobile/propmate_mobile/linux/
 /mobile/propmate_mobile/windows/
 
-# Python generated files
-**/__pycache__/
-.pytest_cache/
-*.pyc
-
-# Python virtual environment
+# Python
+**/.venv/
 /ai/venv/
+**/__pycache__/
+**/.pytest_cache/
+**/*.pyc
 
 # Local AI workflow state
 /ai/workflow_state.json
+
+# IDE / OS
+.idea/
+.DS_Store
+Thumbs.db

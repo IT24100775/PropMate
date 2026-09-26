@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
 import 'create_request.dart';
+import '../component3/models/transaction_models.dart';
+import '../component3/services/component3_api.dart';
 import '../services/maintenance_api.dart';
 
 class MaintenanceHome extends StatefulWidget {
-  const MaintenanceHome({super.key});
+  const MaintenanceHome({super.key, required this.tenantId, required this.onSignOut});
+
+  final int tenantId;
+  final VoidCallback onSignOut;
 
   @override
   State<MaintenanceHome> createState() => _MaintenanceHomeState();
 }
 
 class _MaintenanceHomeState extends State<MaintenanceHome> {
-  static const int tenantId = 1;
   final MaintenanceApi _api = MaintenanceApi();
+  final Component3Api _transactions = Component3Api();
   List<Map<String, dynamic>> requests = [];
   List<Map<String, dynamic>> notifications = [];
+  List<RentalApplication> activeRentals = [];
   bool _loading = true;
   String? _error;
 
@@ -26,13 +32,24 @@ class _MaintenanceHomeState extends State<MaintenanceHome> {
   Future<void> _loadData() async {
     try {
       final results = await Future.wait<List<Map<String, dynamic>>>([
-        _api.getRequests(tenantId),
-        _api.getNotifications(tenantId),
+        _api.getRequests(widget.tenantId),
+        _api.getNotifications(widget.tenantId),
       ]);
+      final rentalApplications = await _transactions.myRentalApplications();
+      final agreements = await Future.wait(
+        rentalApplications.map((rental) => _transactions.rentalAgreement(rental.id)),
+      );
+      final rentedProperties = <RentalApplication>[];
+      for (var index = 0; index < rentalApplications.length; index++) {
+        if (agreements[index]?.status == 'Completed') {
+          rentedProperties.add(rentalApplications[index]);
+        }
+      }
       if (!mounted) return;
       setState(() {
         requests = results[0];
         notifications = results[1];
+        activeRentals = rentedProperties;
         _error = null;
         _loading = false;
       });
@@ -97,6 +114,11 @@ class _MaintenanceHomeState extends State<MaintenanceHome> {
         foregroundColor: Colors.black87,
         elevation: 0,
         actions: [
+          IconButton(
+            tooltip: 'Sign out',
+            onPressed: widget.onSignOut,
+            icon: const Icon(Icons.logout),
+          ),
           IconButton(
             tooltip: 'Notifications',
             onPressed: _showNotifications,
@@ -194,12 +216,14 @@ class _MaintenanceHomeState extends State<MaintenanceHome> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: () async {
+                onPressed: activeRentals.isEmpty ? null : () async {
                   final created = await Navigator.push<bool>(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          const CreateRequestScreen(),
+                      builder: (context) => CreateRequestScreen(
+                        tenantId: widget.tenantId,
+                        activeRentals: activeRentals,
+                      ),
                     ),
                   );
                   if (created == true) await _loadData();
@@ -299,7 +323,7 @@ class _MaintenanceHomeState extends State<MaintenanceHome> {
 
   Future<void> _showNotifications() async {
     try {
-      final latestNotifications = await _api.getNotifications(tenantId);
+      final latestNotifications = await _api.getNotifications(widget.tenantId);
       if (!mounted) return;
       setState(() => notifications = latestNotifications);
     } catch (error) {

@@ -1,13 +1,21 @@
 const API_URL = "http://localhost:5235/api";
 const AI_API_URL = "http://localhost:8000/api";
 
+function authHeaders() {
+  const savedUser = localStorage.getItem("propmate_user");
+  if (!savedUser) return {};
+  const user = JSON.parse(savedUser);
+  return user.token ? { Authorization: `Bearer ${user.token}` } : {};
+}
+
 async function requestTo(baseUrl, url, options = {}) {
   const response = await fetch(`${baseUrl}${url}`, {
+    ...options,
     headers: {
       "Content-Type": "application/json",
+      ...authHeaders(),
       ...(options.headers || {}),
     },
-    ...options,
   });
 
   if (!response.ok) {
@@ -33,8 +41,20 @@ export const maintenanceApi = {
   getById: (id) =>
     request(`/maintenance/${id}`),
 
+  getForTenant: (tenantId) =>
+    request(`/maintenance/tenant/${tenantId}`),
+
+  getNotificationsForTenant: (tenantId) =>
+    request(`/maintenance/tenant/${tenantId}/notifications`),
+
   create: (data) =>
     request("/maintenance", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  createForTenant: (data) =>
+    request("/maintenance/tenant", {
       method: "POST",
       body: JSON.stringify(data),
     }),

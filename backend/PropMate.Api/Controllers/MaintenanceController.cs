@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PropMate.Api.DTOs.Maintenance;
 using PropMate.Api.Services.Maintenance;
@@ -16,6 +18,7 @@ namespace PropMate.Api.Controllers
         }
 
         // POST: api/Maintenance
+        [Authorize(Roles = "PropertyManager,Admin")]
         [HttpPost]
         public async Task<IActionResult> Create(
             CreateMaintenanceRequestDto dto)
@@ -27,6 +30,31 @@ namespace PropMate.Api.Controllers
                 new { id = request.Id },
                 request
             );
+        }
+
+        [Authorize(Roles = "BuyerRenter")]
+        [HttpPost("tenant")]
+        public async Task<IActionResult> CreateForTenant(
+            CreateTenantMaintenanceRequestDto dto)
+        {
+            if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var tenantId))
+            {
+                return Unauthorized();
+            }
+
+            try
+            {
+                var request = await _maintenanceService.CreateForTenantAsync(tenantId, dto);
+                return CreatedAtAction(nameof(GetById), new { id = request.Id }, request);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         // GET: api/Maintenance
@@ -45,9 +73,16 @@ namespace PropMate.Api.Controllers
             });
         }
 
+        [Authorize(Roles = "BuyerRenter")]
         [HttpGet("tenant/{tenantId}")]
         public async Task<IActionResult> GetForTenant(int tenantId)
         {
+            if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var currentTenantId) ||
+                currentTenantId != tenantId)
+            {
+                return Forbid();
+            }
+
             var result = await _maintenanceService.GetAllAsync(new MaintenanceQueryDto
             {
                 TenantId = tenantId,
@@ -58,9 +93,16 @@ namespace PropMate.Api.Controllers
             return Ok(result.Items);
         }
 
+        [Authorize(Roles = "BuyerRenter")]
         [HttpGet("tenant/{tenantId}/notifications")]
         public async Task<IActionResult> GetNotificationsForTenant(int tenantId)
         {
+            if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var currentTenantId) ||
+                currentTenantId != tenantId)
+            {
+                return Forbid();
+            }
+
             var notifications = await _maintenanceService.GetNotificationsForTenantAsync(tenantId);
             return Ok(notifications);
         }

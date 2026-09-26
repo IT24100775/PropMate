@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import '../component3/models/transaction_models.dart';
 import '../services/maintenance_api.dart';
 
 class CreateRequestScreen extends StatefulWidget {
-  const CreateRequestScreen({super.key});
+  const CreateRequestScreen({
+    super.key,
+    required this.tenantId,
+    required this.activeRentals,
+  });
+
+  final int tenantId;
+  final List<RentalApplication> activeRentals;
 
   @override
   State<CreateRequestScreen> createState() => _CreateRequestScreenState();
@@ -14,7 +22,14 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
   final _api = MaintenanceApi();
   String _category = 'General';
   String _priority = 'MEDIUM';
+  int? _propertyListingId;
   bool _submitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _propertyListingId = widget.activeRentals.firstOrNull?.propertyListingId;
+  }
 
   @override
   void dispose() {
@@ -27,8 +42,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
     setState(() => _submitting = true);
     try {
       await _api.createRequest(
-        propertyId: 1,
-        tenantId: 1,
+        propertyId: _propertyListingId!,
         description: _descriptionController.text.trim(),
         category: _category,
         priority: _priority,
@@ -56,6 +70,24 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
+            DropdownButtonFormField<int>(
+              initialValue: _propertyListingId,
+              decoration: const InputDecoration(
+                labelText: 'Rented property',
+                border: OutlineInputBorder(),
+              ),
+              items: widget.activeRentals
+                  .map(
+                    (rental) => DropdownMenuItem(
+                      value: rental.propertyListingId,
+                      child: Text(rental.propertyTitle),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (value) => setState(() => _propertyListingId = value),
+              validator: (value) => value == null ? 'Select your rented property.' : null,
+            ),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _descriptionController,
               maxLines: 5,

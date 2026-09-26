@@ -8,6 +8,10 @@ namespace PropMate.Api.Services.Maintenance
         Task<MaintenanceRequest> CreateAsync(
             CreateMaintenanceRequestDto dto);
 
+        Task<MaintenanceRequest> CreateForTenantAsync(
+            int tenantId,
+            CreateTenantMaintenanceRequestDto dto);
+
         Task<(List<MaintenanceRequest> Items, int TotalCount)>
             GetAllAsync(MaintenanceQueryDto query);
 
