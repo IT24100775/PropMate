@@ -208,7 +208,7 @@ namespace PropMate.Api.Services.Maintenance
         TenantId = request.TenantId,
         MaintenanceRequestId = request.Id,
         Title = "Technician assigned",
-        Message = $"A technician has been assigned to maintenance request #{request.Id}.",
+        Message = $"{technician.Name} has been assigned to maintenance request #{request.Id}.",
         CreatedAt = DateTime.UtcNow
     });
 
@@ -275,6 +275,18 @@ namespace PropMate.Api.Services.Maintenance
                     EndTime = endTime,
                     Notes = dto.Notes ?? "Approved by manager from AI recommendation."
                 });
+
+            var technician = await _context.Technicians
+                .FirstAsync(x => x.Id == dto.TechnicianId);
+            var notification = await _context.MaintenanceNotifications
+                .Where(x => x.MaintenanceRequestId == request.Id && x.TenantId == request.TenantId)
+                .OrderByDescending(x => x.CreatedAt)
+                .FirstOrDefaultAsync();
+            if (notification != null)
+            {
+                notification.Title = "Technician assigned and repair scheduled";
+                notification.Message = $"{technician.Name} has been assigned to maintenance request #{request.Id}. Repair is scheduled for {dto.ScheduledDate:yyyy-MM-dd} from {startTime.ToString(@"hh\:mm")} to {endTime.ToString(@"hh\:mm")} .";
+            }
 
             request.AiApproved = true;
             request.AiApprovedBy = dto.ApprovedBy;

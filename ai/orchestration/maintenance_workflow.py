@@ -138,6 +138,7 @@ class MaintenanceWorkflow:
             )
 
         available_technicians = technicians_result.data or []
+        state.available_technicians = available_technicians
         if not available_technicians:
             error = (
                 "No available technicians match specialization "
@@ -161,6 +162,7 @@ class MaintenanceWorkflow:
                 objective=objective.objective,
                 plan=plan,
                 analysis=analysis,
+                available_technicians=available_technicians,
                 history=state.history,
                 approval_required=False,
             )
@@ -232,6 +234,7 @@ class MaintenanceWorkflow:
             plan=plan,
             analysis=analysis,
             technician_recommendation=recommendation,
+            available_technicians=available_technicians,
             validation=validation,
             approval_required=True,
             manager_approval=state.manager_approval,
@@ -251,12 +254,35 @@ class MaintenanceWorkflow:
         approved_by: int,
         approved: bool = True,
         comment: str = "",
+        technician_id: int | None = None,
     ) -> WorkflowResult:
         state = self._load_state(workflow_id)
         if state is None:
             raise ValueError(f"Workflow {workflow_id} was not found.")
 
         if approved:
+            if technician_id is not None:
+                selected = next(
+                    (
+                        item
+                        for item in state.available_technicians
+                        if int(item.get("id") or item.get("technician_id") or 0)
+                        == technician_id
+                    ),
+                    None,
+                )
+                if selected is None:
+                    raise ValueError("Selected technician is not in the available recommendations.")
+                if state.technician_recommendation is not None:
+                    state.technician_recommendation = state.technician_recommendation.model_copy(
+                        update={
+                            "technician_id": technician_id,
+                            "technician_name": str(
+                                selected.get("name") or selected.get("technician_name") or "Unknown"
+                            ),
+                            "specialization": str(selected.get("specialization") or ""),
+                        }
+                    )
             state.status = "APPROVED_PENDING_BACKEND_EXECUTION"
             state.manager_approval = ManagerApprovalDecision(
                 decision="APPROVED",
@@ -282,6 +308,7 @@ class MaintenanceWorkflow:
                 plan=state.plan,
                 analysis=state.analysis,
                 technician_recommendation=state.technician_recommendation,
+                available_technicians=state.available_technicians,
                 validation=state.validation,
                 approval_required=False,
                 manager_approval=state.manager_approval,
@@ -317,6 +344,7 @@ class MaintenanceWorkflow:
             plan=state.plan,
             analysis=state.analysis,
             technician_recommendation=state.technician_recommendation,
+            available_technicians=state.available_technicians,
             validation=state.validation,
             approval_required=False,
             manager_approval=state.manager_approval,

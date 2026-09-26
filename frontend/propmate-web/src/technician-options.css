@@ -1,0 +1,35 @@
+.technician-options {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.technician-options > strong {
+  font-size: 12px;
+}
+
+.technician-options label {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  background: #fff;
+  cursor: pointer;
+}
+
+.technician-options input {
+  margin: 0;
+  accent-color: var(--blue);
+}
+
+.technician-options label span {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.technician-options label small {
+  color: var(--muted);
+  font-size: 11px;
+}

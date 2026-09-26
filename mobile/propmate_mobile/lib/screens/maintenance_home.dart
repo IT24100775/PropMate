@@ -298,6 +298,16 @@ class _MaintenanceHomeState extends State<MaintenanceHome> {
   }
 
   Future<void> _showNotifications() async {
+    try {
+      final latestNotifications = await _api.getNotifications(tenantId);
+      if (!mounted) return;
+      setState(() => notifications = latestNotifications);
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => _error = 'Could not load notifications.');
+    }
+    if (!mounted) return;
+
     await showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,

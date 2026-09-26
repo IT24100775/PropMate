@@ -42,6 +42,7 @@ function StakeholderDashboard() {
   const [requestHistory, setRequestHistory] = useState([]);
   const [requestExpenses, setRequestExpenses] = useState([]);
   const [aiWorkflow, setAiWorkflow] = useState(null);
+  const [selectedTechnicianId, setSelectedTechnicianId] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiComment, setAiComment] = useState("");
   const [search, setSearch] = useState("");
@@ -131,6 +132,7 @@ function StakeholderDashboard() {
       setRequestHistory(unwrap(history));
       setRequestExpenses(unwrap(expenses));
       setAiWorkflow(null);
+      setSelectedTechnicianId(null);
       setAiComment("");
     } catch (err) {
       setError(err.message);
@@ -147,6 +149,7 @@ function StakeholderDashboard() {
         objective: selectedRequest.description,
       });
       setAiWorkflow(result);
+      setSelectedTechnicianId(result.technician_recommendation?.technician_id ?? null);
       setMessage(result.status === "PENDING_MANAGER_APPROVAL"
         ? "AI recommendation is ready for manager review."
         : `AI workflow status: ${result.status}.`);
@@ -168,7 +171,7 @@ function StakeholderDashboard() {
         approved_by: 1,
         approved,
         comment: aiComment,
-        technician_id: recommendation?.technician_id,
+        technician_id: selectedTechnicianId,
         scheduled_date: recommendation?.scheduled_date,
         start_time: recommendation?.start_time,
         end_time: recommendation?.end_time,
@@ -177,6 +180,7 @@ function StakeholderDashboard() {
       setMessage(approved ? "Recommendation approved and sent for backend execution." : "Recommendation rejected.");
       await openRequest(selectedRequest.id);
       setAiWorkflow(result);
+      setSelectedTechnicianId(result.technician_recommendation?.technician_id ?? null);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -243,7 +247,8 @@ function StakeholderDashboard() {
       return <section className="ai-panel"><div><p className="eyebrow">AGENTIC ASSISTANCE</p><h3>AI maintenance recommendation</h3><p className="muted">The four agents will classify this issue, find an available specialist, recommend a schedule, and validate the result. Nothing is assigned without your approval.</p></div><button className="primary-button" onClick={runAiWorkflow} disabled={aiLoading}>{aiLoading ? "Analyzing..." : "Run AI analysis"}</button></section>;
     }
     const recommendation = aiWorkflow.technician_recommendation;
-    return <section className="ai-panel"><div className="ai-panel-heading"><div><p className="eyebrow">AGENTIC ASSISTANCE</p><h3>AI recommendation</h3></div><span className={`ai-status ${aiWorkflow.status.toLowerCase()}`}>{aiWorkflow.status.replaceAll("_", " ")}</span></div>{aiWorkflow.analysis && <div className="ai-analysis-grid"><div><span>Category</span><strong>{aiWorkflow.analysis.category}</strong></div><div><span>Priority</span><strong>{aiWorkflow.analysis.priority}</strong></div><div><span>Specialist</span><strong>{aiWorkflow.analysis.technician_specialization}</strong></div><div><span>Duration</span><strong>{aiWorkflow.analysis.estimated_duration_minutes} min</strong></div></div>}<p className="ai-explanation">{aiWorkflow.analysis?.explanation}</p>{recommendation && <div className="recommendation-box"><div><span className="recommendation-label">RECOMMENDED TECHNICIAN</span><strong>{recommendation.technician_name}</strong><small>{recommendation.specialization}</small></div><div><span className="recommendation-label">REPAIR WINDOW</span><strong>{recommendation.scheduled_date}</strong><small>{recommendation.start_time} - {recommendation.end_time}</small></div></div>}{aiWorkflow.validation && <div className={aiWorkflow.validation.is_valid ? "validation valid" : "validation invalid"}><strong>{aiWorkflow.validation.is_valid ? "Validation passed" : "Validation needs attention"}</strong>{aiWorkflow.validation.errors?.map((item) => <span key={item}>{item}</span>)}{aiWorkflow.validation.warnings?.map((item) => <span key={item}>{item}</span>)}</div>}<div className="agent-plan">{aiWorkflow.plan?.steps?.map((step) => <div key={step.step_number}><span className={`plan-dot ${step.status.toLowerCase()}`} /> <strong>{step.agent_name}</strong><small>{step.status}</small></div>)}</div>{aiWorkflow.approval_required && <><textarea placeholder="Approval note (optional)" value={aiComment} onChange={(event) => setAiComment(event.target.value)} /><div className="ai-actions"><button className="secondary-button" onClick={() => approveAiWorkflow(false)} disabled={aiLoading}>Reject recommendation</button><button className="primary-button" onClick={() => approveAiWorkflow(true)} disabled={aiLoading || !recommendation}>Approve & execute</button></div></>}</section>;
+    const availableTechnicians = aiWorkflow.available_technicians || [];
+    return <section className="ai-panel"><div className="ai-panel-heading"><div><p className="eyebrow">AGENTIC ASSISTANCE</p><h3>AI recommendation</h3></div><span className={`ai-status ${aiWorkflow.status.toLowerCase()}`}>{aiWorkflow.status.replaceAll("_", " ")}</span></div>{aiWorkflow.analysis && <div className="ai-analysis-grid"><div><span>Category</span><strong>{aiWorkflow.analysis.category}</strong></div><div><span>Priority</span><strong>{aiWorkflow.analysis.priority}</strong></div><div><span>Specialist</span><strong>{aiWorkflow.analysis.technician_specialization}</strong></div><div><span>Duration</span><strong>{aiWorkflow.analysis.estimated_duration_minutes} min</strong></div></div>}<p className="ai-explanation">{aiWorkflow.analysis?.explanation}</p>{recommendation && <><div className="recommendation-box"><div><span className="recommendation-label">SELECTED TECHNICIAN</span><strong>{availableTechnicians.find((technician) => Number(technician.id ?? technician.technician_id) === Number(selectedTechnicianId))?.name || recommendation.technician_name}</strong><small>{recommendation.specialization}</small></div><div><span className="recommendation-label">REPAIR WINDOW</span><strong>{recommendation.scheduled_date}</strong><small>{recommendation.start_time} - {recommendation.end_time}</small></div></div>{aiWorkflow.approval_required && <div className="technician-options"><strong>Available technicians</strong>{availableTechnicians.map((technician) => { const technicianId = Number(technician.id ?? technician.technician_id); return <label key={technicianId}><input type="radio" name="ai-technician" value={technicianId} checked={Number(selectedTechnicianId) === technicianId} onChange={() => setSelectedTechnicianId(technicianId)} /><span>{technician.name || technician.technician_name}</span><small>{technician.specialization}</small></label>; })}</div>}</>}{aiWorkflow.validation && <div className={aiWorkflow.validation.is_valid ? "validation valid" : "validation invalid"}><strong>{aiWorkflow.validation.is_valid ? "Validation passed" : "Validation needs attention"}</strong>{aiWorkflow.validation.errors?.map((item) => <span key={item}>{item}</span>)}{aiWorkflow.validation.warnings?.map((item) => <span key={item}>{item}</span>)}</div>}<div className="agent-plan">{aiWorkflow.plan?.steps?.map((step) => <div key={step.step_number}><span className={`plan-dot ${step.status.toLowerCase()}`} /> <strong>{step.agent_name}</strong><small>{step.status}</small></div>)}</div>{aiWorkflow.approval_required && <><textarea placeholder="Approval note (optional)" value={aiComment} onChange={(event) => setAiComment(event.target.value)} /><div className="ai-actions"><button className="secondary-button" onClick={() => approveAiWorkflow(false)} disabled={aiLoading}>Reject recommendation</button><button className="primary-button" onClick={() => approveAiWorkflow(true)} disabled={aiLoading || !recommendation || selectedTechnicianId == null}>Approve & execute</button></div></>}</section>;
   };
 
   return <div className="dashboard"><aside className="sidebar"><div className="brand"><div className="brand-mark">P</div><div><strong>PropMate</strong><span>Property operations</span></div></div><nav>{views.map((view) => <button key={view.id} className={activeView === view.id ? "nav-item active" : "nav-item"} onClick={() => setActiveView(view.id)}><span className="nav-number">{view.icon}</span>{view.label}</button>)}</nav><div className="sidebar-footer"><div className="sidebar-status"><span className="signal-dot" /> System connected</div><p>Stakeholder workspace</p></div></aside><main className="main-content"><header className="topbar"><div className="breadcrumb"><span>PropMate</span><b>/</b><strong>{views.find((view) => view.id === activeView)?.label}</strong></div><div className="manager-info"><div className="avatar">PM</div><div><strong>Property Manager</strong><small>Stakeholder account</small></div></div></header><div className="content-wrap">{message && <div className="alert success">{message}<button onClick={() => setMessage("")}>×</button></div>}{error && <div className="alert error">{error}<button onClick={() => setError("")}>×</button></div>}{activeView === "home" && renderHome()}{activeView === "requests" && renderRequests()}{activeView === "technicians" && renderTechnicians()}{activeView === "expenses" && renderExpenses()}{activeView === "history" && renderHistory()}</div></main>

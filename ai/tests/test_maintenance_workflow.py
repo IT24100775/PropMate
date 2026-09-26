@@ -1,9 +1,11 @@
+from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 
 from agents.planning_agent import PlanningAgent
 from agents.maintenance_analysis_agent import MaintenanceAnalysisAgent
 from agents.technician_scheduling_agent import TechnicianSchedulingAgent
 from agents.validation_agent import ValidationSafetyAgent
+from api import maintenance_ai_api
 from models.workflow_models import (
     MaintenanceAnalysis,
     MaintenanceObjective,
@@ -56,7 +58,7 @@ def test_validation_agent_accepts_valid_recommendation():
         technician_id=5,
         technician_name="Ahmed",
         specialization="PLUMBER",
-        scheduled_date="2026-09-25",
+        scheduled_date=(datetime.now(UTC).date() + timedelta(days=1)).isoformat(),
         start_time="10:00",
         end_time="11:00",
         reason="Matches specialization and availability.",
@@ -115,7 +117,7 @@ def test_workflow_supports_backend_specialization_names(monkeypatch):
             success=True,
             data={
                 "technician_id": technician_id,
-                "scheduled_date": "2026-09-25",
+                "scheduled_date": (datetime.now(UTC).date() + timedelta(days=1)).isoformat(),
                 "start_time": "10:00",
                 "end_time": "11:00",
                 "duration_minutes": duration_minutes,
@@ -158,7 +160,13 @@ def test_workflow_pauses_for_manager_approval(monkeypatch):
                     "name": "Ahmed",
                     "specialization": "PLUMBER",
                     "availabilityStatus": "AVAILABLE",
-                }
+                },
+                {
+                    "id": 8,
+                    "name": "Mariam",
+                    "specialization": "PLUMBING",
+                    "availabilityStatus": "AVAILABLE",
+                },
             ],
         ),
     )
@@ -187,7 +195,7 @@ def test_workflow_pauses_for_manager_approval(monkeypatch):
             success=True,
             data={
                 "technician_id": technician_id,
-                "scheduled_date": "2026-09-25",
+                "scheduled_date": (datetime.now(UTC).date() + timedelta(days=1)).isoformat(),
                 "start_time": "10:00",
                 "end_time": "11:00",
                 "duration_minutes": duration_minutes,
@@ -207,6 +215,15 @@ def test_workflow_pauses_for_manager_approval(monkeypatch):
     assert result.analysis.category == "PLUMBING"
     assert result.technician_recommendation.technician_id == 5
     assert result.technician_recommendation.start_time == "10:00"
+    assert [technician["id"] for technician in result.available_technicians] == [5, 8]
+
+    approved = workflow.approve_recommendation(
+        workflow_id=result.workflow_id,
+        approved_by=1,
+        technician_id=8,
+    )
+    assert approved.technician_recommendation.technician_id == 8
+    assert approved.technician_recommendation.technician_name == "Mariam"
 
 
 def test_workflow_uses_backend_description_and_handles_no_matching_technician(monkeypatch):
@@ -237,3 +254,48 @@ def test_workflow_uses_backend_description_and_handles_no_matching_technician(mo
     assert result.analysis.category == "PLUMBING"
     assert result.analysis.technician_specialization == "PLUMBER"
     assert result.technician_recommendation is None
+
+
+def test_manager_approval_forwards_selected_technician_and_schedule(monkeypatch):
+    scheduled_date = (datetime.now(UTC).date() + timedelta(days=1)).isoformat()
+    state = SimpleNamespace(
+        maintenance_request_id=42,
+        available_technicians=[
+            {"id": 5, "name": "Ahmed", "specialization": "PLUMBER"},
+            {"id": 8, "name": "Mariam", "specialization": "PLUMBING"},
+        ],
+        technician_recommendation=TechnicianRecommendation(
+            technician_id=5,
+            technician_name="Ahmed",
+            specialization="PLUMBER",
+            scheduled_date=scheduled_date,
+            start_time="10:00",
+            end_time="11:00",
+            reason="Matches specialization and availability.",
+        ),
+    )
+    backend_requests = []
+    monkeypatch.setattr(maintenance_ai_api.workflow, "_load_state", lambda _: state)
+    monkeypatch.setattr(
+        maintenance_ai_api.httpx,
+        "post",
+        lambda url, json, timeout: backend_requests.append(json)
+        or SimpleNamespace(status_code=200, text=""),
+    )
+    monkeypatch.setattr(
+        maintenance_ai_api.workflow,
+        "approve_recommendation",
+        lambda **kwargs: kwargs,
+    )
+
+    result = maintenance_ai_api.approve_maintenance_workflow(
+        maintenance_ai_api.ManagerApprovalRequest(
+            workflow_id="WF-test",
+            approved_by=1,
+            technician_id=8,
+        )
+    )
+
+    assert backend_requests[0]["technicianId"] == 8
+    assert backend_requests[0]["scheduledDate"] == f"{scheduled_date}T00:00:00Z"
+    assert result["technician_id"] == 8

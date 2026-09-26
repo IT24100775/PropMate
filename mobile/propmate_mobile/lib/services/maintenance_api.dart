@@ -1,10 +1,17 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class MaintenanceApi {
-  // Use 10.0.2.2 instead of localhost when running on an Android emulator.
-  static const String baseUrl = 'http://localhost:5235/api';
+  static final String baseUrl = Uri(
+    scheme: 'http',
+    host: defaultTargetPlatform == TargetPlatform.android
+        ? '10.0.2.2'
+        : 'localhost',
+    port: 5235,
+    path: '/api',
+  ).toString();
 
   Future<List<Map<String, dynamic>>> getRequests(int tenantId) async {
     final response = await http.get(

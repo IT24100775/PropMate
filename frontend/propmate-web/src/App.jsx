@@ -1,6 +1,7 @@
 import StakeholderDashboard from "./pages/StakeholderDashboard";
 import "./App.css";
 import "./ai-workflow.css";
+import "./technician-options.css";
 
 function App() {
   return <StakeholderDashboard />;

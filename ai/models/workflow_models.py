@@ -70,6 +70,7 @@ class WorkflowState(BaseModel):
     plan: Optional[MaintenancePlan] = None
     analysis: Optional[MaintenanceAnalysis] = None
     technician_recommendation: Optional[TechnicianRecommendation] = None
+    available_technicians: List[Dict[str, Any]] = Field(default_factory=list)
     validation: Optional[ValidationResult] = None
     approval_required: bool = False
     manager_approval: Optional[ManagerApprovalDecision] = None
@@ -84,6 +85,7 @@ class WorkflowResult(BaseModel):
     plan: Optional[MaintenancePlan] = None
     analysis: Optional[MaintenanceAnalysis] = None
     technician_recommendation: Optional[TechnicianRecommendation] = None
+    available_technicians: List[Dict[str, Any]] = Field(default_factory=list)
     validation: Optional[ValidationResult] = None
     approval_required: bool = False
     manager_approval: Optional[ManagerApprovalDecision] = None
