@@ -36,6 +36,9 @@ public class PropertyListingService : IPropertyListingService
             Price = dto.Price,
             Address = dto.Address.Trim(),
             City = dto.City.Trim(),
+            // Create
+            Latitude = dto.Latitude,
+            Longitude = dto.Longitude,
             Bedrooms = dto.Bedrooms,
             Bathrooms = dto.Bathrooms,
             Status = ListingStatus.Draft,
@@ -116,6 +119,9 @@ public class PropertyListingService : IPropertyListingService
         listing.Price = dto.Price;
         listing.Address = dto.Address.Trim();
         listing.City = dto.City.Trim();
+        // Update
+        listing.Latitude = dto.Latitude;
+        listing.Longitude = dto.Longitude;
         listing.Bedrooms = dto.Bedrooms;
         listing.Bathrooms = dto.Bathrooms;
         listing.UpdatedAt = DateTime.UtcNow;
@@ -841,6 +847,9 @@ public class PropertyListingService : IPropertyListingService
             Price = listing.Price,
             Address = listing.Address,
             City = listing.City,
+            // Response mapping
+            Latitude = listing.Latitude,
+            Longitude = listing.Longitude,
             Bedrooms = listing.Bedrooms,
             Bathrooms = listing.Bathrooms,
             Status = listing.Status,
