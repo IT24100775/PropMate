@@ -1,32 +1,34 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
+﻿import 'dart:convert';
+import '../models/viewing_booking.dart';
+import '../models/viewing_slot.dart';
+import 'api_client.dart';
 
 class BookingService {
-  static const String baseUrl = 'http://localhost:5235/api/viewing-bookings';
-
-  Future<void> bookViewing({
-    required int viewingSlotId,
-    required int userId,
-  }) async {
-    final response = await http.post(
-      Uri.parse(baseUrl),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'viewingSlotId': viewingSlotId, 'userId': userId}),
-    );
-
-    if (response.statusCode == 201) {
-      return;
+  Future<List<ViewingSlot>> getAvailableSlots(int propertyListingId) async {
+    final response = await ApiClient.get('/viewing-slots/property/$propertyListingId/available');
+    if (response.statusCode == 200) {
+      final List data = jsonDecode(response.body);
+      return data.map((x) => ViewingSlot.fromJson(x)).toList();
     }
+    return [];
+  }
 
-    if (response.statusCode == 409) {
-      throw Exception('This viewing slot is already booked');
+  Future<bool> bookViewing(int viewingSlotId) async {
+    final response = await ApiClient.post('/viewing-bookings', body: {'viewingSlotId': viewingSlotId});
+    return response.statusCode == 200 || response.statusCode == 201;
+  }
+
+  Future<List<ViewingBooking>> getMyBookings() async {
+    final response = await ApiClient.get('/viewing-bookings/my');
+    if (response.statusCode == 200) {
+      final List data = jsonDecode(response.body);
+      return data.map((x) => ViewingBooking.fromJson(x)).toList();
     }
+    return [];
+  }
 
-    if (response.statusCode == 404) {
-      throw Exception('Viewing slot not found');
-    }
-
-    throw Exception('Failed to book viewing');
+  Future<bool> cancelBooking(int bookingId) async {
+    final response = await ApiClient.post('/viewing-bookings/$bookingId/cancel');
+    return response.statusCode == 200;
   }
 }

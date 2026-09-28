@@ -5,10 +5,11 @@ class Property {
   final double price;
   final int bedrooms;
   final int bathrooms;
-  final String location;
-  final double latitude;
-  final double longitude;
-  final bool isAvailable;
+  final String? address;
+  final String? city;
+  final double? latitude;
+  final double? longitude;
+  final List<String> images;
 
   Property({
     required this.id,
@@ -17,24 +18,51 @@ class Property {
     required this.price,
     required this.bedrooms,
     required this.bathrooms,
-    required this.location,
-    required this.latitude,
-    required this.longitude,
-    required this.isAvailable,
+    this.address,
+    this.city,
+    this.latitude,
+    this.longitude,
+    required this.images,
   });
 
   factory Property.fromJson(Map<String, dynamic> json) {
+    var rawImages = json['images'] as List? ?? [];
+    List<String> imageUrls = rawImages.map((img) => img['imageUrl'].toString()).toList();
+    if (imageUrls.isEmpty && json['primaryImageUrl'] != null) {
+      imageUrls.add(json['primaryImageUrl']);
+    }
+
     return Property(
-      id: json['id'],
-      title: json['title'],
-      description: json['description'],
-      price: (json['price'] as num).toDouble(),
-      bedrooms: json['bedrooms'],
-      bathrooms: json['bathrooms'],
-      location: json['location'],
-      latitude: (json['latitude'] as num).toDouble(),
-      longitude: (json['longitude'] as num).toDouble(),
-      isAvailable: json['isAvailable'],
+      id: json['id'] ?? 0,
+      title: json['title'] ?? '',
+      description: json['description'] ?? '',
+      price: (json['price'] ?? 0.0).toDouble(),
+      bedrooms: json['bedrooms'] ?? 0,
+      bathrooms: json['bathrooms'] ?? 0,
+      address: json['address'],
+      city: json['city'],
+      latitude: json['latitude'] != null ? (json['latitude'] as num).toDouble() : null,
+      longitude: json['longitude'] != null ? (json['longitude'] as num).toDouble() : null,
+      images: imageUrls,
+    );
+  }
+}
+
+class PaginatedPropertyResult {
+  final List<Property> items;
+  final int page;
+  final int totalCount;
+  final int totalPages;
+
+  PaginatedPropertyResult({required this.items, required this.page, required this.totalCount, required this.totalPages});
+
+  factory PaginatedPropertyResult.fromJson(Map<String, dynamic> json) {
+    var list = json['items'] as List? ?? [];
+    return PaginatedPropertyResult(
+      items: list.map((e) => Property.fromJson(e)).toList(),
+      page: json['page'] ?? 1,
+      totalCount: json['totalCount'] ?? 0,
+      totalPages: json['totalPages'] ?? 0,
     );
   }
 }
