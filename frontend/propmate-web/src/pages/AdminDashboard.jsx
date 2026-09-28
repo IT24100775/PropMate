@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/authContext";
 import { getAdminListings } from "../services/propertyListingService";
 import "./AdminDashboard.css";
 import logoWhite from "../assets/logo-white.png";
@@ -18,7 +17,6 @@ function formatPrice(price) {
 }
 
 function AdminDashboard() {
-  const { user, logout } = useAuth();
 
   const [listings, setListings] = useState([]);
   const [filter, setFilter] = useState("All");
@@ -126,12 +124,12 @@ function AdminDashboard() {
 
           <div>
             <small>ADMINISTRATOR</small>
-            <p>{user?.email}</p>
+            <p>admin@propmate.demo</p>
           </div>
 
-          <button type="button" onClick={logout}>
+          <Link className="admin-workspace-link" to="/workspaces">
             ↗
-          </button>
+          </Link>
         </div>
       </aside>
 

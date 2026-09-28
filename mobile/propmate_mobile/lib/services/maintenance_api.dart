@@ -2,14 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import '../component3/services/auth_token_provider.dart';
 
 class MaintenanceApi {
-  Map<String, String> get _headers => {
-        if (TenantSession.instance.accessToken case final token?)
-          'Authorization': 'Bearer $token',
-      };
-
   static final String baseUrl = Uri(
     scheme: 'http',
     host: defaultTargetPlatform == TargetPlatform.android
@@ -22,7 +16,7 @@ class MaintenanceApi {
   Future<List<Map<String, dynamic>>> getRequests(int tenantId) async {
     final response = await http.get(
       Uri.parse('$baseUrl/maintenance/tenant/$tenantId'),
-      headers: _headers,
+      headers: const {'X-Workspace-Role': 'BuyerRenter'},
     );
     _ensureSuccess(response);
     return _asMapList(jsonDecode(response.body));
@@ -31,7 +25,7 @@ class MaintenanceApi {
   Future<List<Map<String, dynamic>>> getNotifications(int tenantId) async {
     final response = await http.get(
       Uri.parse('$baseUrl/maintenance/tenant/$tenantId/notifications'),
-      headers: _headers,
+      headers: const {'X-Workspace-Role': 'BuyerRenter'},
     );
     _ensureSuccess(response);
     return _asMapList(jsonDecode(response.body));
@@ -45,7 +39,10 @@ class MaintenanceApi {
   }) async {
     final response = await http.post(
       Uri.parse('$baseUrl/maintenance/tenant'),
-      headers: {'Content-Type': 'application/json', ..._headers},
+      headers: const {
+        'Content-Type': 'application/json',
+        'X-Workspace-Role': 'BuyerRenter',
+      },
       body: jsonEncode({
         'propertyListingId': propertyId,
         'description': description,

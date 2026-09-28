@@ -1,11 +1,13 @@
 const API_URL = "http://localhost:5235/api";
 const AI_API_URL = "http://localhost:8000/api";
 
-function authHeaders() {
-  const savedUser = localStorage.getItem("propmate_user");
-  if (!savedUser) return {};
-  const user = JSON.parse(savedUser);
-  return user.token ? { Authorization: `Bearer ${user.token}` } : {};
+function workspaceHeaders() {
+  const path = window.location.pathname;
+  return {
+    "X-Workspace-Role": path.startsWith("/maintenance") || path.startsWith("/property-management")
+      ? "PropertyManager"
+      : "BuyerRenter",
+  };
 }
 
 async function requestTo(baseUrl, url, options = {}) {
@@ -13,7 +15,7 @@ async function requestTo(baseUrl, url, options = {}) {
     ...options,
     headers: {
       "Content-Type": "application/json",
-      ...authHeaders(),
+      ...workspaceHeaders(),
       ...(options.headers || {}),
     },
   });

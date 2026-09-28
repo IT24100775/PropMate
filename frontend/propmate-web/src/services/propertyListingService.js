@@ -8,18 +8,16 @@ export async function getPublishedListings() {
   return data?.items || [];
 }
 
-function getAuthHeaders() {
-  const savedUser = localStorage.getItem("propmate_user");
-
-  if (!savedUser) {
-    throw new Error("You must be logged in.");
-  }
-
-  const user = JSON.parse(savedUser);
-
+function getWorkspaceHeaders() {
+  const path = window.location.pathname;
+  const role = path.startsWith("/admin")
+    ? "Admin"
+    : path.startsWith("/owner")
+      ? "OwnerAgent"
+      : "BuyerRenter";
   return {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${user.token}`,
+    "X-Workspace-Role": role,
   };
 }
 
@@ -41,22 +39,10 @@ async function handleResponse(response) {
   }
 
   if (!response.ok) {
-    if (response.status === 401) {
-      throw new Error(
-        "Your session has expired. Please log in again."
-      );
-    }
-
-    if (response.status === 403) {
-      throw new Error(
-        "You do not have permission to perform this action."
-      );
-    }
-
     throw new Error(
       data?.message ||
         (typeof data === "string" ? data : null) ||
-        `Request failed with status ${response.status}.`
+        `Request failed with status ${response.status}.`,
     );
   }
 
@@ -66,7 +52,7 @@ async function handleResponse(response) {
 export async function getOwnerListings() {
   const response = await fetch(`${API_URL}/owner`, {
     method: "GET",
-    headers: getAuthHeaders(),
+    headers: getWorkspaceHeaders(),
   });
 
   return handleResponse(response);
@@ -89,7 +75,7 @@ export async function getOwnerListingById(id) {
 export async function createListing(listingData) {
   const response = await fetch(API_URL, {
     method: "POST",
-    headers: getAuthHeaders(),
+    headers: getWorkspaceHeaders(),
     body: JSON.stringify(listingData),
   });
 
@@ -99,7 +85,7 @@ export async function createListing(listingData) {
 export async function updateListing(id, listingData) {
   const response = await fetch(`${API_URL}/${id}`, {
     method: "PUT",
-    headers: getAuthHeaders(),
+    headers: getWorkspaceHeaders(),
     body: JSON.stringify(listingData),
   });
 
@@ -109,7 +95,7 @@ export async function updateListing(id, listingData) {
 export async function deleteListing(id) {
   const response = await fetch(`${API_URL}/${id}`, {
     method: "DELETE",
-    headers: getAuthHeaders(),
+    headers: getWorkspaceHeaders(),
   });
 
   return handleResponse(response);
@@ -118,7 +104,7 @@ export async function deleteListing(id) {
 export async function submitListing(id) {
   const response = await fetch(`${API_URL}/${id}/submit`, {
     method: "POST",
-    headers: getAuthHeaders(),
+    headers: getWorkspaceHeaders(),
   });
 
   return handleResponse(response);
@@ -127,7 +113,7 @@ export async function submitListing(id) {
 export async function getAdminListings() {
   const response = await fetch(`${API_URL}/admin`, {
     method: "GET",
-    headers: getAuthHeaders(),
+    headers: getWorkspaceHeaders(),
   });
 
   return handleResponse(response);
@@ -136,7 +122,7 @@ export async function getAdminListings() {
 export async function getVerificationReview(id) {
   const response = await fetch(`${API_URL}/${id}/verification-review`, {
     method: "GET",
-    headers: getAuthHeaders(),
+    headers: getWorkspaceHeaders(),
   });
 
   return handleResponse(response);
@@ -145,7 +131,7 @@ export async function getVerificationReview(id) {
 export async function approveListing(id, reason = "") {
   const response = await fetch(`${API_URL}/${id}/approve`, {
     method: "POST",
-    headers: getAuthHeaders(),
+    headers: getWorkspaceHeaders(),
     body: JSON.stringify({
       reason: reason || null,
     }),
@@ -157,7 +143,7 @@ export async function approveListing(id, reason = "") {
 export async function rejectListing(id, reason) {
   const response = await fetch(`${API_URL}/${id}/reject`, {
     method: "POST",
-    headers: getAuthHeaders(),
+    headers: getWorkspaceHeaders(),
     body: JSON.stringify({ reason }),
   });
 
@@ -169,7 +155,7 @@ export async function requestListingRevision(id, reason) {
     `${API_URL}/${id}/request-revision`,
     {
       method: "POST",
-      headers: getAuthHeaders(),
+      headers: getWorkspaceHeaders(),
       body: JSON.stringify({ reason }),
     }
   );
@@ -180,7 +166,7 @@ export async function requestListingRevision(id, reason) {
 export async function publishListing(id) {
   const response = await fetch(`${API_URL}/${id}/publish`, {
     method: "POST",
-    headers: getAuthHeaders(),
+    headers: getWorkspaceHeaders(),
   });
 
   return handleResponse(response);
@@ -189,7 +175,7 @@ export async function publishListing(id) {
 export async function unpublishListing(id) {
   const response = await fetch(`${API_URL}/${id}/unpublish`, {
     method: "POST",
-    headers: getAuthHeaders(),
+    headers: getWorkspaceHeaders(),
   });
 
   return handleResponse(response);

@@ -2,22 +2,15 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../models/transaction_models.dart';
-import 'auth_token_provider.dart';
 
 class Component3Api {
   static final String baseUrl =
       'http://${defaultTargetPlatform == TargetPlatform.android ? '10.0.2.2' : 'localhost'}:5235/api';
-  final AuthTokenProvider authTokenProvider;
-
-  Component3Api({AuthTokenProvider? authTokenProvider})
-      : authTokenProvider = authTokenProvider ?? TenantSession.instance;
-
   Map<String, String> _headers() {
-    final token = authTokenProvider.accessToken;
     return {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
-      if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
+      'X-Workspace-Role': 'BuyerRenter',
     };
   }
 

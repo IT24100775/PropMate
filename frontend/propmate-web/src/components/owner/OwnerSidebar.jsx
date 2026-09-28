@@ -1,15 +1,10 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/authContext";
 import logoWhite from "../../assets/logo-white.png";
 
 function OwnerSidebar() {
-  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
+  const handleWorkspaceChange = () => navigate("/workspaces");
 
   return (
     <aside className="owner-sidebar">
@@ -59,21 +54,21 @@ function OwnerSidebar() {
       <div className="sidebar-bottom">
         <div className="sidebar-user">
           <div className="user-avatar">
-            {user?.email?.charAt(0).toUpperCase()}
+            D
           </div>
 
           <div className="user-details">
             <strong>Owner / Agent</strong>
-            <span>{user?.email}</span>
+            <span>owner@propmate.demo</span>
           </div>
         </div>
 
         <button
           type="button"
           className="logout-button"
-          onClick={handleLogout}
+          onClick={handleWorkspaceChange}
         >
-          Sign out
+          Change workspace
           <span>→</span>
         </button>
       </div>

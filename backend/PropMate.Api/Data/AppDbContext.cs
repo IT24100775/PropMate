@@ -60,9 +60,9 @@ public class AppDbContext : DbContext
             entity.Property(x => x.FirstName).IsRequired().HasMaxLength(100);
             entity.Property(x => x.LastName).IsRequired().HasMaxLength(100);
             entity.Property(x => x.Email).IsRequired().HasMaxLength(255);
-            entity.Property(x => x.PasswordHash).IsRequired();
             entity.HasIndex(x => x.Email).IsUnique();
         });
+
 
         modelBuilder.Entity<PropertyListingVerification>()
             .HasOne(x => x.PropertyListing).WithMany(x => x.Verifications)

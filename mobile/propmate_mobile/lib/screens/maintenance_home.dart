@@ -5,10 +5,9 @@ import '../component3/services/component3_api.dart';
 import '../services/maintenance_api.dart';
 
 class MaintenanceHome extends StatefulWidget {
-  const MaintenanceHome({super.key, required this.tenantId, required this.onSignOut});
+  const MaintenanceHome({super.key, required this.tenantId});
 
   final int tenantId;
-  final VoidCallback onSignOut;
 
   @override
   State<MaintenanceHome> createState() => _MaintenanceHomeState();
@@ -114,11 +113,6 @@ class _MaintenanceHomeState extends State<MaintenanceHome> {
         foregroundColor: Colors.black87,
         elevation: 0,
         actions: [
-          IconButton(
-            tooltip: 'Sign out',
-            onPressed: widget.onSignOut,
-            icon: const Icon(Icons.logout),
-          ),
           IconButton(
             tooltip: 'Notifications',
             onPressed: _showNotifications,

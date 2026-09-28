@@ -248,8 +248,19 @@ namespace PropMate.Api.Services.Maintenance
         CreatedAt = DateTime.UtcNow
     });
 
+    var oldStatus = request.Status;
     request.Status = "ASSIGNED";
     request.UpdatedAt = DateTime.UtcNow;
+
+    _context.MaintenanceStatusHistories.Add(new MaintenanceStatusHistory
+    {
+        MaintenanceRequestId = maintenanceRequestId,
+        OldStatus = oldStatus,
+        NewStatus = "ASSIGNED",
+        ChangedBy = dto.AssignedBy,
+        Comment = $"{technician.Name} was assigned to the maintenance request. {dto.Notes}".Trim(),
+        ChangedAt = DateTime.UtcNow
+    });
 
     technician.AvailabilityStatus = "BUSY";
     technician.UpdatedAt = DateTime.UtcNow;
@@ -422,6 +433,16 @@ namespace PropMate.Api.Services.Maintenance
 
     request.Status = "SCHEDULED";
     request.UpdatedAt = DateTime.UtcNow;
+
+    _context.MaintenanceStatusHistories.Add(new MaintenanceStatusHistory
+    {
+        MaintenanceRequestId = maintenanceRequestId,
+        OldStatus = "ASSIGNED",
+        NewStatus = "SCHEDULED",
+        ChangedBy = assignment.AssignedBy,
+        Comment = $"Repair scheduled for {schedule.ScheduledDate:yyyy-MM-dd} from {schedule.StartTime:hh\\:mm} to {schedule.EndTime:hh\\:mm}. {dto.Notes}".Trim(),
+        ChangedAt = DateTime.UtcNow
+    });
 
     await _context.SaveChangesAsync();
 

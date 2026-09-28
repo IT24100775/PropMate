@@ -3,8 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'screens/maintenance_home.dart';
 import 'screens/property_listing/published_properties_screen.dart';
-import 'screens/tenant_login_screen.dart';
-import 'component3/services/auth_token_provider.dart';
 
 void main() {
   runApp(const PropMateApp());
@@ -60,40 +58,15 @@ class PropMateApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const TenantSessionGate(),
-    );
-  }
-}
-
-class TenantSessionGate extends StatefulWidget {
-  const TenantSessionGate({super.key});
-
-  @override
-  State<TenantSessionGate> createState() => _TenantSessionGateState();
-}
-
-class _TenantSessionGateState extends State<TenantSessionGate> {
-  @override
-  Widget build(BuildContext context) {
-    final session = TenantSession.instance;
-    if (!session.isSignedIn) {
-      return TenantLoginScreen(onSignedIn: () => setState(() {}));
-    }
-    return TenantHome(
-      tenantId: session.userId!,
-      onSignOut: () {
-        session.signOut();
-        setState(() {});
-      },
+      home: const TenantHome(tenantId: 1),
     );
   }
 }
 
 class TenantHome extends StatefulWidget {
-  const TenantHome({super.key, required this.tenantId, required this.onSignOut});
+  const TenantHome({super.key, required this.tenantId});
 
   final int tenantId;
-  final VoidCallback onSignOut;
 
   @override
   State<TenantHome> createState() => _TenantHomeState();
@@ -111,7 +84,6 @@ class _TenantHomeState extends State<TenantHome> {
           PublishedPropertiesScreen(),
           MaintenanceHome(
             tenantId: widget.tenantId,
-            onSignOut: widget.onSignOut,
           ),
         ],
       ),

@@ -10,11 +10,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:propmate_mobile/main.dart';
 
 void main() {
-  testWidgets('tenant app requests sign in before loading properties', (WidgetTester tester) async {
+  testWidgets('tenant workspace opens without an authentication screen', (WidgetTester tester) async {
     await tester.pumpWidget(const PropMateApp());
-    await tester.pumpAndSettle();
+    await tester.pump();
 
-    expect(find.text('Sign in'), findsOneWidget);
-    expect(find.text('Email'), findsOneWidget);
+    expect(find.text('Sign in'), findsNothing);
+    expect(find.text('Properties'), findsOneWidget);
+    expect(find.text('Maintenance'), findsWidgets);
   });
 }

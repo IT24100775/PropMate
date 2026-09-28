@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PropMate.Api.DTOs.Listings;
+using PropMate.Api.Services;
 using PropMate.Api.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
 
 namespace PropMate.Api.Controllers;
 
@@ -17,7 +16,6 @@ public class PropertyListingsController : ControllerBase
         _service = service;
     }
 
-    [AllowAnonymous]
     [HttpGet("{id:int}")]
     public async Task<ActionResult<PropertyListingResponseDto>> GetById(int id)
     {
@@ -34,7 +32,6 @@ public class PropertyListingsController : ControllerBase
         return Ok(listing);
     }
 
-    [Authorize(Roles = "OwnerAgent")]
     [HttpGet("owner")]
     public async Task<ActionResult<IEnumerable<PropertyListingResponseDto>>>
         GetOwnerListings()
@@ -46,7 +43,6 @@ public class PropertyListingsController : ControllerBase
         return Ok(listings);
     }
 
-    [Authorize(Roles = "OwnerAgent")]
     [HttpPut("{id:int}")]
     public async Task<ActionResult<PropertyListingResponseDto>> Update(
         int id,
@@ -77,7 +73,6 @@ public class PropertyListingsController : ControllerBase
         }
     }
 
-    [Authorize(Roles = "OwnerAgent")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -106,7 +101,6 @@ public class PropertyListingsController : ControllerBase
         }
     }
 
-    [Authorize(Roles = "OwnerAgent")]
     [HttpPost("{id:int}/submit")]
     public async Task<ActionResult<PropertyListingResponseDto>> Submit(int id)
     {
@@ -135,7 +129,6 @@ public class PropertyListingsController : ControllerBase
         }
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpPost("{id:int}/review")]
     public async Task<ActionResult<PropertyListingResponseDto>> StartReview(int id)
     {
@@ -164,7 +157,6 @@ public class PropertyListingsController : ControllerBase
         }
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpPost("{id:int}/approve")]
     public async Task<ActionResult<PropertyListingResponseDto>> Approve(
         int id,
@@ -198,7 +190,6 @@ public class PropertyListingsController : ControllerBase
         }
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpPost("{id:int}/reject")]
     public async Task<ActionResult<PropertyListingResponseDto>> Reject(
         int id,
@@ -232,7 +223,6 @@ public class PropertyListingsController : ControllerBase
         }
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpPost("{id:int}/request-revision")]
     public async Task<ActionResult<PropertyListingResponseDto>> RequestRevision(
         int id,
@@ -266,7 +256,6 @@ public class PropertyListingsController : ControllerBase
         }
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpPost("{id:int}/publish")]
     public async Task<ActionResult<PropertyListingResponseDto>> Publish(int id)
     {
@@ -295,7 +284,6 @@ public class PropertyListingsController : ControllerBase
         }
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpPost("{id:int}/unpublish")]
     public async Task<ActionResult<PropertyListingResponseDto>> Unpublish(int id)
     {
@@ -343,7 +331,6 @@ public class PropertyListingsController : ControllerBase
         return Ok(result);
     }
 
-    [Authorize(Roles = "OwnerAgent")]
     [HttpPost]
     public async Task<ActionResult<PropertyListingResponseDto>> Create(
         [FromBody] CreatePropertyListingDto dto)
@@ -356,7 +343,6 @@ public class PropertyListingsController : ControllerBase
     }
 
     [HttpGet("{id}/verification-review")]
-    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetVerificationReview(int id)
     {
         var review =
@@ -374,7 +360,6 @@ public class PropertyListingsController : ControllerBase
         return Ok(review);
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpGet("admin")]
     public async Task<ActionResult<IEnumerable<PropertyListingResponseDto>>>
         GetAdminListings()
@@ -387,15 +372,7 @@ public class PropertyListingsController : ControllerBase
 
     private int GetCurrentUserId()
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (!int.TryParse(userId, out var id))
-        {
-            throw new UnauthorizedAccessException(
-                "User ID could not be determined.");
-        }
-
-        return id;
+        return DemoIdentity.GetUserId(Request);
     }
 
 }

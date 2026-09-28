@@ -1,15 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { maintenanceApi } from "../services/maintenanceApi";
 
-const emptyRequest = {
-  propertyId: "",
-  tenantId: "",
-  description: "",
-  category: "General",
-  priority: "MEDIUM",
-  imageUrl: "",
-};
-
 const emptyTechnician = {
   name: "",
   phone: "",
@@ -32,11 +23,9 @@ function MaintenanceDashboard() {
 
   const [activeTab, setActiveTab] = useState("requests");
 
-  const [showRequestForm, setShowRequestForm] = useState(false);
   const [showTechnicianForm, setShowTechnicianForm] = useState(false);
   const [editingTechnicianId, setEditingTechnicianId] = useState(null);
 
-  const [requestForm, setRequestForm] = useState(emptyRequest);
   const [technicianForm, setTechnicianForm] = useState(emptyTechnician);
 
   const [loading, setLoading] = useState(true);
@@ -133,29 +122,6 @@ function MaintenanceDashboard() {
           : historyData.items || historyData.data || []
       );
       setExpenses(Array.isArray(expenseData) ? expenseData : []);
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
-  const createRequest = async (event) => {
-    event.preventDefault();
-
-    try {
-      await maintenanceApi.create({
-        propertyId: Number(requestForm.propertyId),
-        tenantId: Number(requestForm.tenantId),
-        description: requestForm.description,
-        category: requestForm.category,
-        priority: requestForm.priority,
-        imageUrl: requestForm.imageUrl || null,
-      });
-
-      setMessage("Maintenance request created successfully.");
-      setRequestForm(emptyRequest);
-      setShowRequestForm(false);
-
-      await loadData();
     } catch (err) {
       setError(err.message);
     }
@@ -361,12 +327,6 @@ function MaintenanceDashboard() {
             </p>
           </div>
 
-          <button
-            className="primary-button"
-            onClick={() => setShowRequestForm(true)}
-          >
-            + New Request
-          </button>
         </section>
 
         {message && (
@@ -617,123 +577,6 @@ function MaintenanceDashboard() {
         )}
 
       </main>
-
-      {showRequestForm && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <div className="modal-header">
-              <div>
-                <h2>New Maintenance Request</h2>
-                <p>Create a maintenance request.</p>
-              </div>
-
-              <button onClick={() => setShowRequestForm(false)}>×</button>
-            </div>
-
-            <form onSubmit={createRequest}>
-
-              <label>Property ID</label>
-              <input
-                type="number"
-                required
-                value={requestForm.propertyId}
-                onChange={(e) =>
-                  setRequestForm({
-                    ...requestForm,
-                    propertyId: e.target.value,
-                  })
-                }
-              />
-
-              <label>Tenant ID</label>
-              <input
-                type="number"
-                required
-                value={requestForm.tenantId}
-                onChange={(e) =>
-                  setRequestForm({
-                    ...requestForm,
-                    tenantId: e.target.value,
-                  })
-                }
-              />
-
-              <label>Description</label>
-              <textarea
-                required
-                value={requestForm.description}
-                onChange={(e) =>
-                  setRequestForm({
-                    ...requestForm,
-                    description: e.target.value,
-                  })
-                }
-              />
-
-              <label>Category</label>
-              <select
-                value={requestForm.category}
-                onChange={(e) =>
-                  setRequestForm({
-                    ...requestForm,
-                    category: e.target.value,
-                  })
-                }
-              >
-                <option>General</option>
-                <option>Plumbing</option>
-                <option>Electrical</option>
-                <option>HVAC</option>
-                <option>Appliance</option>
-                <option>Structural</option>
-                <option>Other</option>
-              </select>
-
-              <label>Priority</label>
-              <select
-                value={requestForm.priority}
-                onChange={(e) =>
-                  setRequestForm({
-                    ...requestForm,
-                    priority: e.target.value,
-                  })
-                }
-              >
-                <option>LOW</option>
-                <option>MEDIUM</option>
-                <option>HIGH</option>
-              </select>
-
-              <label>Image URL (optional)</label>
-              <input
-                type="text"
-                value={requestForm.imageUrl}
-                onChange={(e) =>
-                  setRequestForm({
-                    ...requestForm,
-                    imageUrl: e.target.value,
-                  })
-                }
-              />
-
-              <div className="modal-actions">
-                <button
-                  type="button"
-                  className="secondary-button"
-                  onClick={() => setShowRequestForm(false)}
-                >
-                  Cancel
-                </button>
-
-                <button className="primary-button" type="submit">
-                  Create Request
-                </button>
-              </div>
-
-            </form>
-          </div>
-        </div>
-      )}
 
       {showTechnicianForm && (
         <div className="modal-overlay">

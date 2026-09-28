@@ -1,14 +1,12 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PropMate.Api.DTOs.AgenticAI;
+using PropMate.Api.Services;
 using PropMate.Api.Services.Interfaces;
 
 namespace PropMate.Api.Controllers;
 
 [ApiController]
 [Route("api/ai-workflows")]
-[Authorize(Roles = "OwnerAgent,Admin")]
 public class AiWorkflowsController : ControllerBase
 {
     private readonly IAgentWorkflowClient _client;
@@ -19,7 +17,6 @@ public class AiWorkflowsController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "OwnerAgent")]
     public async Task<ActionResult<AgentWorkflowResponseDto>> Start(
         [FromBody] StartAgentWorkflowDto dto,
         CancellationToken cancellationToken)
@@ -62,7 +59,6 @@ public class AiWorkflowsController : ControllerBase
     }
 
     [HttpPost("{id:int}/approvals/{approvalId:int}/decision")]
-    [Authorize(Roles = "OwnerAgent")]
     public async Task<ActionResult<AgentWorkflowResponseDto>> Decide(
         int id,
         int approvalId,
@@ -79,6 +75,6 @@ public class AiWorkflowsController : ControllerBase
         }
     }
 
-    private int UserId() => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-    private string Role() => User.FindFirstValue(ClaimTypes.Role) ?? string.Empty;
+    private int UserId() => DemoIdentity.GetUserId(Request);
+    private string Role() => DemoIdentity.GetRole(Request).ToString();
 }

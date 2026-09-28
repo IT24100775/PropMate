@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { c3Api } from "../component3/services/api";
-import { useAuth } from "../context/authContext";
 import { getPublishedListings } from "../services/propertyListingService";
 import { maintenanceApi } from "../services/maintenanceApi";
 import "./TenantDashboard.css";
@@ -10,9 +8,7 @@ const statusText = (value) =>
   typeof value === "string" ? value.replaceAll("_", " ") : "Pending";
 
 function TenantDashboard() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  const tenantId = Number(user?.userId);
+  const tenantId = 1;
   const [view, setView] = useState("properties");
   const [listings, setListings] = useState([]);
   const [rentals, setRentals] = useState([]);
@@ -132,11 +128,6 @@ function TenantDashboard() {
     }
   };
 
-  const signOut = () => {
-    logout();
-    navigate("/login");
-  };
-
   return (
     <main className="tenant-shell">
       <header className="tenant-header">
@@ -146,7 +137,7 @@ function TenantDashboard() {
           <button className={view === "activity" ? "active" : ""} onClick={() => setView("activity")}>My activity</button>
           <button className={view === "maintenance" ? "active" : ""} onClick={() => setView("maintenance")}>Maintenance</button>
         </nav>
-        <div className="tenant-account"><span>{user?.email}</span><button onClick={signOut}>Sign out</button></div>
+        <div className="tenant-account"><span>Demo tenant</span><a href="/workspaces">Change workspace</a></div>
       </header>
 
       <div className="tenant-content">

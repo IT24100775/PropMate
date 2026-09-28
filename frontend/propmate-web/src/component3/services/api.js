@@ -1,14 +1,16 @@
 const API = "http://localhost:5235/api";
 
 function headers() {
-  const savedUser = localStorage.getItem("propmate_user");
-  if (!savedUser) throw new Error("You must be logged in.");
-
-  const user = JSON.parse(savedUser);
+  const path = window.location.pathname;
+  const role = path.startsWith("/admin")
+    ? "Admin"
+    : path.startsWith("/owner")
+      ? "OwnerAgent"
+      : "BuyerRenter";
   return {
     "Content-Type": "application/json",
     Accept: "application/json",
-    Authorization: `Bearer ${user.token}`,
+    "X-Workspace-Role": role,
   };
 }
 
