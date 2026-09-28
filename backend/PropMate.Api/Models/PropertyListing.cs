@@ -22,6 +22,10 @@ public class PropertyListing
 
     public string City { get; set; } = string.Empty;
 
+    public double? Latitude { get; set; }
+    
+    public double? Longitude { get; set; }  
+
     public int Bedrooms { get; set; }
 
     public int Bathrooms { get; set; }

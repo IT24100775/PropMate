@@ -15,6 +15,8 @@ function CreateListing() {
     price: "",
     address: "",
     city: "",
+    latitude: "",
+    longitude: "",
     bedrooms: 0,
     bathrooms: 0,
   });
@@ -70,6 +72,10 @@ function CreateListing() {
       const listingData = {
         ...formData,
         price: Number(formData.price),
+        latitude:
+          formData.latitude === "" ? null : Number(formData.latitude),
+        longitude:
+          formData.longitude === "" ? null : Number(formData.longitude),
         bedrooms: Number(formData.bedrooms),
         bathrooms: Number(formData.bathrooms),
         imageUrls,
@@ -284,7 +290,45 @@ function CreateListing() {
                   maxLength={100}
                   required
                 />
+                
               </div>
+
+              <div className="listing-field">
+                <label htmlFor="latitude">Latitude</label>
+
+                <input
+                  id="latitude"
+                  name="latitude"
+                  type="number"
+                  step="any"
+                  min="-90"
+                  max="90"
+                  placeholder="e.g. 6.9271"
+                  value={formData.latitude}
+                  onChange={handleChange}
+                />
+
+                <small>Optional — between -90 and 90</small>
+              </div>
+
+              <div className="listing-field">
+                <label htmlFor="longitude">Longitude</label>
+
+                <input
+                  id="longitude"
+                  name="longitude"
+                  type="number"
+                  step="any"
+                  min="-180"
+                  max="180"
+                  placeholder="e.g. 79.8612"
+                  value={formData.longitude}
+                  onChange={handleChange}
+                />
+
+                <small>Optional — between -180 and 180</small>
+              </div>
+
             </div>
           </section>
 
