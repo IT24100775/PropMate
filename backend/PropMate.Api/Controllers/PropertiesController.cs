@@ -1,8 +1,7 @@
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PropMate.Api.Data;
-using PropMate.Api.Models;
+using PropMate.Api.Enums;
 
 namespace PropMate.Api.Controllers;
 
@@ -10,18 +9,17 @@ namespace PropMate.Api.Controllers;
 [Route("api/[controller]")]
 public class PropertiesController : ControllerBase
 {
-    private readonly PropMateDbContext _context;
+    private readonly AppDbContext _context;
 
-    public PropertiesController(PropMateDbContext context)
+    public PropertiesController(AppDbContext context)
     {
         _context = context;
     }
 
     // GET /api/properties
-    // Supported query parameters:
-    // search, minPrice, maxPrice, bedrooms, bathrooms, location, isAvailable
+    // Discovery endpoint - returns published property listings only
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Property>>> GetProperties(
+    public async Task<IActionResult> GetProperties(
         [FromQuery] string? search,
         [FromQuery] decimal? minPrice,
         [FromQuery] decimal? maxPrice,
@@ -30,72 +28,115 @@ public class PropertiesController : ControllerBase
         [FromQuery] string? location,
         [FromQuery] bool? isAvailable)
     {
-        var query = _context.Properties.AsQueryable();
+        var query = _context.PropertyListings
+            .Where(p => p.Status == ListingStatus.Published)
+            .AsQueryable();
 
-        // Keyword search in Title or Location
         if (!string.IsNullOrWhiteSpace(search))
         {
             var searchLower = search.Trim().ToLower();
 
             query = query.Where(p =>
                 p.Title.ToLower().Contains(searchLower) ||
-                p.Location.ToLower().Contains(searchLower));
+                p.City.ToLower().Contains(searchLower) ||
+                p.Address.ToLower().Contains(searchLower));
         }
 
-        // Minimum price
         if (minPrice.HasValue)
         {
             query = query.Where(p => p.Price >= minPrice.Value);
         }
 
-        // Maximum price
         if (maxPrice.HasValue)
         {
             query = query.Where(p => p.Price <= maxPrice.Value);
         }
 
-        // Minimum bedrooms
         if (bedrooms.HasValue)
         {
             query = query.Where(p => p.Bedrooms >= bedrooms.Value);
         }
 
-        // Minimum bathrooms
         if (bathrooms.HasValue)
         {
             query = query.Where(p => p.Bathrooms >= bathrooms.Value);
         }
 
-        // Location
         if (!string.IsNullOrWhiteSpace(location))
         {
             var locationLower = location.Trim().ToLower();
 
             query = query.Where(p =>
-                p.Location.ToLower().Contains(locationLower));
+                p.City.ToLower().Contains(locationLower) ||
+                p.Address.ToLower().Contains(locationLower));
         }
 
-        // Availability
-        if (isAvailable.HasValue)
+        // Published listings are the discoverable/available listings.
+        // If false is requested, no published results are returned.
+        if (isAvailable.HasValue && !isAvailable.Value)
         {
-            query = query.Where(p =>
-                p.IsAvailable == isAvailable.Value);
+            query = query.Where(p => false);
         }
 
-        var properties = await query.ToListAsync();
+        var properties = await query
+            .Select(p => new
+            {
+                p.Id,
+                p.Title,
+                p.Description,
+                p.Price,
+                p.Bedrooms,
+                p.Bathrooms,
+
+                // Preserve Component 2 API field names
+                Location = string.IsNullOrWhiteSpace(p.City)
+                    ? p.Address
+                    : p.City,
+
+                p.Latitude,
+                p.Longitude,
+
+                IsAvailable = true
+            })
+            .ToListAsync();
 
         return Ok(properties);
     }
 
     // GET /api/properties/{id}
     [HttpGet("{id}")]
-    public async Task<ActionResult<Property>> GetProperty(int id)
+    public async Task<IActionResult> GetProperty(int id)
     {
-        var property = await _context.Properties.FindAsync(id);
+        var property = await _context.PropertyListings
+            .Where(p =>
+                p.Id == id &&
+                p.Status == ListingStatus.Published)
+            .Select(p => new
+            {
+                p.Id,
+                p.Title,
+                p.Description,
+                p.Price,
+                p.Bedrooms,
+                p.Bathrooms,
+
+                Location = string.IsNullOrWhiteSpace(p.City)
+                    ? p.Address
+                    : p.City,
+
+                p.Latitude,
+                p.Longitude,
+
+                IsAvailable = true
+            })
+            .FirstOrDefaultAsync();
 
         if (property == null)
         {
-            return NotFound();
+            return NotFound(new
+            {
+                message = "Published property listing not found."
+            });
         }
 
         return Ok(property);
@@ -105,11 +146,16 @@ public class PropertiesController : ControllerBase
     [HttpGet("{id}/location")]
     public async Task<IActionResult> GetPropertyLocation(int id)
     {
-        var locationData = await _context.Properties
-            .Where(p => p.Id == id)
+        var locationData = await _context.PropertyListings
+            .Where(p =>
+                p.Id == id &&
+                p.Status == ListingStatus.Published)
             .Select(p => new
             {
-                p.Location,
+                Location = string.IsNullOrWhiteSpace(p.City)
+                    ? p.Address
+                    : p.City,
+
                 p.Latitude,
                 p.Longitude
             })
@@ -117,7 +163,10 @@ public class PropertiesController : ControllerBase
 
         if (locationData == null)
         {
-            return NotFound();
+            return NotFound(new
+            {
+                message = "Published property listing not found."
+            });
         }
 
         return Ok(locationData);
@@ -125,7 +174,7 @@ public class PropertiesController : ControllerBase
 
     // POST /api/properties/natural-search
     [HttpPost("natural-search")]
-    public async Task<ActionResult<IEnumerable<Property>>> NaturalLanguageSearch(
+    public async Task<IActionResult> NaturalLanguageSearch(
         [FromBody] NaturalLanguageSearchRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Query))
@@ -135,19 +184,22 @@ public class PropertiesController : ControllerBase
 
         var search = request.Query.Trim().ToLower();
 
-        var query = _context.Properties.AsQueryable();
+        var query = _context.PropertyListings
+            .Where(p => p.Status == ListingStatus.Published)
+            .AsQueryable();
 
-        // Simple natural-language keyword matching
         if (search.Contains("colombo"))
         {
             query = query.Where(p =>
-                p.Location.ToLower().Contains("colombo"));
+                p.City.ToLower().Contains("colombo") ||
+                p.Address.ToLower().Contains("colombo"));
         }
 
         if (search.Contains("kandy"))
         {
             query = query.Where(p =>
-                p.Location.ToLower().Contains("kandy"));
+                p.City.ToLower().Contains("kandy") ||
+                p.Address.ToLower().Contains("kandy"));
         }
 
         if (search.Contains("bedroom"))
@@ -185,106 +237,32 @@ public class PropertiesController : ControllerBase
             }
         }
 
-        var properties = await query.ToListAsync();
+        var properties = await query
+            .Select(p => new
+            {
+                p.Id,
+                p.Title,
+                p.Description,
+                p.Price,
+                p.Bedrooms,
+                p.Bathrooms,
+
+                Location = string.IsNullOrWhiteSpace(p.City)
+                    ? p.Address
+                    : p.City,
+
+                p.Latitude,
+                p.Longitude,
+
+                IsAvailable = true
+            })
+            .ToListAsync();
 
         return Ok(properties);
     }
+}
 
-    // POST /api/properties
-    // Staff: Create a new property
-    [HttpPost]
-    public async Task<ActionResult<Property>> CreateProperty(
-        [FromBody] Property property)
-    {
-        if (property == null)
-        {
-            return BadRequest("Property data is required.");
-        }
-
-        _context.Properties.Add(property);
-
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(
-            nameof(GetProperty),
-            new { id = property.Id },
-            property);
-    }
-
-    // PUT /api/properties/{id}
-    // Staff: Update an existing property
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateProperty(
-        int id,
-        [FromBody] Property property)
-    {
-        if (id != property.Id)
-        {
-            return BadRequest("Property ID mismatch.");
-        }
-
-        var existingProperty =
-            await _context.Properties.FindAsync(id);
-
-        if (existingProperty == null)
-        {
-            return NotFound();
-        }
-
-        existingProperty.Title = property.Title;
-        existingProperty.Description = property.Description;
-        existingProperty.Location = property.Location;
-        existingProperty.Price = property.Price;
-        existingProperty.Bedrooms = property.Bedrooms;
-        existingProperty.Bathrooms = property.Bathrooms;
-        existingProperty.Latitude = property.Latitude;
-        existingProperty.Longitude = property.Longitude;
-        existingProperty.IsAvailable = property.IsAvailable;
-
-        await _context.SaveChangesAsync();
-
-        return NoContent();
-    }
-
-    // DELETE /api/properties/{id}
-    // Staff: Delete a property
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteProperty(int id)
-    {
-        var property =
-            await _context.Properties.FindAsync(id);
-
-        if (property == null)
-        {
-            return NotFound();
-        }
-
-        _context.Properties.Remove(property);
-
-        await _context.SaveChangesAsync();
-
-        return NoContent();
-    }
-
-    // PATCH /api/properties/{id}/availability
-    // Staff: Change property availability
-    [HttpPatch("{id}/availability")]
-    public async Task<IActionResult> UpdateAvailability(
-        int id,
-        [FromBody] bool isAvailable)
-    {
-        var property =
-            await _context.Properties.FindAsync(id);
-
-        if (property == null)
-        {
-            return NotFound();
-        }
-
-        property.IsAvailable = isAvailable;
-
-        await _context.SaveChangesAsync();
-
-        return Ok(property);
-    }
+public class NaturalLanguageSearchRequest
+{
+    public string Query { get; set; } = string.Empty;
 }

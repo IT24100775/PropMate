@@ -1,153 +1,193 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
+import logo from "../assets/logo-full.png";
+import logoIcon from "../assets/logo-icon.png";
+import "./Auth.css";
 
 function Register() {
-    const [formData, setFormData] = useState({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+  });
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const { register } = useAuth();
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
     });
+  };
 
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    const { register } = useAuth();
-    const navigate = useNavigate();
+    try {
+      const user = await register(
+        formData.firstName,
+        formData.lastName,
+        formData.email,
+        formData.password
+      );
 
-    const handleChange = (event) => {
-        setFormData({
-            ...formData,
-            [event.target.name]: event.target.value,
-        });
-    };
+      if (user.role === "Admin") {
+        navigate("/admin");
+      } else if (user.role === "OwnerAgent") {
+        navigate("/owner");
+      } else {
+        navigate("/discover");
+      }
+    } catch (err) {
+      setError(err.message || "Unable to create account.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
+  return (
+    <div className="auth-page">
+      <section className="auth-brand-panel">
+        <div className="brand-content">
+          <img
+            src={logoIcon}
+            alt="PropMate"
+            className="brand-icon"
+          />
 
-        setError("");
-        setLoading(true);
+          <p className="brand-eyebrow">PROPERTY INTELLIGENCE</p>
 
-        try {
-            const authenticatedUser = await register(
-                formData.firstName,
-                formData.lastName,
-                formData.email,
-                formData.password
-            );
+          <h1>
+            List smarter.
+            <br />
+            <span>Move confidently.</span>
+          </h1>
 
-            if (authenticatedUser.role === "Admin") {
-                navigate("/admin");
-            } else if (authenticatedUser.role === "OwnerAgent") {
-                navigate("/owner");
-            } else {
-                navigate("/discover");
-            }
-        } catch (err) {
-            setError(err.message || "Unable to create account.");
-        } finally {
-            setLoading(false);
-        }
-    };
+          <p className="brand-description">
+            Bring your properties into one intelligent workspace,
+            with structured listings, verification and transparent
+            review.
+          </p>
+        </div>
 
-    return (
-        <main className="register-page">
-            <section className="register-card">
-                <h1>Create your account</h1>
+        <div className="verification-badge">
+          <div className="verification-symbol">✓</div>
 
-                <p>
-                    Join PropMate and start your property journey.
-                </p>
+          <div>
+            <strong>Built for trusted listings</strong>
+            <span>Verification before publication.</span>
+          </div>
+        </div>
 
-                {error && (
-                    <p role="alert">
-                        {error}
-                    </p>
-                )}
+        <span className="building-outline building-one"></span>
+        <span className="building-outline building-two"></span>
+        <span className="building-outline building-three"></span>
+      </section>
 
-                <form onSubmit={handleSubmit}>
-                    <div>
-                        <label htmlFor="firstName">
-                            First name
-                        </label>
+      <section className="auth-form-panel">
+        <div className="auth-form-wrapper">
+          <img
+            src={logo}
+            alt="PropMate"
+            className="auth-logo"
+          />
 
-                        <input
-                            id="firstName"
-                            name="firstName"
-                            type="text"
-                            value={formData.firstName}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
+          <div className="auth-heading">
+            <p className="auth-kicker">GET STARTED</p>
+            <h2>Create your account</h2>
+            <p>
+              Join PropMate and start managing your property journey.
+            </p>
+          </div>
 
-                    <div>
-                        <label htmlFor="lastName">
-                            Last name
-                        </label>
+          <form onSubmit={handleSubmit} className="auth-form">
+            {error && (
+              <div className="auth-error">
+                {error}
+              </div>
+            )}
 
-                        <input
-                            id="lastName"
-                            name="lastName"
-                            type="text"
-                            value={formData.lastName}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
+            <div className="name-fields">
+              <div className="form-group">
+                <label htmlFor="firstName">First name</label>
+                <input
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  placeholder="First name"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
 
-                    <div>
-                        <label htmlFor="email">
-                            Email address
-                        </label>
+              <div className="form-group">
+                <label htmlFor="lastName">Last name</label>
+                <input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  placeholder="Last name"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
 
-                        <input
-                            id="email"
-                            name="email"
-                            type="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
+            <div className="form-group">
+              <label htmlFor="email">Email address</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="you@example.com"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-                    <div>
-                        <label htmlFor="password">
-                            Password
-                        </label>
+            <div className="form-group">
+              <label htmlFor="password">Password</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Minimum 8 characters"
+                value={formData.password}
+                onChange={handleChange}
+                minLength={8}
+                required
+              />
+            </div>
 
-                        <input
-                            id="password"
-                            name="password"
-                            type="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            minLength={8}
-                            required
-                        />
-                    </div>
+            <button
+              className="auth-submit"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? "Creating account..." : "Create account"}
+              {!loading && <span>→</span>}
+            </button>
+          </form>
 
-                    <button
-                        type="submit"
-                        disabled={loading}
-                    >
-                        {loading
-                            ? "Creating account..."
-                            : "Create account"}
-                    </button>
-                </form>
-
-                <p>
-                    Already have an account?{" "}
-                    <Link to="/login">
-                        Sign in
-                    </Link>
-                </p>
-            </section>
-        </main>
-    );
+          <p className="auth-switch">
+            Already have an account?{" "}
+            <Link to="/login">Sign in</Link>
+          </p>
+        </div>
+      </section>
+    </div>
+  );
 }
 
 export default Register;

@@ -64,7 +64,7 @@ function PropertyDiscovery() {
         try {
             setError("");
 
-            await addFavourite(property.id, user.userId);
+            await addFavourite(property, id);
 
             alert("Property added to favourites.");
         } catch (err) {

@@ -5,6 +5,6 @@ void main() {
   testWidgets('Property discovery page loads', (WidgetTester tester) async {
     await tester.pumpWidget(const PropMateApp());
 
-    expect(find.text('Property Discovery'), findsOneWidget);
+    expect(find.text('PROPERTY DISCOVERY'), findsWidgets);
   });
 }

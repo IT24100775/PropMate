@@ -1,52 +1,151 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PropMate.Api.Data;
+using PropMate.Api.Services;
+using PropMate.Api.Services.Interfaces;
+using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 Console.WriteLine("ENVIRONMENT: " + builder.Environment.EnvironmentName);
 Console.WriteLine("CONNECTION STRING FOUND: " +
-    !string.IsNullOrEmpty(builder.Configuration.GetConnectionString("DefaultConnection")));
+    !string.IsNullOrEmpty(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Add services to the container.
-builder.Services.AddControllers();
+// ----------------------------------------------------
+// OpenAPI / Swagger
+// ----------------------------------------------------
+
+builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// ----------------------------------------------------
+// Controllers + JSON Enum Configuration
+// ----------------------------------------------------
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter());
+    });
+
+// ----------------------------------------------------
+// Database
+// ----------------------------------------------------
+
+// Component 1 database context
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// ----------------------------------------------------
+// Application Services
+// ----------------------------------------------------
+
+builder.Services.AddScoped<IPropertyListingService, PropertyListingService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+// ----------------------------------------------------
+// JWT Authentication
+// ----------------------------------------------------
+
+var jwtKey = builder.Configuration["Jwt:Key"]
+    ?? throw new InvalidOperationException(
+        "JWT key is not configured.");
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtKey)),
+
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+// ----------------------------------------------------
+// Property Verification AI Service
+// ----------------------------------------------------
+
+builder.Services.AddHttpClient<
+    IPropertyVerificationClient,
+    PropertyVerificationClient>(
+    client =>
+    {
+        var baseUrl = builder.Configuration[
+            "PropertyVerificationService:BaseUrl"];
+
+        if (string.IsNullOrWhiteSpace(baseUrl))
+        {
+            throw new InvalidOperationException(
+                "Property verification service BaseUrl is not configured.");
+        }
+
+        client.BaseAddress = new Uri(baseUrl);
+        client.Timeout = TimeSpan.FromSeconds(15);
+    });
+
+// ----------------------------------------------------
+// CORS
+// ----------------------------------------------------
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5174")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
-builder.Services.AddDbContext<PropMateDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+// ----------------------------------------------------
+// Build Application
+// ----------------------------------------------------
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// ----------------------------------------------------
+// Development Tools
+// ----------------------------------------------------
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+// ----------------------------------------------------
+// HTTP Pipeline
+// ----------------------------------------------------
 
 app.UseHttpsRedirection();
 
 app.UseCors("AllowFrontend");
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
 
-// Apply pending migrations and seed database
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<PropMateDbContext>();
-    await context.Database.MigrateAsync();
-    await DbInitializer.SeedAsync(context);
-}
-
 app.Run();
-
-
