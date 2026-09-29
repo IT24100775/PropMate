@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'screens/property_listing/published_properties_screen.dart';
+import 'pages/discovery/property_discovery.dart';
 
 void main() {
   runApp(const PropMateApp());
@@ -67,7 +67,7 @@ class PropMateApp extends StatelessWidget {
         ),
       ),
 
-      home: const PublishedPropertiesScreen(),
+      home: const PropertyDiscoveryPage(),
     );
   }
 }

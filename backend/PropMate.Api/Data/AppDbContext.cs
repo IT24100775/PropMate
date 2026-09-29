@@ -1,3 +1,4 @@
+using PropMate.Api.Enums;
 using Microsoft.EntityFrameworkCore;
 using PropMate.Api.Models;
 
@@ -21,6 +22,12 @@ public class AppDbContext : DbContext
 
     public DbSet<PropertyListingVerification> PropertyListingVerifications =>
         Set<PropertyListingVerification>();
+
+    public DbSet<Favourite> Favourites => Set<Favourite>();
+
+    public DbSet<ViewingSlot> ViewingSlots => Set<ViewingSlot>();
+
+    public DbSet<ViewingBooking> ViewingBookings => Set<ViewingBooking>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -111,9 +118,59 @@ public class AppDbContext : DbContext
             .WithMany(x => x.Verifications)
             .HasForeignKey(x => x.PropertyListingId)
             .OnDelete(DeleteBehavior.Cascade);
-    
+
         modelBuilder.Entity<PropertyListingVerification>()
             .HasIndex(x => x.PropertyListingId);
+
+        modelBuilder.Entity<Favourite>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.HasOne(x => x.PropertyListing)
+                .WithMany()
+                .HasForeignKey(x => x.PropertyListingId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(x => x.PropertyListingId);
+
+            entity.HasIndex(x => new { x.UserId, x.PropertyListingId })
+                .IsUnique();
+        });
+
+        modelBuilder.Entity<ViewingSlot>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.HasOne(x => x.PropertyListing)
+                .WithMany()
+                .HasForeignKey(x => x.PropertyListingId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<ViewingBooking>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Status)
+                .HasDefaultValue(BookingStatus.Booked);
+
+            entity.HasOne(x => x.ViewingSlot)
+                .WithMany()
+                .HasForeignKey(x => x.ViewingSlotId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(x => x.ViewingSlotId);
+        });
 
     }
 }

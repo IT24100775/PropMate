@@ -9,6 +9,11 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+Console.WriteLine("ENVIRONMENT: " + builder.Environment.EnvironmentName);
+Console.WriteLine("CONNECTION STRING FOUND: " +
+    !string.IsNullOrEmpty(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
+
 // ----------------------------------------------------
 // OpenAPI / Swagger
 // ----------------------------------------------------
@@ -32,17 +37,16 @@ builder.Services.AddControllers()
 // Database
 // ----------------------------------------------------
 
+// Component 1 database context
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-    ));
+        builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // ----------------------------------------------------
 // Application Services
 // ----------------------------------------------------
 
 builder.Services.AddScoped<IPropertyListingService, PropertyListingService>();
-
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
@@ -102,9 +106,6 @@ builder.Services.AddHttpClient<
 // ----------------------------------------------------
 // CORS
 // ----------------------------------------------------
-// Allows React and Flutter Web during local development.
-// Flutter Web uses a changing localhost port, so AllowAnyOrigin()
-// is convenient while developing.
 
 builder.Services.AddCors(options =>
 {
@@ -130,7 +131,6 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-
     app.UseSwagger();
     app.UseSwaggerUI();
 }

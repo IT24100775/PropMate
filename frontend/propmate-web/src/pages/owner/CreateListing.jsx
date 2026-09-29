@@ -290,7 +290,7 @@ function CreateListing() {
                   maxLength={100}
                   required
                 />
-                
+
               </div>
 
               <div className="listing-field">

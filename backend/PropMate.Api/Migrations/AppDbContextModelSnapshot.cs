@@ -22,6 +22,33 @@ namespace PropMate.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("PropMate.Api.Models.Favourite", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("PropertyListingId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PropertyListingId");
+
+                    b.HasIndex("UserId", "PropertyListingId")
+                        .IsUnique();
+
+                    b.ToTable("Favourites");
+                });
+
             modelBuilder.Entity("PropMate.Api.Models.ListingStatusHistory", b =>
                 {
                     b.Property<int>("Id")
@@ -247,6 +274,83 @@ namespace PropMate.Api.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("PropMate.Api.Models.ViewingBooking", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("BookedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ViewingSlotId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ViewingSlotId");
+
+                    b.ToTable("ViewingBookings");
+                });
+
+            modelBuilder.Entity("PropMate.Api.Models.ViewingSlot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("PropertyListingId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PropertyListingId");
+
+                    b.ToTable("ViewingSlots");
+                });
+
+            modelBuilder.Entity("PropMate.Api.Models.Favourite", b =>
+                {
+                    b.HasOne("PropMate.Api.Models.PropertyListing", "PropertyListing")
+                        .WithMany()
+                        .HasForeignKey("PropertyListingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PropMate.Api.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PropertyListing");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("PropMate.Api.Models.ListingStatusHistory", b =>
                 {
                     b.HasOne("PropMate.Api.Models.PropertyListing", "PropertyListing")
@@ -275,6 +379,36 @@ namespace PropMate.Api.Migrations
                         .WithMany("Verifications")
                         .HasForeignKey("PropertyListingId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PropertyListing");
+                });
+
+            modelBuilder.Entity("PropMate.Api.Models.ViewingBooking", b =>
+                {
+                    b.HasOne("PropMate.Api.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PropMate.Api.Models.ViewingSlot", "ViewingSlot")
+                        .WithMany()
+                        .HasForeignKey("ViewingSlotId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+
+                    b.Navigation("ViewingSlot");
+                });
+
+            modelBuilder.Entity("PropMate.Api.Models.ViewingSlot", b =>
+                {
+                    b.HasOne("PropMate.Api.Models.PropertyListing", "PropertyListing")
+                        .WithMany()
+                        .HasForeignKey("PropertyListingId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("PropertyListing");

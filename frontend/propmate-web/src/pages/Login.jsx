@@ -27,7 +27,7 @@ function Login() {
       } else if (user.role === "OwnerAgent") {
         navigate("/owner");
       } else {
-        navigate("/");
+        navigate("/discover");
       }
     } catch (err) {
       setError(err.message || "Unable to sign in.");
