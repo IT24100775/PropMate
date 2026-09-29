@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'screens/maintenance_home.dart';
 import 'screens/property_listing/published_properties_screen.dart';
 
 void main() {
@@ -63,44 +62,15 @@ class PropMateApp extends StatelessWidget {
   }
 }
 
-class TenantHome extends StatefulWidget {
+class TenantHome extends StatelessWidget {
   const TenantHome({super.key, required this.tenantId});
 
   final int tenantId;
 
   @override
-  State<TenantHome> createState() => _TenantHomeState();
-}
-
-class _TenantHomeState extends State<TenantHome> {
-  int _selectedIndex = 0;
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: [
-          PublishedPropertiesScreen(),
-          MaintenanceHome(
-            tenantId: widget.tenantId,
-          ),
-        ],
-      ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) => setState(() => _selectedIndex = index),
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_work_outlined),
-            label: 'Properties',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.build_outlined),
-            label: 'Maintenance',
-          ),
-        ],
-      ),
+    return PublishedPropertiesScreen(
+      tenantId: tenantId,
     );
   }
 }

@@ -60,17 +60,41 @@ namespace PropMate.Api.Services.Maintenance
 
             if (!hasActiveRental)
             {
-                throw new UnauthorizedAccessException(
-                    "Maintenance requests are available only for a completed rental agreement.");
+                // Also check if tenant has an application or if the property is a rent listing
+                var hasApplication = await _marketplaceContext.RentalApplications
+                    .AnyAsync(app => app.TenantId == tenantId && app.PropertyListingId == dto.PropertyListingId);
+                var isRentalProperty = await _marketplaceContext.PropertyListings
+                    .AnyAsync(p => p.Id == dto.PropertyListingId && p.Purpose == ListingPurpose.Rent);
+
+                if (!hasApplication && !isRentalProperty)
+                {
+                    throw new UnauthorizedAccessException(
+                        "Maintenance requests are available for rented properties or rental listings.");
+                }
+            }
+
+            var scheduleDetails = new List<string>();
+            if (!string.IsNullOrWhiteSpace(dto.PreferredDate))
+                scheduleDetails.Add($"Preferred Date: {dto.PreferredDate}");
+            if (!string.IsNullOrWhiteSpace(dto.PreferredTime))
+                scheduleDetails.Add($"Preferred Time: {dto.PreferredTime}");
+            if (!string.IsNullOrWhiteSpace(dto.ContactPhone))
+                scheduleDetails.Add($"Contact: {dto.ContactPhone}");
+
+            var finalDescription = dto.Description;
+            if (scheduleDetails.Any())
+            {
+                finalDescription = $"{finalDescription}\n\n[{string.Join(" | ", scheduleDetails)}]";
             }
 
             return await CreateAsync(new CreateMaintenanceRequestDto
             {
                 PropertyId = dto.PropertyListingId,
                 TenantId = tenantId,
-                Description = dto.Description,
+                Description = finalDescription,
                 Category = dto.Category,
-                Priority = dto.Priority
+                Priority = dto.Priority,
+                ImageUrl = dto.ImageUrl
             });
         }
 

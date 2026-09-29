@@ -2,12 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/property_listing.dart';
+import '../../services/maintenance_api.dart';
 import '../../services/property_listing_service.dart';
 import '../../widgets/property_card.dart';
+import '../maintenance_home.dart';
 import 'property_details_screen.dart';
 
 class PublishedPropertiesScreen extends StatefulWidget {
-  const PublishedPropertiesScreen({super.key});
+  final int tenantId;
+
+  const PublishedPropertiesScreen({
+    super.key,
+    this.tenantId = 1,
+  });
 
   @override
   State<PublishedPropertiesScreen> createState() =>
@@ -17,25 +24,41 @@ class PublishedPropertiesScreen extends StatefulWidget {
 class _PublishedPropertiesScreenState
     extends State<PublishedPropertiesScreen> {
   final PropertyListingService _service = PropertyListingService();
+  final MaintenanceApi _maintenanceApi = MaintenanceApi();
 
   late Future<List<PropertyListing>> _properties;
+  List<Map<String, dynamic>> _notifications = [];
 
   @override
   void initState() {
     super.initState();
     _loadProperties();
+    _loadNotifications();
   }
 
   void _loadProperties() {
     _properties = _service.getPublishedProperties();
   }
 
+  Future<void> _loadNotifications() async {
+    try {
+      final notifs = await _maintenanceApi.getNotifications(widget.tenantId);
+      if (mounted) {
+        setState(() => _notifications = notifs);
+      }
+    } catch (_) {
+      // Graceful fallback
+    }
+  }
+
   Future<void> _refreshProperties() async {
     setState(() {
       _loadProperties();
     });
-
-    await _properties;
+    await Future.wait([
+      _properties,
+      _loadNotifications(),
+    ]);
   }
 
   void _openProperty(PropertyListing property) {
@@ -44,6 +67,107 @@ class _PublishedPropertiesScreenState
       MaterialPageRoute(
         builder: (_) => PropertyDetailsScreen(
           propertyId: property.id,
+        ),
+      ),
+    );
+  }
+
+  void _openMaintenance(PropertyListing property) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MaintenanceHome(
+          tenantId: widget.tenantId,
+          initialPropertyId: property.id,
+          initialPropertyTitle: property.title,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showNotifications() async {
+    await _loadNotifications();
+    if (!mounted) return;
+
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 14),
+              child: Row(
+                children: [
+                  const Icon(Icons.notifications_active_outlined, color: Color(0xFFCF9E3E)),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'Maintenance Notifications',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const Spacer(),
+                  Text(
+                    '${_notifications.length}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFCF9E3E),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1),
+            if (_notifications.isEmpty)
+              const Padding(
+                padding: EdgeInsets.all(40),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Icon(Icons.notifications_none, size: 48, color: Colors.grey),
+                      SizedBox(height: 12),
+                      Text('No new notifications', style: TextStyle(color: Colors.grey)),
+                    ],
+                  ),
+                ),
+              )
+            else
+              Flexible(
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: _notifications.length,
+                  separatorBuilder: (context, index) => const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final n = _notifications[index];
+                    return ListTile(
+                      leading: const CircleAvatar(
+                        backgroundColor: Color(0xFFFFF7E6),
+                        child: Icon(Icons.build_circle_outlined, color: Color(0xFFCF9E3E)),
+                      ),
+                      title: Text(
+                        n['title']?.toString() ?? 'Notification',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      ),
+                      subtitle: Text(
+                        n['message']?.toString() ?? '',
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                      trailing: Text(
+                        n['createdAt'] != null
+                            ? DateTime.tryParse(n['createdAt'].toString())?.toLocal().toString().substring(0, 10) ?? ''
+                            : '',
+                        style: const TextStyle(fontSize: 11, color: Colors.grey),
+                      ),
+                    );
+                  },
+                ),
+              ),
+          ],
         ),
       ),
     );
@@ -66,6 +190,18 @@ class _PublishedPropertiesScreenState
           height: 52,
           fit: BoxFit.contain,
         ),
+        actions: [
+          IconButton(
+            tooltip: 'Notifications',
+            onPressed: _showNotifications,
+            icon: Badge(
+              isLabelVisible: _notifications.isNotEmpty,
+              label: Text(_notifications.length.toString()),
+              child: const Icon(Icons.notifications_outlined, color: Colors.white),
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
 
       body: SafeArea(
@@ -214,6 +350,7 @@ class _PublishedPropertiesScreenState
                     (property) => PropertyCard(
                       property: property,
                       onTap: () => _openProperty(property),
+                      onMaintenanceTap: () => _openMaintenance(property),
                     ),
                   ),
                 ],

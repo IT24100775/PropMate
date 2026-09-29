@@ -36,6 +36,10 @@ class MaintenanceApi {
     required String description,
     required String category,
     required String priority,
+    String? imageUrl,
+    String? preferredDate,
+    String? preferredTime,
+    String? contactPhone,
   }) async {
     final response = await http.post(
       Uri.parse('$baseUrl/maintenance/tenant'),
@@ -48,6 +52,10 @@ class MaintenanceApi {
         'description': description,
         'category': category,
         'priority': priority,
+        if (imageUrl != null && imageUrl.isNotEmpty) 'imageUrl': imageUrl,
+        if (preferredDate != null && preferredDate.isNotEmpty) 'preferredDate': preferredDate,
+        if (preferredTime != null && preferredTime.isNotEmpty) 'preferredTime': preferredTime,
+        if (contactPhone != null && contactPhone.isNotEmpty) 'contactPhone': contactPhone,
       }),
     );
     _ensureSuccess(response);

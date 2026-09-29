@@ -5,6 +5,7 @@ import '../../models/property_listing.dart';
 import '../../services/property_listing_service.dart';
 import '../../component3/screens/purchase_offer_screen.dart';
 import '../../component3/screens/rental_application_screen.dart';
+import '../maintenance_home.dart';
 
 class PropertyDetailsScreen extends StatefulWidget {
   final int propertyId;
@@ -394,7 +395,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
                           const SizedBox(height: 24),
 
                           // Component 3 action — intentionally at the bottom of property details.
-                          if (property.purpose.toLowerCase() == 'rent')
+                          if (property.purpose.toLowerCase() == 'rent') ...[
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton.icon(
@@ -407,7 +408,40 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
                                 icon: const Icon(Icons.home_work_outlined),
                                 label: const Text('Apply for Rental'),
                               ),
-                            )
+                            ),
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              width: double.infinity,
+                              child: OutlinedButton.icon(
+                                onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => MaintenanceHome(
+                                      tenantId: 1,
+                                      initialPropertyId: property.id,
+                                      initialPropertyTitle: property.title,
+                                    ),
+                                  ),
+                                ),
+                                icon: const Icon(Icons.build_circle_outlined, color: gold),
+                                label: const Text(
+                                  'Maintenance',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: gold,
+                                  side: const BorderSide(color: gold, width: 1.8),
+                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ]
                           else if (property.purpose.toLowerCase() == 'sale')
                             SizedBox(
                               width: double.infinity,

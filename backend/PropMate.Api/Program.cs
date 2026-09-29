@@ -52,25 +52,29 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins(
-                "http://localhost:5173",
-                "http://127.0.0.1:5173",
-                "http://localhost:35481",
-                "http://localhost:5400",
-                "http://localhost:5410",
-                 "http://localhost:52582"
-            )
+        policy
+            .SetIsOriginAllowed(origin =>
+                origin.StartsWith("http://localhost:"))
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
 });
-
 var app = builder.Build();
 
 app.UseCors("AllowFrontend");
 
 if (app.Environment.IsDevelopment())
 {
+    using (var scope = app.Services.CreateScope())
+    {
+        var appDb = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        appDb.Database.Migrate();
+        var applicationDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        applicationDb.Database.Migrate();
+
+        DbInitializer.SeedDemoData(appDb);
+    }
+
     app.UseSwagger();
     app.UseSwaggerUI();
 }

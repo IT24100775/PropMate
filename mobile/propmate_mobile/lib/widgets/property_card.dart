@@ -5,11 +5,13 @@ import '../models/property_listing.dart';
 class PropertyCard extends StatelessWidget {
   final PropertyListing property;
   final VoidCallback onTap;
+  final VoidCallback? onMaintenanceTap;
 
   const PropertyCard({
     super.key,
     required this.property,
     required this.onTap,
+    this.onMaintenanceTap,
   });
 
   String _formatPrice(double price) {
@@ -142,24 +144,55 @@ class PropertyCard extends StatelessWidget {
 
                         const SizedBox(height: 12),
 
-                        const Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                            Text(
-                            'View Details',
-                            style: TextStyle(
-                                color: gold,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            if (property.purpose.toLowerCase() == 'rent')
+                              ElevatedButton.icon(
+                                onPressed: onMaintenanceTap,
+                                icon: const Icon(Icons.build_circle_outlined, size: 16),
+                                label: const Text(
+                                  'Maintenance',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: gold,
+                                  foregroundColor: Colors.white,
+                                  elevation: 0,
+                                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              )
+                            else
+                              const SizedBox.shrink(),
+
+                            const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'View Details',
+                                  style: TextStyle(
+                                    color: gold,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                SizedBox(width: 4),
+                                Icon(
+                                  Icons.arrow_forward,
+                                  size: 16,
+                                  color: gold,
+                                ),
+                              ],
                             ),
-                            ),
-                            SizedBox(width: 4),
-                            Icon(
-                            Icons.arrow_forward,
-                            size: 16,
-                            color: gold,
-                            ),
-                        ],
+                          ],
                         ),
 
                 ],

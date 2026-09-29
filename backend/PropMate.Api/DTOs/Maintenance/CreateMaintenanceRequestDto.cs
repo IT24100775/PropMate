@@ -9,6 +9,10 @@ namespace PropMate.Api.DTOs.Maintenance
         public string Category { get; set; } = string.Empty;
 
         public string Priority { get; set; } = "MEDIUM";
+        public string? ImageUrl { get; set; }
+        public string? PreferredDate { get; set; }
+        public string? PreferredTime { get; set; }
+        public string? ContactPhone { get; set; }
     }
 
     public class CreateMaintenanceRequestDto
