@@ -3,7 +3,29 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'screens/property_listing/published_properties_screen.dart';
 
-void main() {
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'component3/services/component3_api.dart';
+
+Future<void> setupDevAuth() async {
+  try {
+    final response = await http.post(
+      Uri.parse('http://localhost:5235/api/auth/login'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': 'buyer@propmate.com', 'password': 'Password123!'}),
+    );
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      Component3Api.devToken = data['token'];
+    }
+  } catch (e) {
+    debugPrint('Dev auth setup failed: $e');
+  }
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await setupDevAuth();
   runApp(const PropMateApp());
 }
 

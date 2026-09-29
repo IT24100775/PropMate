@@ -53,6 +53,26 @@ function OwnerSidebar() {
             <span className="sidebar-icon">＋</span>
             Add Property
           </NavLink>
+
+          <NavLink
+            to="/owner/component3/rentals"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+          >
+            <span className="sidebar-icon">⌂</span>
+            Rental Applications
+          </NavLink>
+
+          <NavLink
+            to="/owner/component3/purchases"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+          >
+            <span className="sidebar-icon">＄</span>
+            Purchase Offers
+          </NavLink>
         </nav>
       </div>
 
