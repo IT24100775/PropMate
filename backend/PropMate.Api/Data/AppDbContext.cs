@@ -29,6 +29,17 @@ public class AppDbContext : DbContext
 
     public DbSet<ViewingBooking> ViewingBookings => Set<ViewingBooking>();
 
+    // Component 3 - Applications, Offers & Transactions
+    public DbSet<RentalApplication> RentalApplications => Set<RentalApplication>();
+    public DbSet<RentalNegotiationOffer> RentalNegotiationOffers => Set<RentalNegotiationOffer>();
+    public DbSet<RentalNegotiationMessage> RentalNegotiationMessages => Set<RentalNegotiationMessage>();
+    public DbSet<RentalAgreement> RentalAgreements => Set<RentalAgreement>();
+
+    public DbSet<PurchaseOffer> PurchaseOffers => Set<PurchaseOffer>();
+    public DbSet<PurchaseNegotiationOffer> PurchaseNegotiationOffers => Set<PurchaseNegotiationOffer>();
+    public DbSet<PurchaseNegotiationMessage> PurchaseNegotiationMessages => Set<PurchaseNegotiationMessage>();
+    public DbSet<PurchaseAgreement> PurchaseAgreements => Set<PurchaseAgreement>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -170,6 +181,214 @@ public class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasIndex(x => x.ViewingSlotId);
+        });
+
+        // =====================================================
+        // Component 3 - Applications, Offers & Transactions
+        // =====================================================
+
+        modelBuilder.Entity<RentalApplication>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Employment)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            entity.Property(x => x.MonthlyIncome)
+                .HasPrecision(18, 2);
+
+            entity.Property(x => x.Message)
+                .HasMaxLength(2000);
+
+            entity.HasOne(x => x.PropertyListing)
+                .WithMany()
+                .HasForeignKey(x => x.PropertyListingId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(x => x.Tenant)
+                .WithMany()
+                .HasForeignKey(x => x.TenantId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(x => x.PropertyListingId);
+            entity.HasIndex(x => x.TenantId);
+            entity.HasIndex(x => x.Status);
+        });
+
+        modelBuilder.Entity<RentalNegotiationOffer>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.MonthlyRent)
+                .HasPrecision(18, 2);
+
+            entity.Property(x => x.Conditions)
+                .HasMaxLength(2000);
+
+            entity.HasOne(x => x.RentalApplication)
+                .WithMany(x => x.NegotiationOffers)
+                .HasForeignKey(x => x.RentalApplicationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(x => x.ProposedByUser)
+                .WithMany()
+                .HasForeignKey(x => x.ProposedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(x => x.RentalApplicationId);
+        });
+
+        modelBuilder.Entity<RentalNegotiationMessage>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Message)
+                .IsRequired()
+                .HasMaxLength(2000);
+
+            entity.HasOne(x => x.RentalApplication)
+                .WithMany(x => x.NegotiationMessages)
+                .HasForeignKey(x => x.RentalApplicationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(x => x.SenderUser)
+                .WithMany()
+                .HasForeignKey(x => x.SenderUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(x => x.RentalApplicationId);
+        });
+
+        modelBuilder.Entity<RentalAgreement>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.FinalMonthlyRent)
+                .HasPrecision(18, 2);
+
+            entity.Property(x => x.Terms)
+                .HasMaxLength(4000);
+
+            entity.Property(x => x.TenantObligation)
+                .IsRequired()
+                .HasMaxLength(2000);
+
+            entity.Property(x => x.OwnerObligation)
+                .IsRequired()
+                .HasMaxLength(2000);
+
+            entity.Property(x => x.PenaltyTerms)
+                .IsRequired()
+                .HasMaxLength(2000);
+
+            entity.HasOne(x => x.RentalApplication)
+                .WithOne(x => x.Agreement)
+                .HasForeignKey<RentalAgreement>(x => x.RentalApplicationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(x => x.RentalApplicationId)
+                .IsUnique();
+        });
+
+        modelBuilder.Entity<PurchaseOffer>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.OfferAmount)
+                .HasPrecision(18, 2);
+
+            entity.Property(x => x.Conditions)
+                .HasMaxLength(3000);
+
+            entity.HasOne(x => x.PropertyListing)
+                .WithMany()
+                .HasForeignKey(x => x.PropertyListingId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(x => x.Buyer)
+                .WithMany()
+                .HasForeignKey(x => x.BuyerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(x => x.PropertyListingId);
+            entity.HasIndex(x => x.BuyerId);
+            entity.HasIndex(x => x.Status);
+        });
+
+        modelBuilder.Entity<PurchaseNegotiationOffer>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.OfferAmount)
+                .HasPrecision(18, 2);
+
+            entity.Property(x => x.Conditions)
+                .HasMaxLength(3000);
+
+            entity.HasOne(x => x.PurchaseOffer)
+                .WithMany(x => x.NegotiationOffers)
+                .HasForeignKey(x => x.PurchaseOfferId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(x => x.ProposedByUser)
+                .WithMany()
+                .HasForeignKey(x => x.ProposedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(x => x.PurchaseOfferId);
+        });
+
+        modelBuilder.Entity<PurchaseNegotiationMessage>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Message)
+                .IsRequired()
+                .HasMaxLength(2000);
+
+            entity.HasOne(x => x.PurchaseOffer)
+                .WithMany(x => x.NegotiationMessages)
+                .HasForeignKey(x => x.PurchaseOfferId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(x => x.SenderUser)
+                .WithMany()
+                .HasForeignKey(x => x.SenderUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(x => x.PurchaseOfferId);
+        });
+
+        modelBuilder.Entity<PurchaseAgreement>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.FinalPurchasePrice)
+                .HasPrecision(18, 2);
+
+            entity.Property(x => x.Conditions)
+                .HasMaxLength(4000);
+
+            entity.Property(x => x.BuyerObligation)
+                .IsRequired()
+                .HasMaxLength(2000);
+
+            entity.Property(x => x.SellerObligation)
+                .IsRequired()
+                .HasMaxLength(2000);
+
+            entity.Property(x => x.PenaltyTerms)
+                .IsRequired()
+                .HasMaxLength(2000);
+
+            entity.HasOne(x => x.PurchaseOffer)
+                .WithOne(x => x.Agreement)
+                .HasForeignKey<PurchaseAgreement>(x => x.PurchaseOfferId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(x => x.PurchaseOfferId)
+                .IsUnique();
         });
 
     }

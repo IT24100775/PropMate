@@ -50,6 +50,9 @@ builder.Services.AddScoped<IPropertyListingService, PropertyListingService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+// Component 3 - Applications, Offers & Transactions
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+
 // ----------------------------------------------------
 // JWT Authentication
 // ----------------------------------------------------
@@ -101,6 +104,24 @@ builder.Services.AddHttpClient<
 
         client.BaseAddress = new Uri(baseUrl);
         client.Timeout = TimeSpan.FromSeconds(15);
+    });
+
+    // Component 3 - Transaction Negotiation Agent
+builder.Services.AddHttpClient<
+    IAgentWorkflowClient, 
+    AgentWorkflowClient>(
+    client =>
+    {
+        var baseUrl = builder.Configuration["AgenticAiService:BaseUrl"];
+
+        if (string.IsNullOrWhiteSpace(baseUrl))
+        {
+            throw new InvalidOperationException(
+                "Agentic AI service BaseUrl is not configured.");
+        }
+
+        client.BaseAddress = new Uri(baseUrl.TrimEnd('/') + "/");
+        client.Timeout = TimeSpan.FromSeconds(60);
     });
 
 // ----------------------------------------------------

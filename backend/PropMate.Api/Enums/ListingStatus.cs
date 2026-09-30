@@ -9,5 +9,7 @@ public enum ListingStatus
     Approved,
     Rejected,
     Published,
-    Unpublished
+    Unpublished,
+    Sold,
+    Rented
 }

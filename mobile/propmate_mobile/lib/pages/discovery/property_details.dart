@@ -1,6 +1,8 @@
 ﻿import 'package:flutter/material.dart';
 import '../../models/property.dart';
 import '../../services/favourite_service.dart';
+import '../../component3/screens/rental_application_screen.dart';
+import '../../component3/screens/purchase_offer_screen.dart';
 import 'viewing_slots.dart';
 
 class PropertyDetailsPage extends StatefulWidget {
@@ -346,6 +348,79 @@ class _State extends State<PropertyDetailsPage> {
                           Icon(
                             Icons.arrow_forward,
                             color: _gold,
+                            size: 17,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // --------------------------------------------------
+                  // RENTAL APPLICATION / PURCHASE OFFER
+                  // --------------------------------------------------
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 54,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (property.purpose == 1) {
+                          // Rent listing
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => RentalApplicationScreen(
+                                propertyId: property.id,
+                              ),
+                            ),
+                          );
+                        } else {
+                          // Sale listing
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => PurchaseOfferScreen(
+                                propertyId: property.id,
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _gold,
+                        foregroundColor: _dark,
+                        elevation: 0,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.zero,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            property.purpose == 1
+                              ? Icons.description_outlined
+                              : Icons.local_offer_outlined,
+                            color: _dark,
+                            size: 19,
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            property.purpose == 1
+                              ? 'APPLY FOR RENTAL'
+                              : 'MAKE PURCHASE OFFER',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          const Icon(
+                            Icons.arrow_forward,
+                            color: _dark,
                             size: 17,
                           ),
                         ],
