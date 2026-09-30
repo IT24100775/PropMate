@@ -28,10 +28,31 @@ class Property {
   });
 
   factory Property.fromJson(Map<String, dynamic> json) {
-    var rawImages = json['images'] as List? ?? [];
-    List<String> imageUrls = rawImages.map((img) => img['imageUrl'].toString()).toList();
+    final List<String> imageUrls = [];
+
+    final rawImageUrls = json['imageUrls'];
+
+    if (rawImageUrls is List) {
+      imageUrls.addAll(
+        rawImageUrls
+          .where((image) => image != null)
+          .map((image) => image.toString()),
+      );
+    }
+
+    final rawImages = json['images'];
+
+    if (imageUrls.isEmpty && rawImages is List) {
+      imageUrls.addAll(
+        rawImages
+          .whereType<Map>()
+          .where((image) => image['imageUrl'] != null)
+          .map((image) => image['imageUrl'].toString()),
+      );
+    }
+
     if (imageUrls.isEmpty && json['primaryImageUrl'] != null) {
-      imageUrls.add(json['primaryImageUrl']);
+      imageUrls.add(json['primaryImageUrl'].toString());
     }
 
     return Property(

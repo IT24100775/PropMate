@@ -1,4 +1,6 @@
 ﻿import 'package:flutter/material.dart';
+import '../../services/mobile_auth_service.dart';
+import '../../screens/auth/login_screen.dart';
 import '../../services/property_service.dart';
 import '../../services/agent_service.dart';
 import '../../models/property.dart';
@@ -641,6 +643,43 @@ class _PropertyDiscoveryPageState extends State<PropertyDiscoveryPage> {
                         builder: (_) =>
                             const MyViewingsPage(),
                       ),
+                    );
+                  },
+                                ),
+
+                const Divider(
+                  height: 28,
+                  indent: 24,
+                  endIndent: 24,
+                  color: _border,
+                ),
+
+                ListTile(
+                  leading: const Icon(
+                    Icons.logout_rounded,
+                    color: _danger,
+                  ),
+                  title: const Text(
+                    'Sign Out',
+                    style: TextStyle(
+                      color: _danger,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  onTap: () async {
+                    Navigator.pop(context);
+
+                    await MobileAuthService.logout();
+
+                    if (!mounted) {
+                      return;
+                    }
+
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(
+                        builder: (_) => const LoginScreen(),
+                      ),
+                      (route) => false,
                     );
                   },
                 ),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'pages/discovery/property_discovery.dart';
+import 'screens/auth/login_screen.dart';
+import 'services/mobile_auth_service.dart';
 
 void main() {
   runApp(const PropMateApp());
@@ -67,7 +69,46 @@ class PropMateApp extends StatelessWidget {
         ),
       ),
 
-      home: const PropertyDiscoveryPage(),
+      home: const AuthGate(),
+    );
+  }
+}
+
+class AuthGate extends StatefulWidget {
+  const AuthGate({super.key});
+
+  @override
+  State<AuthGate> createState() => _AuthGateState();
+}
+
+class _AuthGateState extends State<AuthGate> {
+  late Future<bool> _authCheck;
+
+  @override
+  void initState() {
+    super.initState();
+    _authCheck = MobileAuthService.isLoggedIn();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: _authCheck,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        if (snapshot.data == true) {
+          return const PropertyDiscoveryPage();
+        }
+
+        return const LoginScreen();
+      },
     );
   }
 }

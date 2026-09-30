@@ -214,21 +214,25 @@ export default function TransactionInbox({
                                     Open negotiation <span>→</span>
                                 </Link>
 
-                                <button
-                                    type="button"
-                                    className="c3-accept-button"
-                                    onClick={() => handleAccept(item.id)}
-                                >
-                                    Accept
-                                </button>
+                                {item.status === "Pending" && (
+                                    <>
+                                        <button
+                                            type="button"
+                                            className="c3-accept-button"
+                                            onClick={() => handleAccept(item.id)}
+                                        >
+                                            Accept
+                                        </button>
 
-                                <button
-                                    type="button"
-                                    className="c3-reject-button"
-                                    onClick={() => handleReject(item.id)}
-                                >
-                                    Reject
-                                </button>
+                                        <button
+                                            type="button"
+                                            className="c3-reject-button"
+                                            onClick={() => handleReject(item.id)}
+                                        >
+                                            Reject
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         </article>
                     ))}
