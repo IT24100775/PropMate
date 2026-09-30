@@ -113,6 +113,11 @@ function AdminDashboard() {
               <span>01</span>
               Verification Queue
             </Link>
+
+            <Link to="/admin/component3" className="admin-nav-active">
+              <span>02</span>
+              Component 3 Transactions
+            </Link>
           </nav>
         </div>
 
@@ -297,14 +302,14 @@ function AdminDashboard() {
 
                       {listing.status ===
                         "UnderReview" && (
-                        <Link
-                          to={`/admin/listings/${listing.id}/review`}
-                          className="review-property-button"
-                        >
-                          Review property
-                          <span>→</span>
-                        </Link>
-                      )}
+                          <Link
+                            to={`/admin/listings/${listing.id}/review`}
+                            className="review-property-button"
+                          >
+                            Review property
+                            <span>→</span>
+                          </Link>
+                        )}
 
                       {listing.status === "Approved" && (
                         <Link
@@ -320,13 +325,13 @@ function AdminDashboard() {
                         "UnderReview",
                         "Approved",
                       ].includes(listing.status) && (
-                        <Link
-                          to={`/admin/listings/${listing.id}/review`}
-                          className="view-property-button"
-                        >
-                          View details →
-                        </Link>
-                      )}
+                          <Link
+                            to={`/admin/listings/${listing.id}/review`}
+                            className="view-property-button"
+                          >
+                            View details →
+                          </Link>
+                        )}
                     </div>
                   </div>
                 </article>

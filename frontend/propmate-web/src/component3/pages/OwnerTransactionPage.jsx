@@ -1,0 +1,1 @@
+import {useParams} from 'react-router-dom';import NegotiationPanel from '../components/NegotiationPanel';export default function OwnerTransactionPage(){const{type,id}=useParams();return <NegotiationPanel type={type} id={Number(id)} title={type==='rental'?`Rental negotiation #${id}`:`Purchase negotiation #${id}`}/>}

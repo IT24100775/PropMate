@@ -10,8 +10,10 @@ class Component3Api {
   Component3Api({AuthTokenProvider? authTokenProvider})
       : authTokenProvider = authTokenProvider ?? const EmptyAuthTokenProvider();
 
+  static String? devToken;
+
   Map<String, String> _headers() {
-    final token = authTokenProvider.accessToken;
+    final token = authTokenProvider.accessToken ?? devToken;
     return {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
@@ -28,7 +30,9 @@ class Component3Api {
     final text = response.body;
     dynamic data;
     if (text.isNotEmpty) { try { data = jsonDecode(text); } catch (_) { data = text; } }
-    if (response.statusCode < 200 || response.statusCode >= 300)
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(data ?? response.reasonPhrase);
+    }
     return data;
   }
 

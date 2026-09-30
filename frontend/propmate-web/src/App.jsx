@@ -20,6 +20,13 @@ import PropertyDetails from "./pages/discovery/PropertyDetails";
 import PropertyLocation from "./pages/discovery/PropertyLocation";
 import ViewingBookings from "./pages/discovery/ViewingBookings";
 
+// Component 3 - Applications, Offers & Transactions
+import OwnerRentalApplications from "./component3/pages/OwnerRentalApplications";
+import OwnerPurchaseOffers from "./component3/pages/OwnerPurchaseOffers";
+import OwnerTransactionPage from "./component3/pages/OwnerTransactionPage";
+import AdminTransactions from "./component3/pages/AdminTransactions";
+import "./component3/styles/component3.css";
+
 function HomeRedirect() {
   const { user } = useAuth();
 
@@ -104,6 +111,34 @@ function App() {
         }
       />
 
+      {/* Owner - Applications, Offers & Transactions */}
+      <Route
+        path="/owner/component3/rentals"
+        element={
+          <ProtectedRoute allowedRoles={["OwnerAgent"]}>
+            <OwnerRentalApplications />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/owner/component3/purchases"
+        element={
+          <ProtectedRoute allowedRoles={["OwnerAgent"]}>
+            <OwnerPurchaseOffers />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/owner/component3/:type/:id"
+        element={
+          <ProtectedRoute allowedRoles={["OwnerAgent"]}>
+            <OwnerTransactionPage />
+          </ProtectedRoute>
+        }
+      />
+
       {/* Admin */}
       <Route
         path="/admin"
@@ -119,6 +154,16 @@ function App() {
         element={
           <ProtectedRoute allowedRoles={["Admin"]}>
             <AdminReviewListing />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Admin - Applications, Offers & Transactions */}
+      <Route
+        path="/admin/component3"
+        element={
+          <ProtectedRoute allowedRoles={["Admin"]}>
+            <AdminTransactions />
           </ProtectedRoute>
         }
       />

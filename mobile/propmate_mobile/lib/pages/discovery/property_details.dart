@@ -366,7 +366,7 @@ class _State extends State<PropertyDetailsPage> {
                     height: 54,
                     child: ElevatedButton(
                       onPressed: () {
-                        if (property.purpose == 1) {
+                        if (property.purpose.toLowerCase() == 'rent') {
                           // Rent listing
                           Navigator.push(
                             context,
@@ -400,7 +400,7 @@ class _State extends State<PropertyDetailsPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            property.purpose == 1
+                            property.purpose.toLowerCase() == 'rent'
                               ? Icons.description_outlined
                               : Icons.local_offer_outlined,
                             color: _dark,
@@ -408,7 +408,7 @@ class _State extends State<PropertyDetailsPage> {
                           ),
                           const SizedBox(width: 10),
                           Text(
-                            property.purpose == 1
+                            property.purpose.toLowerCase() == 'rent'
                               ? 'APPLY FOR RENTAL'
                               : 'MAKE PURCHASE OFFER',
                             style: const TextStyle(
