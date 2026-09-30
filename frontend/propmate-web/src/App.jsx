@@ -27,6 +27,12 @@ import OwnerTransactionPage from "./component3/pages/OwnerTransactionPage";
 import AdminTransactions from "./component3/pages/AdminTransactions";
 import "./component3/styles/component3.css";
 
+// Component 4 - Maintenance Management
+import StakeholderDashboard from "./pages/StakeholderDashboard";
+import "./App.css";
+import "./ai-workflow.css";
+import "./technician-options.css";
+
 function HomeRedirect() {
   const { user } = useAuth();
 
@@ -171,6 +177,12 @@ function App() {
       <Route
         path="/unauthorized"
         element={<Unauthorized />}
+      />
+
+      {/* Component 4 - Maintenance Management */}
+      <Route
+        path="/maintenance"
+        element={<StakeholderDashboard />}
       />
 
       <Route

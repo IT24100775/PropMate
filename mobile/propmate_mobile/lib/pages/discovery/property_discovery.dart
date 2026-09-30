@@ -8,6 +8,7 @@ import '../../models/agent_response.dart';
 import 'property_details.dart';
 import 'my_favourites.dart';
 import 'my_viewings.dart';
+import '../../screens/maintenance_home.dart';
 import '../../services/favourite_service.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -646,6 +647,29 @@ class _PropertyDiscoveryPageState extends State<PropertyDiscoveryPage> {
                     );
                   },
                                 ),
+
+                                  ListTile(
+                  leading: const Icon(
+                    Icons.build_outlined,
+                    color: _gold,
+                  ),
+                  title: const Text(
+                    'Maintenance',
+                    style: TextStyle(
+                      color: _dark,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const MaintenanceHome(),
+                      ),
+                    );
+                  },
+                ),              
 
                 const Divider(
                   height: 28,

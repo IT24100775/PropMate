@@ -6,6 +6,7 @@ using PropMate.Api.Services;
 using PropMate.Api.Services.Interfaces;
 using System.Text;
 using System.Text.Json.Serialization;
+using PropMate.Api.Services.Maintenance;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +40,10 @@ builder.Services.AddControllers()
 
 // Component 1 database context
 builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -123,6 +128,12 @@ builder.Services.AddHttpClient<
         client.BaseAddress = new Uri(baseUrl.TrimEnd('/') + "/");
         client.Timeout = TimeSpan.FromSeconds(60);
     });
+
+
+// Component 4 - Maintenance Management
+builder.Services.AddScoped<IMaintenanceService, MaintenanceService>();
+builder.Services.AddScoped<ITechnicianService, TechnicianService>();
+builder.Services.AddScoped<IMaintenanceAiService, MaintenanceAiService>();
 
 // ----------------------------------------------------
 // CORS
