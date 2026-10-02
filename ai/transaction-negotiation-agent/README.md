@@ -48,7 +48,7 @@ These routes match the contract used by the ASP.NET Core `AgentWorkflowClient`.
 ## Run
 
 ```bash
-cd ai/component3-agent
+cd ai/transaction-negotiation-agent
 python -m venv .venv
 # activate the venv
 pip install -r requirements.txt
