@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import OwnerSidebar from "../../components/owner/OwnerSidebar";
+import OwnerSidebar from "../../../../components/owner/OwnerSidebar";
 import { createListing } from "../../services/propertyListingService";
 import "./CreateListing.css";
 

@@ -7,8 +7,8 @@ import {
   rejectListing,
   requestListingRevision,
   unpublishListing,
-} from "../services/propertyListingService";
-import logoWhite from "../assets/logo-white.png";
+} from "../../services/propertyListingService";
+import logoWhite from "../../../../assets/logo-white.png";
 import "./AdminReviewListing.css";
 
 function formatPrice(price) {
@@ -411,8 +411,8 @@ function AdminReviewListing() {
               <strong>
                 {review.verifiedAt
                   ? new Date(
-                      review.verifiedAt
-                    ).toLocaleDateString()
+                    review.verifiedAt
+                  ).toLocaleDateString()
                   : "—"}
               </strong>
             </div>

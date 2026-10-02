@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import OwnerSidebar from "../../components/owner/OwnerSidebar";
+import OwnerSidebar from "../../../../components/owner/OwnerSidebar";
 import {
   deleteListing,
   getOwnerListings,
@@ -31,32 +31,32 @@ function MyListings() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-  let cancelled = false;
+    let cancelled = false;
 
-  async function fetchListings() {
-    try {
-      const data = await getOwnerListings();
+    async function fetchListings() {
+      try {
+        const data = await getOwnerListings();
 
-      if (!cancelled) {
-        setListings(data);
-      }
-    } catch (err) {
-      if (!cancelled) {
-        setError(err.message);
-      }
-    } finally {
-      if (!cancelled) {
-        setLoading(false);
+        if (!cancelled) {
+          setListings(data);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err.message);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
-  }
 
-  fetchListings();
+    fetchListings();
 
-  return () => {
-    cancelled = true;
-  };
-}, []);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const filteredListings = useMemo(() => {
     return listings.filter((listing) => {
@@ -327,13 +327,13 @@ function MyListings() {
                   <div className="listing-card-actions">
                     {(listing.status === "Draft" ||
                       listing.status === "RevisionRequired") && (
-                      <Link
-                        to={`/owner/listings/${listing.id}/edit`}
-                        className="secondary-listing-action"
-                      >
-                        Edit
-                      </Link>
-                    )}
+                        <Link
+                          to={`/owner/listings/${listing.id}/edit`}
+                          className="secondary-listing-action"
+                        >
+                          Edit
+                        </Link>
+                      )}
 
                     {listing.status === "Draft" && (
                       <button
@@ -370,11 +370,11 @@ function MyListings() {
                     {["Submitted", "UnderReview"].includes(
                       listing.status
                     ) && (
-                      <div className="review-notice">
-                        <span></span>
-                        Verification in progress
-                      </div>
-                    )}
+                        <div className="review-notice">
+                          <span></span>
+                          Verification in progress
+                        </div>
+                      )}
 
                     {listing.status === "Published" && (
                       <div className="published-notice">

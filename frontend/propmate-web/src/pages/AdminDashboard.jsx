@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/authContext";
-import { getAdminListings } from "../services/propertyListingService";
+import { getAdminListings } from "../features/property-listings/services/propertyListingService";
 import "./AdminDashboard.css";
 import logoWhite from "../assets/logo-white.png";
 

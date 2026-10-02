@@ -9,10 +9,10 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Unauthorized from "./pages/Unauthorized";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./context/authContext";
-import CreateListing from "./pages/owner/CreateListing";
-import MyListings from "./pages/owner/MyListings";
-import EditListing from "./pages/owner/EditListing";
-import AdminReviewListing from "./pages/AdminReviewListing";
+import CreateListing from "./features/property-listings/pages/owner/CreateListing";
+import MyListings from "./features/property-listings/pages/owner/MyListings";
+import EditListing from "./features/property-listings/pages/owner/EditListing";
+import AdminReviewListing from "./features/property-listings/pages/admin/AdminReviewListing";
 
 // Component 2 - Property Discovery & Viewing
 import PropertyDiscovery from "./pages/discovery/PropertyDiscovery";
