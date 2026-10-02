@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../models/property_listing.dart';
-import '../../services/property_listing_service.dart';
-import '../../widgets/property_card.dart';
+import '../models/property_listing.dart';
+import '../services/property_listing_service.dart';
+import '../widgets/property_card.dart';
 import 'property_details_screen.dart';
 
 class PublishedPropertiesScreen extends StatefulWidget {

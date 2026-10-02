@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../models/property_listing.dart';
-import '../../services/property_listing_service.dart';
+import '../models/property_listing.dart';
+import '../services/property_listing_service.dart';
 
 class PropertyDetailsScreen extends StatefulWidget {
   final int propertyId;
