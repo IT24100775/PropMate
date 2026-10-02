@@ -26,6 +26,7 @@ public class PropertiesController : ControllerBase
         [FromQuery] int? bedrooms,
         [FromQuery] int? bathrooms,
         [FromQuery] string? location,
+        [FromQuery] ListingPurpose? purpose,
         [FromQuery] bool? isAvailable)
     {
         var query = _context.PropertyListings
@@ -69,6 +70,11 @@ public class PropertiesController : ControllerBase
             query = query.Where(p =>
                 p.City.ToLower().Contains(locationLower) ||
                 p.Address.ToLower().Contains(locationLower));
+        }
+
+        if (purpose.HasValue)
+        {
+            query = query.Where(p => p.Purpose == purpose.Value);
         }
 
         // Published listings are the discoverable/available listings.

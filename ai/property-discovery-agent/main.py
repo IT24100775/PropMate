@@ -25,6 +25,7 @@ def search_properties(keyword: str = "", city: str = "", minPrice: float = 0, ma
         if city: params["location"] = city
         if minPrice: params["MinPrice"] = minPrice
         if maxPrice: params["MaxPrice"] = maxPrice
+        if purpose: params["purpose"] = purpose
         if bedrooms: params["Bedrooms"] = bedrooms
         
         with httpx.Client() as client:
@@ -34,9 +35,15 @@ def search_properties(keyword: str = "", city: str = "", minPrice: float = 0, ma
             if isinstance(data, dict) and "items" in data:
                 return data["items"]
             return data
-    except Exception as e:
-        print(f"Error fetching properties: {e}")
-        return []
+    except httpx.HTTPStatusError as e:
+        raise RuntimeError(
+            f"Property service returned HTTP {e.response.status_code}."
+        ) from e
+
+    except httpx.RequestError as e:
+        raise RuntimeError(
+            "Property service is currently unavailable."
+    ) from e
 
 def get_viewing_slots(propertyListingId: int):
     """Retrieves available viewing slots for a specific property."""
@@ -142,11 +149,23 @@ User Request: {req.query}
                 "city": args.get("city", ""),
                 "minPrice": float(args.get("minPrice", 0) or 0),
                 "maxPrice": float(args.get("maxPrice", 0) or 0),
-                "purpose": args.get("purpose", ""),
+                "purpose": (
+                    args.get("purpose")
+                    or args.get("listingType")
+                    or args.get("intent")
+                    or args.get("action")
+                    or ""
+                ).capitalize(),
                 "bedrooms": int(args.get("bedrooms", 0) or 0)
             }
-            res = search_properties(**clean_args)
-            tool_evidence["properties"] = res
+            try:
+                res = search_properties(**clean_args)
+                tool_evidence["properties"] = res
+            except RuntimeError as e:
+                error_message = str(e)
+                state_log["warnings"].append(error_message)
+                tool_evidence["properties"] = []
+                tool_evidence["property_service_error"] = error_message
             
         elif tool_name == "get_viewing_slots" and tool_evidence.get("properties"):
             # Execute viewing slots only for real retrieved properties
