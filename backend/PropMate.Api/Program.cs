@@ -180,4 +180,12 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// ----------------------------------------------------
+// Predefined Property Manager Account
+// ----------------------------------------------------
+
+await PropertyManagerSeeder.SeedAsync(
+    app.Services,
+    app.Configuration);
+
 app.Run();

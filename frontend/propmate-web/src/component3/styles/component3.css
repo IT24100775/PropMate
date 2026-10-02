@@ -859,3 +859,172 @@
         flex-direction: column;
     }
 }
+
+/* =========================================================
+   COMPONENT 3 — ADMIN TRANSACTION LOOKUP
+   Matches the PropMate Admin dashboard
+   ========================================================= */
+
+.c3-admin-lookup-section {
+    width: 100%;
+}
+
+.c3-admin-lookup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 30px;
+    padding: 22px 0 18px;
+    border-top: 1px solid #ded9d0;
+}
+
+.c3-admin-lookup-header span {
+    display: block;
+    margin-bottom: 7px;
+    color: #a67829;
+    font-size: 0.52rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+}
+
+.c3-admin-lookup-header h3 {
+    margin: 0;
+    color: #1d1c19;
+    font-family: "Playfair Display", serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.c3-admin-lookup-header p {
+    max-width: 390px;
+    margin: 0;
+    color: #918b82;
+    font-size: 0.65rem;
+    line-height: 1.6;
+    text-align: right;
+}
+
+.c3-admin-lookup-card {
+    padding: 24px;
+    border: 1px solid #ded9d0;
+    background: #fbfaf7;
+}
+
+.c3-admin-search {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.c3-admin-search-field {
+    flex: 1;
+}
+
+.c3-admin-search-field label {
+    display: block;
+    margin-bottom: 7px;
+    color: #8e887f;
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+}
+
+.c3-admin-search-field input {
+    width: 100%;
+    box-sizing: border-box;
+    height: 42px;
+    padding: 0 13px;
+    border: 1px solid #d8d3ca;
+    border-radius: 0;
+    outline: none;
+    background: #fff;
+    color: #1d1c19;
+    font: inherit;
+    font-size: 0.7rem;
+}
+
+.c3-admin-search-field input:focus {
+    border-color: #9b712b;
+}
+
+.c3-admin-search button {
+    height: 42px;
+    padding: 0 17px;
+    border: 1px solid #1b1a18;
+    border-radius: 0;
+    background: #1b1a18;
+    color: #fff;
+    font-size: 0.62rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.c3-admin-search button span {
+    margin-left: 14px;
+    color: #d2a13f;
+}
+
+.c3-admin-search button:hover {
+    opacity: 0.88;
+}
+
+.c3-admin-result {
+    margin-top: 24px;
+    border-top: 1px solid #ded9d0;
+    padding-top: 20px;
+}
+
+.c3-admin-result-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.c3-admin-result-heading span {
+    color: #a67829;
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+}
+
+.c3-admin-result-heading strong {
+    color: #77726a;
+    font-family: "Playfair Display", serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.c3-admin-result pre {
+    max-height: 400px;
+    margin: 0;
+    padding: 18px;
+    overflow: auto;
+    border: 1px solid #e1ddd5;
+    background: #f6f4ef;
+    color: #504c45;
+    font-size: 0.68rem;
+    line-height: 1.65;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+@media (max-width: 700px) {
+    .c3-admin-lookup-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .c3-admin-lookup-header p {
+        text-align: left;
+    }
+
+    .c3-admin-search {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .c3-admin-search button {
+        width: 100%;
+    }
+}

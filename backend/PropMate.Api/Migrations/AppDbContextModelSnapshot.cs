@@ -46,7 +46,7 @@ namespace PropMate.Api.Migrations
                     b.HasIndex("UserId", "PropertyListingId")
                         .IsUnique();
 
-                    b.ToTable("Favourites");
+                    b.ToTable("Favourites", (string)null);
                 });
 
             modelBuilder.Entity("PropMate.Api.Models.ListingStatusHistory", b =>
@@ -80,7 +80,7 @@ namespace PropMate.Api.Migrations
 
                     b.HasIndex("PropertyListingId");
 
-                    b.ToTable("ListingStatusHistories");
+                    b.ToTable("ListingStatusHistories", (string)null);
                 });
 
             modelBuilder.Entity("PropMate.Api.Models.PropertyImage", b =>
@@ -106,7 +106,7 @@ namespace PropMate.Api.Migrations
 
                     b.HasIndex("PropertyListingId");
 
-                    b.ToTable("PropertyImages");
+                    b.ToTable("PropertyImages", (string)null);
                 });
 
             modelBuilder.Entity("PropMate.Api.Models.PropertyListing", b =>
@@ -179,7 +179,7 @@ namespace PropMate.Api.Migrations
 
                     b.HasIndex("Status");
 
-                    b.ToTable("PropertyListings");
+                    b.ToTable("PropertyListings", (string)null);
                 });
 
             modelBuilder.Entity("PropMate.Api.Models.PropertyListingVerification", b =>
@@ -221,7 +221,7 @@ namespace PropMate.Api.Migrations
 
                     b.HasIndex("PropertyListingId");
 
-                    b.ToTable("PropertyListingVerifications");
+                    b.ToTable("PropertyListingVerifications", (string)null);
                 });
 
             modelBuilder.Entity("PropMate.Api.Models.PurchaseAgreement", b =>
@@ -294,7 +294,7 @@ namespace PropMate.Api.Migrations
                     b.HasIndex("PurchaseOfferId")
                         .IsUnique();
 
-                    b.ToTable("PurchaseAgreements");
+                    b.ToTable("PurchaseAgreements", (string)null);
                 });
 
             modelBuilder.Entity("PropMate.Api.Models.PurchaseNegotiationMessage", b =>
@@ -325,7 +325,7 @@ namespace PropMate.Api.Migrations
 
                     b.HasIndex("SenderUserId");
 
-                    b.ToTable("PurchaseNegotiationMessages");
+                    b.ToTable("PurchaseNegotiationMessages", (string)null);
                 });
 
             modelBuilder.Entity("PropMate.Api.Models.PurchaseNegotiationOffer", b =>
@@ -362,7 +362,7 @@ namespace PropMate.Api.Migrations
 
                     b.HasIndex("PurchaseOfferId");
 
-                    b.ToTable("PurchaseNegotiationOffers");
+                    b.ToTable("PurchaseNegotiationOffers", (string)null);
                 });
 
             modelBuilder.Entity("PropMate.Api.Models.PurchaseOffer", b =>
@@ -407,7 +407,7 @@ namespace PropMate.Api.Migrations
 
                     b.HasIndex("Status");
 
-                    b.ToTable("PurchaseOffers");
+                    b.ToTable("PurchaseOffers", (string)null);
                 });
 
             modelBuilder.Entity("PropMate.Api.Models.RentalAgreement", b =>
@@ -486,7 +486,7 @@ namespace PropMate.Api.Migrations
                     b.HasIndex("RentalApplicationId")
                         .IsUnique();
 
-                    b.ToTable("RentalAgreements");
+                    b.ToTable("RentalAgreements", (string)null);
                 });
 
             modelBuilder.Entity("PropMate.Api.Models.RentalApplication", b =>
@@ -545,7 +545,7 @@ namespace PropMate.Api.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("RentalApplications");
+                    b.ToTable("RentalApplications", (string)null);
                 });
 
             modelBuilder.Entity("PropMate.Api.Models.RentalNegotiationMessage", b =>
@@ -576,7 +576,7 @@ namespace PropMate.Api.Migrations
 
                     b.HasIndex("SenderUserId");
 
-                    b.ToTable("RentalNegotiationMessages");
+                    b.ToTable("RentalNegotiationMessages", (string)null);
                 });
 
             modelBuilder.Entity("PropMate.Api.Models.RentalNegotiationOffer", b =>
@@ -619,7 +619,7 @@ namespace PropMate.Api.Migrations
 
                     b.HasIndex("RentalApplicationId");
 
-                    b.ToTable("RentalNegotiationOffers");
+                    b.ToTable("RentalNegotiationOffers", (string)null);
                 });
 
             modelBuilder.Entity("PropMate.Api.Models.User", b =>
@@ -669,7 +669,7 @@ namespace PropMate.Api.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("PropMate.Api.Models.ViewingBooking", b =>
@@ -700,7 +700,7 @@ namespace PropMate.Api.Migrations
 
                     b.HasIndex("ViewingSlotId");
 
-                    b.ToTable("ViewingBookings");
+                    b.ToTable("ViewingBookings", (string)null);
                 });
 
             modelBuilder.Entity("PropMate.Api.Models.ViewingSlot", b =>
@@ -727,7 +727,7 @@ namespace PropMate.Api.Migrations
 
                     b.HasIndex("PropertyListingId");
 
-                    b.ToTable("ViewingSlots");
+                    b.ToTable("ViewingSlots", (string)null);
                 });
 
             modelBuilder.Entity("PropMate.Api.Models.Favourite", b =>

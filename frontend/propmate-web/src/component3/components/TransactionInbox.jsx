@@ -46,20 +46,26 @@ export default function TransactionInbox({
     }, [type, admin, rental]);
 
     if (admin) {
-        return (
-            <div className="c3-page">
-                <h1>Component 3 — Admin view</h1>
+    return (
+        <div className="c3-admin-lookup-section">
+            <div className="c3-admin-lookup-header">
+                <div>
+                    <span>TRANSACTION LOOKUP</span>
+                    <h3>Inspect transaction</h3>
+                </div>
 
                 <p>
-                    Admin access is view-only. Enter a transaction ID to inspect it.
+                    Admin access is view-only. Enter a transaction ID
+                    to inspect its details.
                 </p>
-
-                <div className="c3-card">
-                    <AdminLookup type={type} />
-                </div>
             </div>
-        );
-    }
+
+            <div className="c3-admin-lookup-card">
+                <AdminLookup type={type} />
+            </div>
+        </div>
+    );
+}
 
     const handleAccept = async (id) => {
         try {
@@ -262,20 +268,43 @@ function AdminLookup({ type }) {
     };
 
     return (
-        <>
-            <input
-                placeholder="Transaction ID"
-                value={id}
-                onChange={(event) => setId(event.target.value)}
-            />
+    <>
+        <div className="c3-admin-search">
+            <div className="c3-admin-search-field">
+                <label htmlFor="transaction-id">
+                    TRANSACTION ID
+                </label>
+
+                <input
+                    id="transaction-id"
+                    placeholder="Enter transaction ID"
+                    value={id}
+                    onChange={(event) => setId(event.target.value)}
+                />
+            </div>
 
             <button type="button" onClick={handleView}>
-                View
+                View transaction
+                <span>→</span>
             </button>
+        </div>
 
-            {error && <div className="c3-error">{error}</div>}
+        {error && (
+            <div className="admin-error">
+                {error}
+            </div>
+        )}
 
-            {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
-        </>
-    );
+        {data && (
+            <div className="c3-admin-result">
+                <div className="c3-admin-result-heading">
+                    <span>TRANSACTION DETAILS</span>
+                    <strong>#{id}</strong>
+                </div>
+
+                <pre>{JSON.stringify(data, null, 2)}</pre>
+            </div>
+        )}
+    </>
+);
 }

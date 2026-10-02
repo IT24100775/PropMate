@@ -19,6 +19,7 @@ import PropertyDiscovery from "./pages/discovery/PropertyDiscovery";
 import PropertyDetails from "./pages/discovery/PropertyDetails";
 import PropertyLocation from "./pages/discovery/PropertyLocation";
 import ViewingBookings from "./pages/discovery/ViewingBookings";
+import ViewingManagement from "./pages/owner/ViewingManagement";
 
 // Component 3 - Applications, Offers & Transactions
 import OwnerRentalApplications from "./component3/pages/OwnerRentalApplications";
@@ -113,6 +114,16 @@ function App() {
         element={
           <ProtectedRoute allowedRoles={["OwnerAgent"]}>
             <EditListing />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Owner - Viewing Management */}
+      <Route
+        path="/owner/viewings"
+        element={
+          <ProtectedRoute allowedRoles={["OwnerAgent"]}>
+            <ViewingManagement />
           </ProtectedRoute>
         }
       />

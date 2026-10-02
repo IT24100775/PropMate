@@ -26,6 +26,8 @@ function Login() {
         navigate("/admin");
       } else if (user.role === "OwnerAgent") {
         navigate("/owner");
+      } else if (user.role === "PropertyManager") {
+        navigate("/maintenance");
       } else {
         navigate("/discover");
       }

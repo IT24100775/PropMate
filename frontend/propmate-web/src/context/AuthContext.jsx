@@ -12,6 +12,12 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     const data = await authService.login(email, password);
 
+    if (data.role === "BuyerRenter") {
+      throw new Error(
+        "Buyer/Renter accounts are available through the PropMate mobile app only."
+      );
+    }
+
     const authenticatedUser = {
       userId: data.userId,
       email: data.email,

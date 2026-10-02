@@ -116,7 +116,7 @@ function AdminDashboard() {
 
             <Link to="/admin/component3" className="admin-nav-active">
               <span>02</span>
-              Component 3 Transactions
+              Transactions
             </Link>
           </nav>
         </div>

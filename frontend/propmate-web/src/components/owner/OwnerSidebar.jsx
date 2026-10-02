@@ -55,6 +55,16 @@ function OwnerSidebar() {
           </NavLink>
 
           <NavLink
+            to="/owner/viewings"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+          >
+            <span className="sidebar-icon">◷</span>
+            Viewing Management
+          </NavLink>
+
+          <NavLink
             to="/owner/component3/rentals"
             className={({ isActive }) =>
               `sidebar-link ${isActive ? "active" : ""}`
