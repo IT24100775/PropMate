@@ -92,6 +92,7 @@ class MaintenanceWorkflow:
             self._persist_state(state)
             return WorkflowResult(
                 workflow_id=workflow_id,
+                maintenance_request_id=objective.maintenance_request_id,
                 status="FAILED",
                 objective=objective.objective,
                 plan=plan,
@@ -129,6 +130,7 @@ class MaintenanceWorkflow:
             self._persist_state(state)
             return WorkflowResult(
                 workflow_id=workflow_id,
+                maintenance_request_id=objective.maintenance_request_id,
                 status="FAILED",
                 objective=objective.objective,
                 plan=plan,
@@ -177,6 +179,11 @@ class MaintenanceWorkflow:
             available_technicians,
             schedule_info=schedule_payload,
         )
+        for step in plan.steps:
+            if step.agent_name == "TechnicianSchedulingAgent":
+                step.status = "COMPLETED"
+                break
+
         state.technician_recommendation = recommendation
         self._record_event(
             state,
@@ -193,6 +200,11 @@ class MaintenanceWorkflow:
 
         validation = self.validation_agent.validate(analysis, recommendation, available_technicians)
         state.validation = validation
+        for step in plan.steps:
+            if step.agent_name == "ValidationSafetyAgent":
+                step.status = "COMPLETED" if validation.is_valid else "FAILED"
+                break
+
         self._record_event(
             state,
             "Validation",
@@ -209,6 +221,7 @@ class MaintenanceWorkflow:
             self._persist_state(state)
             return WorkflowResult(
                 workflow_id=workflow_id,
+                maintenance_request_id=objective.maintenance_request_id,
                 status="VALIDATION_FAILED",
                 objective=objective.objective,
                 plan=plan,
@@ -229,6 +242,7 @@ class MaintenanceWorkflow:
         )
         result = WorkflowResult(
             workflow_id=workflow_id,
+            maintenance_request_id=objective.maintenance_request_id,
             status="PENDING_MANAGER_APPROVAL",
             objective=objective.objective,
             plan=plan,
@@ -290,6 +304,12 @@ class MaintenanceWorkflow:
                 approved_at=datetime.now(timezone.utc).isoformat(),
                 comment=comment or "Approved by manager. Backend assignment and scheduling can proceed.",
             )
+
+            for step in state.plan.steps:
+                if step.agent_name == "HumanApproval":
+                    step.status = "COMPLETED"
+                    break
+
             self._record_event(
                 state,
                 "Approval",
@@ -303,6 +323,7 @@ class MaintenanceWorkflow:
             self._persist_state(state)
             return WorkflowResult(
                 workflow_id=workflow_id,
+                maintenance_request_id=state.maintenance_request_id,
                 status="APPROVED_PENDING_BACKEND_EXECUTION",
                 objective=state.objective,
                 plan=state.plan,
@@ -326,6 +347,12 @@ class MaintenanceWorkflow:
             approved_at=datetime.now(timezone.utc).isoformat(),
             comment=comment or "Manager rejected the recommended assignment and schedule.",
         )
+
+        for step in state.plan.steps:
+            if step.agent_name == "HumanApproval":
+                step.status = "COMPLETED"
+                break
+
         state.approval_required = False
         self._record_event(
             state,
@@ -339,6 +366,7 @@ class MaintenanceWorkflow:
         self._persist_state(state)
         return WorkflowResult(
             workflow_id=workflow_id,
+            maintenance_request_id=state.maintenance_request_id,
             status="REJECTED_BY_MANAGER",
             objective=state.objective,
             plan=state.plan,

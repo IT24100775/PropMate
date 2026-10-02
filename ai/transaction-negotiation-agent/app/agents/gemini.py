@@ -6,13 +6,23 @@ from google.genai.errors import APIError
 from app.models.schemas import WorkflowPlan, PlanStep
 
 MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
+_gemini_client = None
 
 
 def client():
-    key = os.getenv("GOOGLE_API_KEY")
-    if not key:
-        raise RuntimeError("GOOGLE_API_KEY is not configured.")
-    return genai.Client(api_key=key, http_options=types.HttpOptions(timeout=30_000))
+    global _gemini_client
+
+    if _gemini_client is None:
+        key = os.getenv("GOOGLE_API_KEY")
+        if not key:
+            raise RuntimeError("GOOGLE_API_KEY is not configured.")
+
+        _gemini_client = genai.Client(
+            api_key=key,
+            http_options=types.HttpOptions(timeout=30_000)
+        )
+
+    return _gemini_client
 
 
 def plan_workflow(objective: str, target_type: str, target_id: int) -> WorkflowPlan:

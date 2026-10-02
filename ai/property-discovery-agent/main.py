@@ -1,12 +1,15 @@
 ﻿import os
 import json
 import httpx
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from google import genai
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 import uuid
+
+load_dotenv()
 
 app = FastAPI()
 
@@ -18,15 +21,14 @@ def search_properties(keyword: str = "", city: str = "", minPrice: float = 0, ma
     """Searches for Published properties using ASP.NET API"""
     try:
         params = {}
-        if keyword: params["Keyword"] = keyword
-        if city: params["City"] = city
+        if keyword: params["search"] = keyword
+        if city: params["location"] = city
         if minPrice: params["MinPrice"] = minPrice
         if maxPrice: params["MaxPrice"] = maxPrice
-        if purpose: params["Purpose"] = purpose
         if bedrooms: params["Bedrooms"] = bedrooms
         
         with httpx.Client() as client:
-            res = client.get(f"{ASP_NET_URL}/discovery/properties", params=params, timeout=10.0)
+            res = client.get(f"{ASP_NET_URL}/properties", params=params, timeout=10.0)
             res.raise_for_status()
             data = res.json()
             if isinstance(data, dict) and "items" in data:

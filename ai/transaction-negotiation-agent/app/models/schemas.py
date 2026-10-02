@@ -44,7 +44,7 @@ class ApprovalDecisionRequest(BaseModel):
     comment: str | None = Field(default=None, max_length=1000)
 
 class PlanStep(BaseModel):
-    sequence: int = Field(gt=0)
+    sequence: int
     agent_role: str
     responsibility: str
     input_contract: str

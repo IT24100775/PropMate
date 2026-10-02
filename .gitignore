@@ -48,3 +48,7 @@ Thumbs.db
 
 # Temporary project inspection files
 project-structure.txt
+
+# AI agent runtime files
+**/workflow_state.json
+**/agent_audit.jsonl
