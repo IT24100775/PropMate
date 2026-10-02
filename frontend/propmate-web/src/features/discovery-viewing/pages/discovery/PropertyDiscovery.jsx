@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import PropertyCard from "../../components/discovery/PropertyCard";
-import PropertyFilters from "../../components/discovery/PropertyFilters";
+import PropertyCard from "../../components/PropertyCard";
+import PropertyFilters from "../../components/PropertyFilters";
 import {
     getProperties,
-} from "../../services/propertyService";
+} from "../../../../services/propertyService";
 import {
     addFavourite,
 } from "../../services/favouriteService";
-import { useAuth } from "../../context/authContext";
+import { useAuth } from "../../../../context/authContext";
 
 const initialFilters = {
     search: "",

@@ -15,11 +15,11 @@ import EditListing from "./features/property-listings/pages/owner/EditListing";
 import AdminReviewListing from "./features/property-listings/pages/admin/AdminReviewListing";
 
 // Component 2 - Property Discovery & Viewing
-import PropertyDiscovery from "./pages/discovery/PropertyDiscovery";
-import PropertyDetails from "./pages/discovery/PropertyDetails";
-import PropertyLocation from "./pages/discovery/PropertyLocation";
-import ViewingBookings from "./pages/discovery/ViewingBookings";
-import ViewingManagement from "./pages/owner/ViewingManagement";
+import PropertyDiscovery from "./features/discovery-viewing/pages/discovery/PropertyDiscovery";
+import PropertyDetails from "./features/discovery-viewing/pages/discovery/PropertyDetails";
+import PropertyLocation from "./features/discovery-viewing/pages/discovery/PropertyLocation";
+import ViewingBookings from "./features/discovery-viewing/pages/discovery/ViewingBookings";
+import ViewingManagement from "./features/discovery-viewing/pages/owner/ViewingManagement";
 
 // Component 3 - Applications, Offers & Transactions
 import OwnerRentalApplications from "./features/transactions/pages/OwnerRentalApplications";

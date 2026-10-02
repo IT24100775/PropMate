@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import ViewingSlotCard from "../../components/discovery/ViewingSlotCard";
+import ViewingSlotCard from "../../components/ViewingSlotCard";
 import { getViewingSlots, bookViewing } from "../../services/viewingService";
-import { useAuth } from "../../context/authContext";
+import { useAuth } from "../../../../context/authContext";
 
 function ViewingBookings() {
     const { id } = useParams();
