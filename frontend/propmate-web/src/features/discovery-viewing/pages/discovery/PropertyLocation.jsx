@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getPropertyLocation } from "../../../../services/propertyService";
+import { getPropertyLocation } from "../../services/propertyService";
 
 function PropertyLocation() {
     const { id } = useParams();

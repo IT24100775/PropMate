@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getPropertyById } from "../../../../services/propertyService";
+import { getPropertyById } from "../../services/propertyService";
 import { addFavourite } from "../../services/favouriteService";
 import { useAuth } from "../../../../auth/context/authContext";
 

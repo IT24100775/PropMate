@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import OwnerSidebar from "../../../../components/owner/OwnerSidebar";
+import OwnerSidebar from "../../../../shared/components/owner/OwnerSidebar";
 import { getOwnerListings } from "../../../property-listings/services/propertyListingService";
 import {
     createViewingSlot,

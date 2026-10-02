@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../../auth/context/authContext";
-import logoWhite from "../../assets/logo-white.png";
+import { useAuth } from "../../../auth/context/authContext";
+import logoWhite from "../../../assets/logo-white.png";
 
 function OwnerSidebar() {
   const { user, logout } = useAuth();

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import OwnerSidebar from "../../../../components/owner/OwnerSidebar";
+import OwnerSidebar from "../../../../shared/components/owner/OwnerSidebar";
 import {
   deleteListing,
   getOwnerListings,

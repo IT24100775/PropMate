@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import OwnerSidebar from "../../../components/owner/OwnerSidebar";
+import OwnerSidebar from "../../../shared/components/owner/OwnerSidebar";
 import NegotiationPanel from "../components/NegotiationPanel";
 import "../../../pages/owner/OwnerDashboard.css";
 import "../styles/component3.css";

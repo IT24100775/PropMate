@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import OwnerSidebar from "../../../../components/owner/OwnerSidebar";
+import OwnerSidebar from "../../../../shared/components/owner/OwnerSidebar";
 import {
   getOwnerListingById,
   updateListing,
