@@ -7,7 +7,7 @@ import {
 import {
     addFavourite,
 } from "../../services/favouriteService";
-import { useAuth } from "../../../../context/authContext";
+import { useAuth } from "../../../../auth/context/authContext";
 
 const initialFilters = {
     search: "",

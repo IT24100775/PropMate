@@ -1,14 +1,14 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+import Login from "./auth/pages/Login";
+import Register from "./auth/pages/Register";
 
 // Component 1 - Property Listing & Approval
 import OwnerDashboard from "./pages/owner/OwnerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
-import Unauthorized from "./pages/Unauthorized";
-import ProtectedRoute from "./components/ProtectedRoute";
-import { useAuth } from "./context/authContext";
+import Unauthorized from "./auth/pages/Unauthorized";
+import ProtectedRoute from "./auth/components/ProtectedRoute";
+import { useAuth } from "./auth/context/authContext";
 import CreateListing from "./features/property-listings/pages/owner/CreateListing";
 import MyListings from "./features/property-listings/pages/owner/MyListings";
 import EditListing from "./features/property-listings/pages/owner/EditListing";

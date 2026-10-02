@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getPropertyById } from "../../../../services/propertyService";
 import { addFavourite } from "../../services/favouriteService";
-import { useAuth } from "../../../../context/authContext";
+import { useAuth } from "../../../../auth/context/authContext";
 
 function PropertyDetails() {
     const { id } = useParams();

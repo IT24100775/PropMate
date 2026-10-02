@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
-import logo from "../assets/logo-full.png";
-import logoIcon from "../assets/logo-icon.png";
+import logo from "../../assets/logo-full.png";
+import logoIcon from "../../assets/logo-icon.png";
 import "./Auth.css";
 
 function Login() {
