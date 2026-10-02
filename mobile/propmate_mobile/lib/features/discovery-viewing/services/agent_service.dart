@@ -1,5 +1,5 @@
 ﻿import 'dart:convert';
-import 'api_client.dart';
+import '../../../services/api_client.dart';
 import '../models/agent_response.dart';
 
 class AgentService {

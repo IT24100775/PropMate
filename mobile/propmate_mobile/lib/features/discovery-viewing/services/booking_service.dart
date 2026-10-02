@@ -1,7 +1,7 @@
 ﻿import 'dart:convert';
 import '../models/viewing_booking.dart';
 import '../models/viewing_slot.dart';
-import 'api_client.dart';
+import '../../../services/api_client.dart';
 
 class BookingService {
   Future<List<ViewingSlot>> getAvailableSlots(int propertyListingId) async {

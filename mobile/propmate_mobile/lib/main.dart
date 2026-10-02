@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'pages/discovery/property_discovery.dart';
+import 'features/discovery-viewing/screens/property_discovery.dart';
 import 'screens/auth/login_screen.dart';
 import 'services/mobile_auth_service.dart';
 

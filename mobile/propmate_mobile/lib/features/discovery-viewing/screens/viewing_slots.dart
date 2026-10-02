@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
-import '../../models/viewing_slot.dart';
-import '../../services/booking_service.dart';
+import '../models/viewing_slot.dart';
+import '../services/booking_service.dart';
 
 class ViewingSlotsPage extends StatefulWidget {
   final int propertyListingId;

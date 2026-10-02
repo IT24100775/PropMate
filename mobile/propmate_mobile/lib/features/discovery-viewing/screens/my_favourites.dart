@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
-import '../../models/property.dart';
-import '../../services/favourite_service.dart';
+import '../models/property.dart';
+import '../services/favourite_service.dart';
 import 'property_details.dart';
 
 class MyFavouritesPage extends StatefulWidget {

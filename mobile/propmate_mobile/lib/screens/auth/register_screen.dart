@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../pages/discovery/property_discovery.dart';
+import '../../features/discovery-viewing/screens/property_discovery.dart';
 import '../../services/mobile_auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {

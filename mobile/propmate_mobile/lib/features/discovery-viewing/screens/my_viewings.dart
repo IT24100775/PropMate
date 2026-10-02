@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
-import '../../models/viewing_booking.dart';
-import '../../services/booking_service.dart';
+import '../models/viewing_booking.dart';
+import '../services/booking_service.dart';
 
 class MyViewingsPage extends StatefulWidget {
   const MyViewingsPage({super.key});

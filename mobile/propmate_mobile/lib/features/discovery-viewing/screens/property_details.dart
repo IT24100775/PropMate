@@ -1,8 +1,8 @@
 ﻿import 'package:flutter/material.dart';
-import '../../models/property.dart';
-import '../../services/favourite_service.dart';
-import '../../component3/screens/rental_application_screen.dart';
-import '../../component3/screens/purchase_offer_screen.dart';
+import '../models/property.dart';
+import '../services/favourite_service.dart';
+import '../../../component3/screens/rental_application_screen.dart';
+import '../../../component3/screens/purchase_offer_screen.dart';
 import 'viewing_slots.dart';
 
 class PropertyDetailsPage extends StatefulWidget {
