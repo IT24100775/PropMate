@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../../context/authContext";
+import { useAuth } from "../../../context/authContext";
 import TransactionInbox from "../components/TransactionInbox";
-import logoWhite from "../../assets/logo-white.png";
-import "../../pages/AdminDashboard.css";
+import logoWhite from "../../../assets/logo-white.png";
+import "../../../pages/AdminDashboard.css";
 
 export default function AdminTransactions() {
   const [type, setType] = useState("rental");

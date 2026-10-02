@@ -22,11 +22,11 @@ import ViewingBookings from "./pages/discovery/ViewingBookings";
 import ViewingManagement from "./pages/owner/ViewingManagement";
 
 // Component 3 - Applications, Offers & Transactions
-import OwnerRentalApplications from "./component3/pages/OwnerRentalApplications";
-import OwnerPurchaseOffers from "./component3/pages/OwnerPurchaseOffers";
-import OwnerTransactionPage from "./component3/pages/OwnerTransactionPage";
-import AdminTransactions from "./component3/pages/AdminTransactions";
-import "./component3/styles/component3.css";
+import OwnerRentalApplications from "./features/transactions/pages/OwnerRentalApplications";
+import OwnerPurchaseOffers from "./features/transactions/pages/OwnerPurchaseOffers";
+import OwnerTransactionPage from "./features/transactions/pages/OwnerTransactionPage";
+import AdminTransactions from "./features/transactions/pages/AdminTransactions";
+import "./features/transactions/styles/component3.css";
 
 // Component 4 - Maintenance Management
 import StakeholderDashboard from "./pages/StakeholderDashboard";

@@ -1,7 +1,7 @@
 import { Link, useParams } from "react-router-dom";
-import OwnerSidebar from "../../components/owner/OwnerSidebar";
+import OwnerSidebar from "../../../components/owner/OwnerSidebar";
 import NegotiationPanel from "../components/NegotiationPanel";
-import "../../pages/owner/OwnerDashboard.css";
+import "../../../pages/owner/OwnerDashboard.css";
 import "../styles/component3.css";
 
 export default function OwnerTransactionPage() {

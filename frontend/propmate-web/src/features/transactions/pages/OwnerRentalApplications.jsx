@@ -1,9 +1,9 @@
-import OwnerSidebar from "../../components/owner/OwnerSidebar";
+import OwnerSidebar from "../../../components/owner/OwnerSidebar";
 import TransactionInbox from "../components/TransactionInbox";
-import "../../pages/owner/OwnerDashboard.css";
+import "../../../pages/owner/OwnerDashboard.css";
 import "../styles/component3.css";
 
-export default function OwnerPurchaseOffers() {
+export default function OwnerRentalApplications() {
     return (
         <div className="owner-layout">
             <OwnerSidebar />
@@ -12,15 +12,15 @@ export default function OwnerPurchaseOffers() {
                 <header className="owner-header">
                     <div>
                         <p className="page-eyebrow">TRANSACTIONS</p>
-                        <h1>Purchase offers</h1>
+                        <h1>Rental applications</h1>
                         <p className="page-description">
-                            Review purchase offers and manage negotiations for your
+                            Review rental applications and manage negotiations for your
                             published properties.
                         </p>
                     </div>
                 </header>
 
-                <TransactionInbox type="purchase" embedded />
+                <TransactionInbox type="rental" embedded />
             </main>
         </div>
     );
