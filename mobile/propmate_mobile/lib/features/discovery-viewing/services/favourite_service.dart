@@ -1,6 +1,6 @@
 ﻿import 'dart:convert';
 import '../models/property.dart';
-import '../../../services/api_client.dart';
+import '../../../shared/services/api_client.dart';
 
 class FavouriteService {
   Future<PaginatedPropertyResult> getFavourites({int page = 1}) async {

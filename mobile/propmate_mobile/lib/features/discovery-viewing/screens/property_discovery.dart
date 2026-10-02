@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
-import '../../../services/mobile_auth_service.dart';
-import '../../../screens/auth/login_screen.dart';
+import '../../../auth/services/mobile_auth_service.dart';
+import '../../../auth/screens/login_screen.dart';
 import '../services/property_service.dart';
 import '../services/agent_service.dart';
 import '../models/property.dart';

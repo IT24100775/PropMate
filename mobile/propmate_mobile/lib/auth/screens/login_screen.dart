@@ -1,40 +1,34 @@
 import 'package:flutter/material.dart';
 
 import '../../features/discovery-viewing/screens/property_discovery.dart';
-import '../../services/mobile_auth_service.dart';
+import '../services/mobile_auth_service.dart';
+import 'register_screen.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
 
   bool _isLoading = false;
   bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
   String? _errorMessage;
 
   @override
   void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  Future<void> _register() async {
+  Future<void> _login() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -45,17 +39,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     try {
-      await MobileAuthService.register(
-        firstName: _firstNameController.text,
-        lastName: _lastNameController.text,
+      await MobileAuthService.login(
         email: _emailController.text,
         password: _passwordController.text,
       );
 
       if (!mounted) return;
 
-      // Registration returns a JWT, so the Buyer/Renter is
-      // already authenticated and can enter the mobile app.
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (_) => const PropertyDiscoveryPage(),
@@ -83,6 +73,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
+  void _openRegistration() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const RegisterScreen(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     const gold = Color(0xFFCF9E3E);
@@ -91,9 +89,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     return Scaffold(
       backgroundColor: cream,
-      appBar: AppBar(
-        title: const Text('Create Account'),
-      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -112,15 +107,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         const Icon(
-                          Icons.person_add_alt_1_rounded,
-                          size: 50,
+                          Icons.home_work_rounded,
+                          size: 52,
                           color: gold,
                         ),
 
                         const SizedBox(height: 16),
 
                         const Text(
-                          'Join PropMate',
+                          'Welcome to PropMate',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: charcoal,
@@ -132,9 +127,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(height: 8),
 
                         Text(
-                          'Create your Buyer / Renter account to '
-                          'discover properties, apply to rent, and '
-                          'make purchase offers.',
+                          'Sign in to discover properties and manage '
+                          'your applications and offers.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.grey.shade700,
@@ -142,54 +136,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
 
-                        const SizedBox(height: 28),
-
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: TextFormField(
-                                controller: _firstNameController,
-                                textInputAction: TextInputAction.next,
-                                decoration: const InputDecoration(
-                                  labelText: 'First name',
-                                  prefixIcon:
-                                      Icon(Icons.person_outline),
-                                  border: OutlineInputBorder(),
-                                ),
-                                validator: (value) {
-                                  if (value == null ||
-                                      value.trim().isEmpty) {
-                                    return 'Required';
-                                  }
-
-                                  return null;
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: TextFormField(
-                                controller: _lastNameController,
-                                textInputAction: TextInputAction.next,
-                                decoration: const InputDecoration(
-                                  labelText: 'Last name',
-                                  border: OutlineInputBorder(),
-                                ),
-                                validator: (value) {
-                                  if (value == null ||
-                                      value.trim().isEmpty) {
-                                    return 'Required';
-                                  }
-
-                                  return null;
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 18),
+                        const SizedBox(height: 30),
 
                         TextFormField(
                           controller: _emailController,
@@ -220,10 +167,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         TextFormField(
                           controller: _passwordController,
                           obscureText: _obscurePassword,
-                          textInputAction: TextInputAction.next,
+                          textInputAction: TextInputAction.done,
+                          onFieldSubmitted: (_) {
+                            if (!_isLoading) {
+                              _login();
+                            }
+                          },
                           decoration: InputDecoration(
                             labelText: 'Password',
-                            helperText: 'Minimum 8 characters',
                             prefixIcon:
                                 const Icon(Icons.lock_outline),
                             border: const OutlineInputBorder(),
@@ -243,54 +194,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter a password.';
-                            }
-
-                            if (value.length < 8) {
-                              return 'Password must be at least 8 characters.';
-                            }
-
-                            return null;
-                          },
-                        ),
-
-                        const SizedBox(height: 18),
-
-                        TextFormField(
-                          controller: _confirmPasswordController,
-                          obscureText: _obscureConfirmPassword,
-                          textInputAction: TextInputAction.done,
-                          onFieldSubmitted: (_) {
-                            if (!_isLoading) {
-                              _register();
-                            }
-                          },
-                          decoration: InputDecoration(
-                            labelText: 'Confirm password',
-                            prefixIcon:
-                                const Icon(Icons.lock_reset_outlined),
-                            border: const OutlineInputBorder(),
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _obscureConfirmPassword =
-                                      !_obscureConfirmPassword;
-                                });
-                              },
-                              icon: Icon(
-                                _obscureConfirmPassword
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined,
-                              ),
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please confirm your password.';
-                            }
-
-                            if (value != _passwordController.text) {
-                              return 'Passwords do not match.';
+                              return 'Please enter your password.';
                             }
 
                             return null;
@@ -324,7 +228,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           height: 50,
                           child: ElevatedButton(
                             onPressed:
-                                _isLoading ? null : _register,
+                                _isLoading ? null : _login,
                             child: _isLoading
                                 ? const SizedBox(
                                     width: 22,
@@ -336,7 +240,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     ),
                                   )
                                 : const Text(
-                                    'Create Account',
+                                    'Sign In',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
@@ -345,14 +249,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
 
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 20),
 
                         Row(
                           mainAxisAlignment:
                               MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Already have an account? ',
+                              'New to PropMate? ',
                               style: TextStyle(
                                 color: Colors.grey.shade700,
                               ),
@@ -360,9 +264,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             TextButton(
                               onPressed: _isLoading
                                   ? null
-                                  : () => Navigator.pop(context),
+                                  : _openRegistration,
                               child: const Text(
-                                'Sign in',
+                                'Create account',
                                 style: TextStyle(
                                   color: gold,
                                   fontWeight: FontWeight.w700,
@@ -372,12 +276,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ],
                         ),
 
+                        const SizedBox(height: 4),
+
                         Text(
-                          'Accounts created here are Buyer / Renter accounts.',
+                          'Buyer / Renter',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.grey.shade500,
                             fontSize: 12,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ],

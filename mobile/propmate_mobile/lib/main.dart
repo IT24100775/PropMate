@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'features/discovery-viewing/screens/property_discovery.dart';
-import 'screens/auth/login_screen.dart';
-import 'services/mobile_auth_service.dart';
+import 'auth/screens/login_screen.dart';
+import 'auth/services/mobile_auth_service.dart';
 
 void main() {
   runApp(const PropMateApp());

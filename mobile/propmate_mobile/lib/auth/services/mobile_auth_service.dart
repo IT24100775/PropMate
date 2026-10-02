@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'api_client.dart';
+import '../../shared/services/api_client.dart';
 
 class MobileAuthService {
   static const String _tokenKey = 'jwt_token';

@@ -1,7 +1,8 @@
-﻿import 'dart:convert';
+﻿import '../../../shared/services/api_client.dart';
+import 'dart:convert';
 
 import '../models/property.dart';
-import '../../../services/api_client.dart';
+
 
 class PropertyService {
   Future<PaginatedPropertyResult> getProperties({

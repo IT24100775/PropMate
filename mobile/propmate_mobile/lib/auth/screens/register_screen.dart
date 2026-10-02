@@ -1,34 +1,40 @@
 import 'package:flutter/material.dart';
 
 import '../../features/discovery-viewing/screens/property_discovery.dart';
-import '../../services/mobile_auth_service.dart';
-import 'register_screen.dart';
+import '../services/mobile_auth_service.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
 
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   bool _isLoading = false;
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
   String? _errorMessage;
 
   @override
   void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  Future<void> _login() async {
+  Future<void> _register() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -39,13 +45,17 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      await MobileAuthService.login(
+      await MobileAuthService.register(
+        firstName: _firstNameController.text,
+        lastName: _lastNameController.text,
         email: _emailController.text,
         password: _passwordController.text,
       );
 
       if (!mounted) return;
 
+      // Registration returns a JWT, so the Buyer/Renter is
+      // already authenticated and can enter the mobile app.
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (_) => const PropertyDiscoveryPage(),
@@ -73,14 +83,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _openRegistration() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const RegisterScreen(),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     const gold = Color(0xFFCF9E3E);
@@ -89,6 +91,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       backgroundColor: cream,
+      appBar: AppBar(
+        title: const Text('Create Account'),
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -107,15 +112,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         const Icon(
-                          Icons.home_work_rounded,
-                          size: 52,
+                          Icons.person_add_alt_1_rounded,
+                          size: 50,
                           color: gold,
                         ),
 
                         const SizedBox(height: 16),
 
                         const Text(
-                          'Welcome to PropMate',
+                          'Join PropMate',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: charcoal,
@@ -127,8 +132,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 8),
 
                         Text(
-                          'Sign in to discover properties and manage '
-                          'your applications and offers.',
+                          'Create your Buyer / Renter account to '
+                          'discover properties, apply to rent, and '
+                          'make purchase offers.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.grey.shade700,
@@ -136,7 +142,54 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
 
-                        const SizedBox(height: 30),
+                        const SizedBox(height: 28),
+
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _firstNameController,
+                                textInputAction: TextInputAction.next,
+                                decoration: const InputDecoration(
+                                  labelText: 'First name',
+                                  prefixIcon:
+                                      Icon(Icons.person_outline),
+                                  border: OutlineInputBorder(),
+                                ),
+                                validator: (value) {
+                                  if (value == null ||
+                                      value.trim().isEmpty) {
+                                    return 'Required';
+                                  }
+
+                                  return null;
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextFormField(
+                                controller: _lastNameController,
+                                textInputAction: TextInputAction.next,
+                                decoration: const InputDecoration(
+                                  labelText: 'Last name',
+                                  border: OutlineInputBorder(),
+                                ),
+                                validator: (value) {
+                                  if (value == null ||
+                                      value.trim().isEmpty) {
+                                    return 'Required';
+                                  }
+
+                                  return null;
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 18),
 
                         TextFormField(
                           controller: _emailController,
@@ -167,14 +220,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         TextFormField(
                           controller: _passwordController,
                           obscureText: _obscurePassword,
-                          textInputAction: TextInputAction.done,
-                          onFieldSubmitted: (_) {
-                            if (!_isLoading) {
-                              _login();
-                            }
-                          },
+                          textInputAction: TextInputAction.next,
                           decoration: InputDecoration(
                             labelText: 'Password',
+                            helperText: 'Minimum 8 characters',
                             prefixIcon:
                                 const Icon(Icons.lock_outline),
                             border: const OutlineInputBorder(),
@@ -194,7 +243,54 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter your password.';
+                              return 'Please enter a password.';
+                            }
+
+                            if (value.length < 8) {
+                              return 'Password must be at least 8 characters.';
+                            }
+
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 18),
+
+                        TextFormField(
+                          controller: _confirmPasswordController,
+                          obscureText: _obscureConfirmPassword,
+                          textInputAction: TextInputAction.done,
+                          onFieldSubmitted: (_) {
+                            if (!_isLoading) {
+                              _register();
+                            }
+                          },
+                          decoration: InputDecoration(
+                            labelText: 'Confirm password',
+                            prefixIcon:
+                                const Icon(Icons.lock_reset_outlined),
+                            border: const OutlineInputBorder(),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _obscureConfirmPassword =
+                                      !_obscureConfirmPassword;
+                                });
+                              },
+                              icon: Icon(
+                                _obscureConfirmPassword
+                                    ? Icons.visibility_outlined
+                                    : Icons.visibility_off_outlined,
+                              ),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please confirm your password.';
+                            }
+
+                            if (value != _passwordController.text) {
+                              return 'Passwords do not match.';
                             }
 
                             return null;
@@ -228,7 +324,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: 50,
                           child: ElevatedButton(
                             onPressed:
-                                _isLoading ? null : _login,
+                                _isLoading ? null : _register,
                             child: _isLoading
                                 ? const SizedBox(
                                     width: 22,
@@ -240,7 +336,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                   )
                                 : const Text(
-                                    'Sign In',
+                                    'Create Account',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
@@ -249,14 +345,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
 
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 16),
 
                         Row(
                           mainAxisAlignment:
                               MainAxisAlignment.center,
                           children: [
                             Text(
-                              'New to PropMate? ',
+                              'Already have an account? ',
                               style: TextStyle(
                                 color: Colors.grey.shade700,
                               ),
@@ -264,9 +360,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             TextButton(
                               onPressed: _isLoading
                                   ? null
-                                  : _openRegistration,
+                                  : () => Navigator.pop(context),
                               child: const Text(
-                                'Create account',
+                                'Sign in',
                                 style: TextStyle(
                                   color: gold,
                                   fontWeight: FontWeight.w700,
@@ -276,15 +372,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
 
-                        const SizedBox(height: 4),
-
                         Text(
-                          'Buyer / Renter',
+                          'Accounts created here are Buyer / Renter accounts.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.grey.shade500,
                             fontSize: 12,
-                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ],
