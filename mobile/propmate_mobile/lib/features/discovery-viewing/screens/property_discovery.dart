@@ -9,7 +9,7 @@ import '../services/favourite_service.dart';
 import 'property_details.dart';
 import 'my_favourites.dart';
 import 'my_viewings.dart';
-import '../../../screens/maintenance_home.dart';
+import '../../maintenance/screens/maintenance_home.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
