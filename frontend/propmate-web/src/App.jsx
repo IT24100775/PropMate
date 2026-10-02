@@ -29,10 +29,10 @@ import AdminTransactions from "./features/transactions/pages/AdminTransactions";
 import "./features/transactions/styles/component3.css";
 
 // Component 4 - Maintenance Management
-import StakeholderDashboard from "./pages/StakeholderDashboard";
+import StakeholderDashboard from "./features/maintenance/pages/StakeholderDashboard";
 import "./App.css";
-import "./ai-workflow.css";
-import "./technician-options.css";
+import "./features/maintenance/styles/ai-workflow.css";
+import "./features/maintenance/styles/technician-options.css";
 
 function HomeRedirect() {
   const { user } = useAuth();

@@ -4,11 +4,11 @@ import { useNavigate } from "react-router-dom";
 
 import { maintenanceApi } from "../services/maintenanceApi";
 
-import { useAuth } from "../context/authContext";
+import { useAuth } from "../../../context/authContext";
 
-import logoWhite from "../assets/logo-white.png";
+import logoWhite from "../../../assets/logo-white.png";
 
-import "../maintenance-dashboard.css";
+import "../styles/maintenance-dashboard.css";
 
 
 
