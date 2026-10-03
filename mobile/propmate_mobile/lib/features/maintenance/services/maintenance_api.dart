@@ -1,17 +1,10 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
+import '../../../shared/services/api_client.dart';
 import 'package:http/http.dart' as http;
 
 class MaintenanceApi {
-  static final String baseUrl = Uri(
-    scheme: 'http',
-    host: defaultTargetPlatform == TargetPlatform.android
-        ? '10.0.2.2'
-        : 'localhost',
-    port: 5235,
-    path: '/api',
-  ).toString();
+  static String get baseUrl => ApiClient.baseUrl;
 
   Future<List<Map<String, dynamic>>> getRequests(int tenantId) async {
     final response = await http.get(

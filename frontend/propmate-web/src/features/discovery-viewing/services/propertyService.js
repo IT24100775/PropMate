@@ -1,4 +1,5 @@
-const API_URL = "http://localhost:5235/api/properties";
+const API_URL = `${import.meta.env.VITE_API_URL || "http://localhost:5235/api"
+    }/properties`;
 
 // Get all properties with optional search/filter parameters
 export async function getProperties(filters = {}) {

@@ -3,9 +3,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../models/viewing_slot.dart';
+import '../../../shared/services/api_client.dart';
 
 class ViewingService {
-  static const String baseUrl = 'http://localhost:5235/api';
+  static String get baseUrl => ApiClient.baseUrl;
 
   Future<List<ViewingSlot>> getViewingSlots(int propertyId) async {
     final response = await http.get(

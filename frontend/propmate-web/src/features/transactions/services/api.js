@@ -1,4 +1,5 @@
-const API = "http://localhost:5235/api";
+const API =
+    import.meta.env.VITE_API_URL || "http://localhost:5235/api";
 
 function headers() {
     const saved = localStorage.getItem("propmate_user");

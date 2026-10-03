@@ -15,7 +15,10 @@ app = FastAPI()
 
 
 
-ASP_NET_URL = "http://localhost:5235/api"
+ASP_NET_URL = os.getenv(
+    "BACKEND_API_URL",
+    "http://localhost:5235/api"
+).rstrip("/")
 
 def search_properties(keyword: str = "", city: str = "", minPrice: float = 0, maxPrice: float = 0, purpose: str = "", bedrooms: int = 0):
     """Searches for Published properties using ASP.NET API"""

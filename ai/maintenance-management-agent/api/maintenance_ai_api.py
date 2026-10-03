@@ -1,5 +1,6 @@
 from typing import Optional
 
+import os
 import httpx
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
@@ -17,7 +18,10 @@ router = APIRouter(
 )
 
 workflow = MaintenanceWorkflow()
-BACKEND_URL = "http://localhost:5235/api"
+BACKEND_URL = os.getenv(
+    "BACKEND_API_URL",
+    "http://localhost:5235/api"
+).rstrip("/")
 
 
 class ManagerApprovalRequest(BaseModel):

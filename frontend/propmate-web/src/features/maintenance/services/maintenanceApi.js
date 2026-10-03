@@ -1,5 +1,8 @@
-const API_URL = "http://localhost:5235/api";
-const AI_API_URL = "http://localhost:8000/api";
+const API_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:5235/api";
+
+const AI_API_URL =
+  import.meta.env.VITE_MAINTENANCE_AI_URL || "http://localhost:8000/api";
 
 async function requestTo(baseUrl, url, options = {}) {
   const response = await fetch(`${baseUrl}${url}`, {

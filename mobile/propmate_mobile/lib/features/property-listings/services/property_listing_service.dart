@@ -3,10 +3,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../models/property_listing.dart';
+import '../../../shared/services/api_client.dart';
 
 class PropertyListingService {
-  static const String baseUrl =
-      'http://localhost:5235/api/PropertyListings';
+  static String get baseUrl =>
+   '${ApiClient.baseUrl}/PropertyListings';
 
   Future<List<PropertyListing>> getPublishedProperties() async {
     final response = await http.get(
