@@ -181,6 +181,16 @@ app.UseAuthorization();
 app.MapControllers();
 
 // ----------------------------------------------------
+// Health Check
+// ----------------------------------------------------
+
+app.MapGet("/health", () => Results.Ok(new
+{
+    status = "healthy",
+    service = "propmate-api"
+}));
+
+// ----------------------------------------------------
 // Predefined Property Manager Account
 // ----------------------------------------------------
 
