@@ -1,122 +1,207 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { Navigate, Route, Routes } from "react-router-dom";
 
-function App() {
-  const [count, setCount] = useState(0)
+import Login from "./auth/pages/Login";
+import Register from "./auth/pages/Register";
 
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+// Component 1 - Property Listing & Approval
+import OwnerDashboard from "./pages/owner/OwnerDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import Unauthorized from "./auth/pages/Unauthorized";
+import ProtectedRoute from "./auth/components/ProtectedRoute";
+import { useAuth } from "./auth/context/authContext";
+import CreateListing from "./features/property-listings/pages/owner/CreateListing";
+import MyListings from "./features/property-listings/pages/owner/MyListings";
+import EditListing from "./features/property-listings/pages/owner/EditListing";
+import AdminReviewListing from "./features/property-listings/pages/admin/AdminReviewListing";
 
-      <div className="ticks"></div>
+// Component 2 - Property Discovery & Viewing
+import PropertyDiscovery from "./features/discovery-viewing/pages/discovery/PropertyDiscovery";
+import PropertyDetails from "./features/discovery-viewing/pages/discovery/PropertyDetails";
+import PropertyLocation from "./features/discovery-viewing/pages/discovery/PropertyLocation";
+import ViewingBookings from "./features/discovery-viewing/pages/discovery/ViewingBookings";
+import ViewingManagement from "./features/discovery-viewing/pages/owner/ViewingManagement";
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+// Component 3 - Applications, Offers & Transactions
+import OwnerRentalApplications from "./features/transactions/pages/OwnerRentalApplications";
+import OwnerPurchaseOffers from "./features/transactions/pages/OwnerPurchaseOffers";
+import OwnerTransactionPage from "./features/transactions/pages/OwnerTransactionPage";
+import AdminTransactions from "./features/transactions/pages/AdminTransactions";
+import "./features/transactions/styles/component3.css";
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+// Component 4 - Maintenance Management
+import StakeholderDashboard from "./features/maintenance/pages/StakeholderDashboard";
+import "./App.css";
+import "./features/maintenance/styles/ai-workflow.css";
+import "./features/maintenance/styles/technician-options.css";
+
+function HomeRedirect() {
+  const { user } = useAuth();
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user.role === "Admin") {
+    return <Navigate to="/admin" replace />;
+  }
+
+  if (user.role === "OwnerAgent") {
+    return <Navigate to="/owner" replace />;
+  }
+
+  return <Navigate to="/discover" replace />;
 }
 
-export default App
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<HomeRedirect />} />
+
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+
+      {/* Property Discovery & Viewing */}
+      <Route
+        path="/discover"
+        element={<PropertyDiscovery />}
+      />
+
+      <Route
+        path="/discover/:id"
+        element={<PropertyDetails />}
+      />
+
+      <Route
+        path="/discover/:id/location"
+        element={<PropertyLocation />}
+      />
+
+      <Route
+        path="/discover/:id/viewing-slots"
+        element={<ViewingBookings />}
+      />
+
+      {/* Owner - Property Listing & Approval */}
+      <Route
+        path="/owner"
+        element={
+          <ProtectedRoute allowedRoles={["OwnerAgent"]}>
+            <OwnerDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/owner/listings"
+        element={
+          <ProtectedRoute allowedRoles={["OwnerAgent"]}>
+            <MyListings />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/owner/listings/new"
+        element={
+          <ProtectedRoute allowedRoles={["OwnerAgent"]}>
+            <CreateListing />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/owner/listings/:id/edit"
+        element={
+          <ProtectedRoute allowedRoles={["OwnerAgent"]}>
+            <EditListing />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Owner - Viewing Management */}
+      <Route
+        path="/owner/viewings"
+        element={
+          <ProtectedRoute allowedRoles={["OwnerAgent"]}>
+            <ViewingManagement />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Owner - Applications, Offers & Transactions */}
+      <Route
+        path="/owner/component3/rentals"
+        element={
+          <ProtectedRoute allowedRoles={["OwnerAgent"]}>
+            <OwnerRentalApplications />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/owner/component3/purchases"
+        element={
+          <ProtectedRoute allowedRoles={["OwnerAgent"]}>
+            <OwnerPurchaseOffers />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/owner/component3/:type/:id"
+        element={
+          <ProtectedRoute allowedRoles={["OwnerAgent"]}>
+            <OwnerTransactionPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Admin */}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute allowedRoles={["Admin"]}>
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/listings/:id/review"
+        element={
+          <ProtectedRoute allowedRoles={["Admin"]}>
+            <AdminReviewListing />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Admin - Applications, Offers & Transactions */}
+      <Route
+        path="/admin/component3"
+        element={
+          <ProtectedRoute allowedRoles={["Admin"]}>
+            <AdminTransactions />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/unauthorized"
+        element={<Unauthorized />}
+      />
+
+      {/* Component 4 - Maintenance Management */}
+      <Route
+        path="/maintenance"
+        element={<StakeholderDashboard />}
+      />
+
+      <Route
+        path="*"
+        element={<Navigate to="/" replace />}
+      />
+    </Routes>
+  );
+}
+
+export default App;

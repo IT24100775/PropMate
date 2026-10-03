@@ -1,0 +1,364 @@
+.viewing-management-main {
+    min-width: 0;
+}
+
+.viewing-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.viewing-page-header h1 {
+    margin: 5px 0 8px;
+    color: #1d1c19;
+    font-family: "Playfair Display", serif;
+    font-size: 2.1rem;
+    font-weight: 600;
+}
+
+.viewing-property-section,
+.viewing-form-section,
+.viewing-slots-section {
+    margin-top: 30px;
+}
+
+.viewing-section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 25px;
+    margin-bottom: 16px;
+}
+
+.viewing-section-heading h2 {
+    margin: 4px 0 0;
+    color: #1d1c19;
+    font-family: "Playfair Display", serif;
+    font-size: 1.35rem;
+    font-weight: 600;
+}
+
+.viewing-property-count {
+    color: #8e887f;
+    font-size: 0.68rem;
+}
+
+/* Property selection */
+
+.viewing-property-selector {
+    padding: 22px;
+    border: 1px solid #ded9d0;
+    background: #fbfaf7;
+}
+
+.viewing-property-selector label,
+.viewing-form-field label {
+    display: block;
+    margin-bottom: 8px;
+    color: #8e887f;
+    font-size: 0.52rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+}
+
+.viewing-property-selector select {
+    width: 100%;
+    height: 44px;
+    padding: 0 13px;
+    border: 1px solid #d8d3ca;
+    border-radius: 0;
+    outline: none;
+    background: #fff;
+    color: #1d1c19;
+    font: inherit;
+    font-size: 0.72rem;
+}
+
+.viewing-property-selector select:focus {
+    border-color: #9b712b;
+}
+
+/* Statistics */
+
+.viewing-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 20px;
+    border: 1px solid #ded9d0;
+    background: #fbfaf7;
+}
+
+.viewing-stats>div {
+    padding: 20px 24px;
+    border-right: 1px solid #ded9d0;
+}
+
+.viewing-stats>div:last-child {
+    border-right: none;
+}
+
+.viewing-stats span {
+    display: block;
+    margin-bottom: 7px;
+    color: #8e887f;
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+}
+
+.viewing-stats strong {
+    color: #1d1c19;
+    font-family: "Playfair Display", serif;
+    font-size: 1.7rem;
+    font-weight: 500;
+}
+
+/* Create / edit form */
+
+.viewing-slot-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    align-items: end;
+    gap: 14px;
+    padding: 24px;
+    border: 1px solid #ded9d0;
+    background: #fbfaf7;
+}
+
+.viewing-form-field input {
+    width: 100%;
+    box-sizing: border-box;
+    height: 44px;
+    padding: 0 13px;
+    border: 1px solid #d8d3ca;
+    border-radius: 0;
+    outline: none;
+    background: #fff;
+    color: #1d1c19;
+    font: inherit;
+    font-size: 0.7rem;
+}
+
+.viewing-form-field input:focus {
+    border-color: #9b712b;
+}
+
+.viewing-submit-button {
+    height: 44px;
+    padding: 0 18px;
+    border: 1px solid #1b1a18;
+    border-radius: 0;
+    background: #1b1a18;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.viewing-submit-button span {
+    margin-left: 18px;
+    color: #d2a13f;
+}
+
+.viewing-submit-button:hover:not(:disabled) {
+    opacity: 0.88;
+}
+
+.viewing-submit-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.cancel-edit-button {
+    padding: 8px 0;
+    border: none;
+    background: transparent;
+    color: #8d6829;
+    font-size: 0.65rem;
+    cursor: pointer;
+}
+
+/* Messages */
+
+.viewing-success {
+    margin-bottom: 18px;
+    padding: 12px 15px;
+    border: 1px solid #b8c7ad;
+    background: #f3f6f0;
+    color: #526047;
+    font-size: 0.7rem;
+}
+
+/* Slot list */
+
+.viewing-slot-list {
+    border-top: 1px solid #ded9d0;
+}
+
+.viewing-slot-card {
+    display: grid;
+    grid-template-columns: 55px minmax(210px, 1.2fr) 110px minmax(190px, 1fr) auto;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 16px;
+    border-right: 1px solid #ded9d0;
+    border-bottom: 1px solid #ded9d0;
+    border-left: 1px solid #ded9d0;
+    background: #fbfaf7;
+}
+
+.viewing-slot-index {
+    color: #b0aaa1;
+    font-family: "Playfair Display", serif;
+    font-size: 1rem;
+}
+
+.viewing-slot-time span,
+.viewing-booking-info span {
+    display: block;
+    margin-bottom: 6px;
+    color: #9a948b;
+    font-size: 0.48rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+}
+
+.viewing-slot-time strong,
+.viewing-booking-info strong {
+    display: block;
+    color: #292723;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.viewing-slot-time small,
+.viewing-booking-info small {
+    display: block;
+    margin-top: 4px;
+    color: #8e887f;
+    font-size: 0.6rem;
+}
+
+/* Status */
+
+.viewing-status {
+    display: inline-block;
+    min-width: 64px;
+    padding: 6px 9px;
+    text-align: center;
+    font-size: 0.52rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.viewing-status.available {
+    border: 1px solid #bdc8b5;
+    background: #f1f5ee;
+    color: #53644b;
+}
+
+.viewing-status.booked {
+    border: 1px solid #d8c38e;
+    background: #faf5e8;
+    color: #89661f;
+}
+
+/* Actions */
+
+.viewing-slot-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.viewing-edit-button,
+.viewing-delete-button {
+    min-width: 64px;
+    height: 34px;
+    padding: 0 11px;
+    border-radius: 0;
+    background: transparent;
+    font-size: 0.6rem;
+    cursor: pointer;
+}
+
+.viewing-edit-button {
+    border: 1px solid #c9c3ba;
+    color: #4f4b45;
+}
+
+.viewing-delete-button {
+    border: 1px solid #cdb6ae;
+    color: #8a5146;
+}
+
+.viewing-edit-button:hover:not(:disabled) {
+    border-color: #9b712b;
+    color: #9b712b;
+}
+
+.viewing-delete-button:hover:not(:disabled) {
+    background: #f7efec;
+}
+
+.viewing-edit-button:disabled,
+.viewing-delete-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
+/* Responsive */
+
+@media (max-width: 1100px) {
+    .viewing-slot-card {
+        grid-template-columns: 45px 1fr 100px 1fr;
+    }
+
+    .viewing-slot-actions {
+        grid-column: 2 / -1;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 800px) {
+
+    .viewing-page-header,
+    .viewing-section-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .viewing-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .viewing-stats>div {
+        border-right: none;
+        border-bottom: 1px solid #ded9d0;
+    }
+
+    .viewing-stats>div:last-child {
+        border-bottom: none;
+    }
+
+    .viewing-slot-form {
+        grid-template-columns: 1fr;
+    }
+
+    .viewing-submit-button {
+        width: 100%;
+    }
+
+    .viewing-slot-card {
+        grid-template-columns: 40px 1fr;
+    }
+
+    .viewing-slot-status,
+    .viewing-booking-info,
+    .viewing-slot-actions {
+        grid-column: 2;
+    }
+}

@@ -1,0 +1,1030 @@
+.c3-page {
+    padding: 42px;
+    max-width: 1250px;
+    margin: auto
+}
+
+.c3-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    align-items: flex-start;
+    margin-bottom: 24px
+}
+
+.c3-header span {
+    font-size: 12px;
+    letter-spacing: .14em
+}
+
+.c3-header h1 {
+    margin: 7px 0;
+    font-size: 34px
+}
+
+.c3-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px
+}
+
+.c3-card {
+    background: #fff;
+    border: 1px solid #e7e2d8;
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 20px
+}
+
+.c3-card-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px
+}
+
+.c3-offer {
+    border: 1px solid #eee4d4;
+    border-radius: 12px;
+    padding: 14px;
+    margin: 10px 0
+}
+
+.c3-offer div {
+    display: flex;
+    justify-content: space-between
+}
+
+.c3-offer span {
+    font-size: 12px
+}
+
+.c3-card input,
+.c3-card textarea,
+.c3-ai textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin: 6px 0
+}
+
+.c3-card button,
+.c3-ai button,
+.c3-actions a {
+    border: 0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    background: #cf9e3e;
+    color: #fff;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    margin: 6px 6px 6px 0
+}
+
+.c3-messages {
+    max-height: 420px;
+    overflow: auto
+}
+
+.c3-messages>div {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee
+}
+
+.c3-message-compose {
+    display: flex;
+    gap: 8px
+}
+
+.c3-message-compose input {
+    flex: 1
+}
+
+.c3-confirm {
+    display: flex;
+    gap: 20px;
+    margin: 14px 0
+}
+
+.c3-error {
+    background: #fff0ef;
+    border: 1px solid #edb8b0;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 12px 0
+}
+
+.c3-ai-toggle {
+    border: 1px solid #cf9e3e;
+    background: #fff8e9;
+    color: #7d5b15;
+    padding: 11px 14px;
+    border-radius: 10px;
+    cursor: pointer
+}
+
+.c3-ai {
+    width: 340px;
+    background: #fff;
+    border: 1px solid #dfd4bf;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, .12)
+}
+
+.c3-ai-head {
+    display: flex;
+    justify-content: space-between
+}
+
+.c3-ai-head button {
+    background: transparent;
+    color: #222;
+    padding: 0
+}
+
+.c3-approval {
+    border-top: 1px solid #eee;
+    margin-top: 12px;
+    padding-top: 12px
+}
+
+.c3-list {
+    display: grid;
+    gap: 12px
+}
+
+.c3-tabs {
+    padding: 24px 42px 0
+}
+
+.c3-tabs button {
+    padding: 10px 16px;
+    border: 0;
+    background: #eee;
+    margin-right: 6px
+}
+
+.c3-tabs .active {
+    background: #cf9e3e;
+    color: #fff
+}
+
+@media(max-width:850px) {
+    .c3-grid {
+        grid-template-columns: 1fr
+    }
+
+    .c3-page {
+        padding: 22px
+    }
+
+    .c3-header {
+        flex-direction: column
+    }
+
+    .c3-ai {
+        width: auto
+    }
+}
+
+/* ========================================
+   OWNER WORKSPACE — COMPONENT 3
+   Matches the C1 owner dashboard styling
+   ======================================== */
+
+.c3-embedded {
+    width: 100%;
+}
+
+.c3-owner-list {
+    display: grid;
+    gap: 18px;
+}
+
+.c3-owner-card {
+    background: #fbfaf7;
+    border: 1px solid #dedad1;
+    padding: 25px 28px;
+}
+
+.c3-owner-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ebe8e1;
+}
+
+.c3-property-label {
+    margin: 0 0 7px;
+    color: #b27e20;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.c3-owner-card h2 {
+    margin: 0;
+    color: #292723;
+    font-family: "Playfair Display", serif;
+    font-size: 1.35rem;
+    font-weight: 600;
+}
+
+.c3-status {
+    display: inline-block;
+    padding: 6px 10px;
+    background: #efede7;
+    color: #67635c;
+    font-size: 0.6rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.c3-status-accepted,
+.c3-status-approved,
+.c3-status-completed {
+    background: #e8efe7;
+    color: #496449;
+}
+
+.c3-status-pending,
+.c3-status-submitted,
+.c3-status-negotiating {
+    background: #f5ead5;
+    color: #8b641e;
+}
+
+.c3-status-rejected {
+    background: #f2dfdc;
+    color: #8d4038;
+}
+
+.c3-owner-details {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    margin-top: 20px;
+    border: 1px solid #e5e1d8;
+    background: #e5e1d8;
+}
+
+.c3-owner-details>div {
+    min-height: 82px;
+    padding: 17px 19px;
+    background: #f8f6f1;
+}
+
+.c3-owner-details span,
+.c3-owner-details strong {
+    display: block;
+}
+
+.c3-owner-details span {
+    margin-bottom: 8px;
+    color: #989289;
+    font-size: 0.57rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+}
+
+.c3-owner-details strong {
+    color: #292723;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.c3-owner-message {
+    margin: 20px 0;
+    color: #77726a;
+    font-size: 0.76rem;
+    line-height: 1.7;
+}
+
+.c3-owner-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 18px;
+    border-top: 1px solid #ebe8e1;
+}
+
+.c3-owner-actions a,
+.c3-owner-actions button {
+    min-height: 39px;
+    padding: 0 15px;
+    border-radius: 0;
+    font-family: inherit;
+    font-size: 0.68rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.c3-open-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin-right: auto;
+    background: #1b1a18;
+    color: #fff;
+    text-decoration: none;
+}
+
+.c3-open-button span {
+    color: #cf9e3e;
+}
+
+.c3-open-button:hover {
+    background: #cf9e3e;
+    color: #181817;
+}
+
+.c3-open-button:hover span {
+    color: #181817;
+}
+
+.c3-accept-button {
+    border: 1px solid #60765e;
+    background: transparent;
+    color: #496449;
+}
+
+.c3-accept-button:hover {
+    background: #e8efe7;
+}
+
+.c3-reject-button {
+    border: 1px solid #b77b73;
+    background: transparent;
+    color: #8d4038;
+}
+
+.c3-reject-button:hover {
+    background: #f2dfdc;
+}
+
+.c3-owner-empty {
+    min-height: 270px;
+    border: 1px solid #dedad1;
+    background: #fbfaf7;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 35px;
+    text-align: center;
+}
+
+.c3-empty-number {
+    margin-bottom: 16px;
+    color: #c89942;
+    font-family: "Playfair Display", serif;
+    font-size: 0.75rem;
+}
+
+.c3-owner-empty h3 {
+    margin: 0 0 8px;
+    color: #292723;
+    font-family: "Playfair Display", serif;
+    font-size: 1.45rem;
+    font-weight: 600;
+}
+
+.c3-owner-empty p {
+    max-width: 430px;
+    margin: 0;
+    color: #918c83;
+    font-size: 0.76rem;
+    line-height: 1.6;
+}
+
+@media (max-width: 850px) {
+    .c3-owner-details {
+        grid-template-columns: 1fr;
+    }
+
+    .c3-owner-card-top {
+        flex-direction: column;
+    }
+
+    .c3-owner-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .c3-open-button {
+        justify-content: center;
+        margin-right: 0;
+    }
+}
+
+/* =========================================================
+   COMPONENT 3 — OWNER NEGOTIATION WORKSPACE
+   Matches the Component 1 owner dashboard styling
+   ========================================================= */
+
+.c3-negotiation-embedded {
+    width: 100%;
+}
+
+/* AI support strip */
+.c3-ai-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    background: #ffffff;
+    border: 1px solid #dedbd4;
+}
+
+.c3-ai-row .page-eyebrow {
+    margin-bottom: 5px;
+}
+
+.c3-ai-row>div>span {
+    font-size: 14px;
+    color: #706d67;
+}
+
+/* Back button */
+.c3-back-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 11px 16px;
+    border: 1px solid #181817;
+    color: #181817;
+    background: transparent;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: 0.2s ease;
+    white-space: nowrap;
+}
+
+.c3-back-button:hover {
+    background: #181817;
+    color: #ffffff;
+}
+
+/* Main two-column workspace */
+.c3-negotiation-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+    gap: 24px;
+    align-items: start;
+}
+
+.c3-workspace-card {
+    background: #ffffff;
+    border: 1px solid #dedbd4;
+    padding: 26px;
+}
+
+/* Section headings */
+.c3-section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 22px;
+}
+
+.c3-section-title h2 {
+    margin: 2px 0 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 25px;
+    font-weight: 500;
+    color: #181817;
+}
+
+.c3-count {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 25px;
+    color: #aaa69e;
+}
+
+/* Empty states */
+.c3-inline-empty {
+    padding: 26px 18px;
+    border: 1px dashed #d6d2ca;
+    background: #faf9f6;
+    color: #77736c;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* Counter offers */
+.c3-offer-history {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.c3-negotiation-offer {
+    padding: 17px;
+    border: 1px solid #e2dfd8;
+    background: #faf9f6;
+}
+
+.c3-negotiation-offer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.c3-negotiation-offer-top strong {
+    font-size: 16px;
+    color: #181817;
+}
+
+.c3-negotiation-offer p {
+    margin: 10px 0 0;
+    color: #6d6962;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.c3-small-accept {
+    margin-top: 13px;
+    padding: 9px 13px;
+    border: 1px solid #181817;
+    background: #181817;
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.c3-small-accept:hover {
+    opacity: 0.85;
+}
+
+/* Divider */
+.c3-form-divider {
+    height: 1px;
+    background: #e5e2dc;
+    margin: 26px 0;
+}
+
+/* Form heading */
+.c3-form-heading {
+    margin-bottom: 18px;
+}
+
+.c3-form-heading h3 {
+    margin: 0 0 5px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: #181817;
+}
+
+.c3-form-heading p {
+    margin: 0;
+    color: #77736c;
+    font-size: 13px;
+}
+
+/* Counter-offer form */
+.c3-form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.c3-form-grid label {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.c3-form-grid label>span {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.1px;
+    color: #77736c;
+}
+
+.c3-form-grid input,
+.c3-form-grid textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #d8d4cc;
+    background: #ffffff;
+    color: #181817;
+    padding: 12px 13px;
+    font: inherit;
+    outline: none;
+}
+
+.c3-form-grid input:focus,
+.c3-form-grid textarea:focus,
+.c3-message-compose-new input:focus {
+    border-color: #181817;
+}
+
+.c3-form-grid textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.c3-form-full {
+    grid-column: 1 / -1;
+}
+
+/* Main black action button */
+.c3-primary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    min-width: 190px;
+    margin-top: 16px;
+    padding: 12px 15px;
+    border: 1px solid #181817;
+    background: #181817;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.c3-primary-button:hover {
+    opacity: 0.86;
+}
+
+/* Messages */
+.c3-conversation {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 430px;
+    overflow-y: auto;
+}
+
+.c3-message-item {
+    padding: 15px;
+    background: #faf9f6;
+    border: 1px solid #e3e0d9;
+}
+
+.c3-message-item>div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.c3-message-item strong {
+    font-size: 13px;
+    color: #181817;
+}
+
+.c3-message-item small {
+    color: #96918a;
+    font-size: 10px;
+}
+
+.c3-message-item p {
+    margin: 8px 0 0;
+    color: #5f5b55;
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+.c3-message-compose-new {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid #e5e2dc;
+}
+
+.c3-message-compose-new input {
+    min-width: 0;
+    border: 1px solid #d8d4cc;
+    padding: 12px 13px;
+    font: inherit;
+    outline: none;
+}
+
+.c3-message-compose-new button {
+    border: 1px solid #181817;
+    background: #181817;
+    color: #ffffff;
+    padding: 0 18px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.c3-message-compose-new button:hover {
+    opacity: 0.86;
+}
+
+/* Agreement */
+.c3-agreement-new {
+    margin-top: 24px;
+}
+
+.c3-agreement-price {
+    padding: 20px;
+    background: #faf9f6;
+    border: 1px solid #e2dfd8;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.c3-agreement-price span,
+.c3-agreement-terms span {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #77736c;
+}
+
+.c3-agreement-price strong {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 25px;
+    font-weight: 500;
+    color: #181817;
+}
+
+.c3-agreement-terms {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 18px;
+}
+
+.c3-agreement-terms>div {
+    padding: 16px;
+    border: 1px solid #e2dfd8;
+}
+
+.c3-agreement-terms p {
+    margin: 8px 0 0;
+    color: #5f5b55;
+    line-height: 1.55;
+    font-size: 13px;
+}
+
+.c3-confirmation-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.c3-confirmation-row>span {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 14px;
+    background: #faf9f6;
+    border: 1px solid #e2dfd8;
+    color: #77736c;
+    font-size: 12px;
+}
+
+.c3-confirmation-row strong {
+    color: #181817;
+}
+
+/* Error message */
+.c3-negotiation-embedded .dashboard-error {
+    margin-bottom: 20px;
+}
+
+/* Responsive */
+@media (max-width: 1050px) {
+    .c3-negotiation-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 850px) {
+    .c3-ai-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .c3-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .c3-form-full {
+        grid-column: auto;
+    }
+
+    .c3-agreement-terms {
+        grid-template-columns: 1fr;
+    }
+
+    .c3-confirmation-row {
+        flex-direction: column;
+    }
+
+    .c3-transaction-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 600px) {
+    .c3-workspace-card {
+        padding: 18px;
+    }
+
+    .c3-message-compose-new {
+        grid-template-columns: 1fr;
+    }
+
+    .c3-message-compose-new button {
+        padding: 12px 18px;
+    }
+
+    .c3-negotiation-offer-top {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+/* =========================================================
+   COMPONENT 3 — ADMIN TRANSACTION LOOKUP
+   Matches the PropMate Admin dashboard
+   ========================================================= */
+
+.c3-admin-lookup-section {
+    width: 100%;
+}
+
+.c3-admin-lookup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 30px;
+    padding: 22px 0 18px;
+    border-top: 1px solid #ded9d0;
+}
+
+.c3-admin-lookup-header span {
+    display: block;
+    margin-bottom: 7px;
+    color: #a67829;
+    font-size: 0.52rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+}
+
+.c3-admin-lookup-header h3 {
+    margin: 0;
+    color: #1d1c19;
+    font-family: "Playfair Display", serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.c3-admin-lookup-header p {
+    max-width: 390px;
+    margin: 0;
+    color: #918b82;
+    font-size: 0.65rem;
+    line-height: 1.6;
+    text-align: right;
+}
+
+.c3-admin-lookup-card {
+    padding: 24px;
+    border: 1px solid #ded9d0;
+    background: #fbfaf7;
+}
+
+.c3-admin-search {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.c3-admin-search-field {
+    flex: 1;
+}
+
+.c3-admin-search-field label {
+    display: block;
+    margin-bottom: 7px;
+    color: #8e887f;
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+}
+
+.c3-admin-search-field input {
+    width: 100%;
+    box-sizing: border-box;
+    height: 42px;
+    padding: 0 13px;
+    border: 1px solid #d8d3ca;
+    border-radius: 0;
+    outline: none;
+    background: #fff;
+    color: #1d1c19;
+    font: inherit;
+    font-size: 0.7rem;
+}
+
+.c3-admin-search-field input:focus {
+    border-color: #9b712b;
+}
+
+.c3-admin-search button {
+    height: 42px;
+    padding: 0 17px;
+    border: 1px solid #1b1a18;
+    border-radius: 0;
+    background: #1b1a18;
+    color: #fff;
+    font-size: 0.62rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.c3-admin-search button span {
+    margin-left: 14px;
+    color: #d2a13f;
+}
+
+.c3-admin-search button:hover {
+    opacity: 0.88;
+}
+
+.c3-admin-result {
+    margin-top: 24px;
+    border-top: 1px solid #ded9d0;
+    padding-top: 20px;
+}
+
+.c3-admin-result-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.c3-admin-result-heading span {
+    color: #a67829;
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+}
+
+.c3-admin-result-heading strong {
+    color: #77726a;
+    font-family: "Playfair Display", serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.c3-admin-result pre {
+    max-height: 400px;
+    margin: 0;
+    padding: 18px;
+    overflow: auto;
+    border: 1px solid #e1ddd5;
+    background: #f6f4ef;
+    color: #504c45;
+    font-size: 0.68rem;
+    line-height: 1.65;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+@media (max-width: 700px) {
+    .c3-admin-lookup-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .c3-admin-lookup-header p {
+        text-align: left;
+    }
+
+    .c3-admin-search {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .c3-admin-search button {
+        width: 100%;
+    }
+}
