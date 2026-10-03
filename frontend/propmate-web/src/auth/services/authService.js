@@ -1,4 +1,5 @@
-const API_URL = "http://localhost:5235/api/Auth";
+const API_URL = `${import.meta.env.VITE_API_URL || "http://localhost:5235/api"
+  }/Auth`;
 
 export async function login(email, password) {
   const response = await fetch(`${API_URL}/login`, {

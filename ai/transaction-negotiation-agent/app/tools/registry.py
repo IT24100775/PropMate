@@ -20,7 +20,7 @@ class CounterOfferInput(BaseModel):
     target_type: str
     target_id: int = Field(gt=0)
     objective: str = Field(min_length=1, max_length=1000)
-    proposal: dict[str, Any] = {}
+    proposal: dict[str, Any] = Field(default_factory=dict)
 
 
 class ToolResult(BaseModel):

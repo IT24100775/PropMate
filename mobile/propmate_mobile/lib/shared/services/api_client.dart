@@ -5,6 +5,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiClient {
   static String get baseUrl {
+    const deployedUrl = String.fromEnvironment('API_BASE_URL');
+
+    if (deployedUrl.isNotEmpty) {
+      return deployedUrl;
+    }
+
     if (kIsWeb) {
       return 'http://localhost:5235/api';
     } else {

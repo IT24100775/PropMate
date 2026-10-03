@@ -9,31 +9,47 @@ namespace PropMate.Api.Services;
 public class AgentService : IAgentService
 {
     private readonly HttpClient _httpClient;
+    private readonly string _agentBaseUrl;
 
-    public AgentService(HttpClient httpClient)
+    public AgentService(HttpClient httpClient, IConfiguration configuration)
     {
         _httpClient = httpClient;
         _httpClient.Timeout = TimeSpan.FromSeconds(30);
+
+        _agentBaseUrl =
+            configuration["PropertyDiscoveryService:BaseUrl"]
+            ?? "http://127.0.0.1:8000";
     }
 
     public async Task<AgentResponseDto> DiscoverPropertiesAsync(AgentQueryDto query)
     {
         try
         {
-            var response = await _httpClient.PostAsJsonAsync("http://127.0.0.1:8000/api/agent/discover", query);
+            var url = $"{_agentBaseUrl.TrimEnd('/')}/api/agent/discover";
+
+            var response = await _httpClient.PostAsJsonAsync(url, query);
             response.EnsureSuccessStatusCode();
-            
-            var result = await response.Content.ReadFromJsonAsync<AgentResponseDto>();
-            if (result == null) throw new Exception("Null response from AI Agent");
-            
+
+            var result =
+                await response.Content.ReadFromJsonAsync<AgentResponseDto>();
+
+            if (result == null)
+                throw new Exception("Null response from AI Agent");
+
             return result;
         }
         catch (HttpRequestException ex)
         {
             return new AgentResponseDto
             {
-                Warnings = new System.Collections.Generic.List<string> { "Failed to communicate with AI Agent: " + ex.Message },
-                Plan = new System.Collections.Generic.List<string> { "Error: Python Agent unavailable" }
+                Warnings = new System.Collections.Generic.List<string>
+                {
+                    "Failed to communicate with AI Agent: " + ex.Message
+                },
+                Plan = new System.Collections.Generic.List<string>
+                {
+                    "Error: Python Agent unavailable"
+                }
             };
         }
     }

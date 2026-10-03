@@ -4,9 +4,10 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/transaction_models.dart';
+import '../../../shared/services/api_client.dart';
 
 class Component3Api {
-  static const String baseUrl = 'http://localhost:5235/api';
+  static String get baseUrl => ApiClient.baseUrl;
 
   /// Uses the same JWT created by the Buyer/Renter mobile
   /// login and registration flow.

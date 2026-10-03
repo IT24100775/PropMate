@@ -1,3 +1,4 @@
+import os
 import httpx
 from datetime import UTC, datetime, timedelta
 
@@ -25,7 +26,10 @@ class TechnicianTools:
     They cannot assign technicians or create schedules.
     """
 
-    BASE_URL = "http://localhost:5235/api"
+    BASE_URL = os.getenv(
+        "BACKEND_API_URL",
+        "http://localhost:5235/api"
+    ).rstrip("/")
 
     SPECIALIZATION_MAP = {
         "PLUMBER": "PLUMBER",

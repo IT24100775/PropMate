@@ -1,4 +1,5 @@
-const API_URL = "http://localhost:5235/api/PropertyListings";
+const API_URL = `${import.meta.env.VITE_API_URL || "http://localhost:5235/api"
+  }/PropertyListings`;
 
 function getAuthHeaders() {
   const savedUser = localStorage.getItem("propmate_user");
@@ -47,8 +48,8 @@ async function handleResponse(response) {
 
     throw new Error(
       data?.message ||
-        (typeof data === "string" ? data : null) ||
-        `Request failed with status ${response.status}.`
+      (typeof data === "string" ? data : null) ||
+      `Request failed with status ${response.status}.`
     );
   }
 

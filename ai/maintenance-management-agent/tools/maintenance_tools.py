@@ -1,3 +1,4 @@
+import os
 import httpx
 from pydantic import BaseModel
 
@@ -26,7 +27,10 @@ class MaintenanceTools:
     They communicate with the ASP.NET Core API.
     """
 
-    BASE_URL = "http://localhost:5235/api"
+    BASE_URL = os.getenv(
+        "BACKEND_API_URL",
+        "http://localhost:5235/api"
+    ).rstrip("/")
 
     ALLOWED_TOOLS = {
         "GetMaintenanceRequest",
