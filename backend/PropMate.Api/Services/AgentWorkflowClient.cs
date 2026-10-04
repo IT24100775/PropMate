@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using PropMate.Api.DTOs.AgenticAI;
 using PropMate.Api.Services.Interfaces;
 using Microsoft.Net.Http.Headers;
@@ -16,7 +17,14 @@ public class AgentWorkflowClient : IAgentWorkflowClient
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web);
+    private readonly JsonSerializerOptions _jsonOptions = CreateJsonOptions();
+
+    private static JsonSerializerOptions CreateJsonOptions()
+    {
+        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+        options.Converters.Add(new JsonStringEnumConverter());
+        return options;
+    }
 
     public AgentWorkflowClient(
         HttpClient httpClient,
