@@ -90,7 +90,11 @@ public class AgentWorkflowClient : IAgentWorkflowClient
             $"workflows/{workflowId}/approvals/{approvalId}/decision",
             userId,
             role);
-        request.Content = JsonContent.Create(dto);
+        request.Content = JsonContent.Create(new
+        {
+            decision = dto.Decision.ToString(),
+            comment = dto.Comment
+        });
         using var response = await _httpClient.SendAsync(request, cancellationToken);
         return await ReadRequiredAsync<AgentWorkflowResponseDto>(response, cancellationToken);
     }
