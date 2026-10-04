@@ -202,19 +202,31 @@ class _State extends State<MyFavouritesPage> {
               Container(
                 width: 64,
                 height: 64,
-
                 decoration: BoxDecoration(
                   color: const Color(0xFFF0ECE3),
                   border: Border.all(
                     color: _border,
                   ),
                 ),
-
-                child: const Icon(
-                  Icons.home_work_outlined,
-                  color: _gold,
-                  size: 27,
-                ),
+                child: property.images.isNotEmpty
+                    ? Image.network(
+                        property.images.first,
+                        width: 64,
+                        height: 64,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(
+                            Icons.home_work_outlined,
+                            color: _gold,
+                            size: 27,
+                          );
+                        },
+                      )
+                    : const Icon(
+                        Icons.home_work_outlined,
+                        color: _gold,
+                        size: 27,
+                      ),
               ),
 
               const SizedBox(width: 16),

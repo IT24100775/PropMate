@@ -112,12 +112,28 @@ class _State extends State<PropertyDetailsPage> {
               color: const Color(0xFFE9E5DC),
               child: Stack(
                 children: [
-                  const Center(
-                    child: Icon(
-                      Icons.apartment_rounded,
-                      size: 72,
-                      color: Color(0xFFB9B2A6),
-                    ),
+                  Positioned.fill(
+                    child: property.images.isNotEmpty
+                      ? Image.network(
+                          property.images.first,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Center(
+                              child: Icon(
+                                Icons.apartment_rounded,
+                                size: 72,
+                                color: Color(0xFFB9B2A6),
+                              ),
+                            );
+                          },
+                        )
+                      : const Center(
+                          child: Icon(
+                            Icons.apartment_rounded,
+                            size: 72,
+                            color: Color(0xFFB9B2A6),
+                          ),
+                        ),
                   ),
 
                   Positioned(

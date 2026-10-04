@@ -62,13 +62,17 @@ public class FavouritesController : ControllerBase
                 title = p.Title,
                 description = p.Description,
                 price = p.Price,
+                purpose = p.Purpose.ToString(),
                 bedrooms = p.Bedrooms,
                 bathrooms = p.Bathrooms,
-                location = string.IsNullOrWhiteSpace(p.City)
-                    ? p.Address
-                    : p.City,
+                address = p.Address,
+                city = p.City,
                 latitude = p.Latitude,
                 longitude = p.Longitude,
+                imageUrls = p.Images
+                    .OrderByDescending(i => i.IsPrimary)
+                    .Select(i => i.ImageUrl)
+                    .ToList(),
                 isAvailable = true
             })
             .ToListAsync();

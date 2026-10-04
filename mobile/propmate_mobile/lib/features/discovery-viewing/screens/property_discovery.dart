@@ -1330,15 +1330,36 @@ child: const Icon(
             children: [
               Stack(
                 children: [
-                  Container(
+                  SizedBox(
                     height: 145,
                     width: double.infinity,
-                    color: const Color(0xFFE9E5DC),
-                    child: const Icon(
-                      Icons.apartment_rounded,
-                      size: 54,
-                      color: Color(0xFFB9B2A6),
-                    ),
+                    child: property.images.isNotEmpty
+                      ? Image.network(
+                          property.images.first,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: 145,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: const Color(0xFFE9E5DC),
+                              alignment: Alignment.center,
+                              child: const Icon(
+                                Icons.apartment_rounded,
+                                size: 54,
+                                color: Color(0xFFB9B2A6),
+                              ),
+                            );
+                          },
+                        )
+                      : Container(
+                          color: const Color(0xFFE9E5DC),
+                          alignment: Alignment.center,
+                          child: const Icon(
+                            Icons.apartment_rounded,
+                            size: 54,
+                            color: Color(0xFFB9B2A6),
+                          ),
+                        ),
                   ),
 
                   Positioned(
@@ -1622,15 +1643,36 @@ child: const Icon(
 
               Stack(
                 children: [
-                  Container(
+                  SizedBox(
                     height: 135,
                     width: double.infinity,
-                    color: const Color(0xFFE9E5DC),
-                    child: const Icon(
-                      Icons.apartment_rounded,
-                      size: 52,
-                      color: Color(0xFFB9B2A6),
-                    ),
+                    child: pObj.images.isNotEmpty
+                        ? Image.network(
+                            pObj.images.first,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: 135,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: const Color(0xFFE9E5DC),
+                                alignment: Alignment.center,
+                                child: const Icon(
+                                  Icons.apartment_rounded,
+                                  size: 52,
+                                  color: Color(0xFFB9B2A6),
+                                ),
+                              );
+                            },
+                          )
+                        : Container(
+                            color: const Color(0xFFE9E5DC),
+                            alignment: Alignment.center,
+                            child: const Icon(
+                              Icons.apartment_rounded,
+                              size: 52,
+                              color: Color(0xFFB9B2A6),
+                            ),
+                          ),
                   ),
 
                   // AI MATCH LABEL
