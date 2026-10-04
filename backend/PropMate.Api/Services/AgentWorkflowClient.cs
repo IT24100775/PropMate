@@ -35,7 +35,12 @@ public class AgentWorkflowClient : IAgentWorkflowClient
         CancellationToken cancellationToken = default)
     {
         using var request = CreateRequest(HttpMethod.Post, "workflows", userId, role);
-        request.Content = JsonContent.Create(dto);
+        request.Content = JsonContent.Create(new
+        {
+            objective = dto.Objective,
+            target_type = dto.TargetType,
+            target_id = dto.TargetId
+        });
         using var response = await _httpClient.SendAsync(request, cancellationToken);
         return await ReadRequiredAsync<AgentWorkflowResponseDto>(response, cancellationToken);
     }
