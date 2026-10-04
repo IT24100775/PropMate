@@ -9,8 +9,28 @@ namespace PropMate.Api.Services.Interfaces;
 /// </summary>
 public interface IAgentWorkflowClient
 {
-    Task<AgentWorkflowResponseDto> StartAsync(int userId, string role, StartAgentWorkflowDto dto, CancellationToken cancellationToken = default);
-    Task<AgentWorkflowResponseDto?> GetAsync(int workflowId, int userId, string role, CancellationToken cancellationToken = default);
-    Task<IReadOnlyList<AgentWorkflowResponseDto>> GetMineAsync(int userId, string role, CancellationToken cancellationToken = default);
-    Task<AgentWorkflowResponseDto> DecideApprovalAsync(int workflowId, int approvalId, int userId, string role, DecideAgentApprovalDto dto, CancellationToken cancellationToken = default);
+    Task<AgentWorkflowResponseDto> StartAsync(
+        int userId,
+        string role,
+        StartAgentWorkflowDto dto,
+        CancellationToken cancellationToken = default);
+
+    Task<AgentWorkflowResponseDto?> GetAsync(
+        Guid workflowId,
+        int userId,
+        string role,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<AgentWorkflowResponseDto>> GetMineAsync(
+        int userId,
+        string role,
+        CancellationToken cancellationToken = default);
+
+    Task<AgentWorkflowResponseDto> DecideApprovalAsync(
+        Guid workflowId,
+        int approvalId,
+        int userId,
+        string role,
+        DecideAgentApprovalDto dto,
+        CancellationToken cancellationToken = default);
 }

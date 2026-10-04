@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using PropMate.Api.DTOs.AgenticAI;
 using PropMate.Api.Services.Interfaces;
+using Microsoft.Net.Http.Headers;
 
 namespace PropMate.Api.Services;
 
@@ -14,12 +15,17 @@ public class AgentWorkflowClient : IAgentWorkflowClient
 {
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web);
 
-    public AgentWorkflowClient(HttpClient httpClient, IConfiguration configuration)
+    public AgentWorkflowClient(
+        HttpClient httpClient,
+        IConfiguration configuration,
+        IHttpContextAccessor httpContextAccessor)
     {
         _httpClient = httpClient;
         _configuration = configuration;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<AgentWorkflowResponseDto> StartAsync(
@@ -35,7 +41,7 @@ public class AgentWorkflowClient : IAgentWorkflowClient
     }
 
     public async Task<AgentWorkflowResponseDto?> GetAsync(
-        int workflowId,
+        Guid workflowId,
         int userId,
         string role,
         CancellationToken cancellationToken = default)
@@ -59,7 +65,7 @@ public class AgentWorkflowClient : IAgentWorkflowClient
     }
 
     public async Task<AgentWorkflowResponseDto> DecideApprovalAsync(
-        int workflowId,
+        Guid workflowId,
         int approvalId,
         int userId,
         string role,
@@ -81,6 +87,15 @@ public class AgentWorkflowClient : IAgentWorkflowClient
         var request = new HttpRequestMessage(method, relativeUrl);
         request.Headers.TryAddWithoutValidation("X-User-Id", userId.ToString());
         request.Headers.TryAddWithoutValidation("X-User-Role", role);
+        var authorization =
+            _httpContextAccessor.HttpContext?.Request.Headers.Authorization.ToString();
+
+        if (!string.IsNullOrWhiteSpace(authorization))
+        {
+            request.Headers.TryAddWithoutValidation(
+                HeaderNames.Authorization,
+                authorization);
+        }
 
         var internalApiKey = _configuration["AgenticAiService:InternalApiKey"];
         if (!string.IsNullOrWhiteSpace(internalApiKey))

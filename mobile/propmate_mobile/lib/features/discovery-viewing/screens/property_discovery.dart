@@ -9,6 +9,7 @@ import '../services/favourite_service.dart';
 import 'property_details.dart';
 import 'my_favourites.dart';
 import 'my_viewings.dart';
+import '../../transactions/screens/my_applications_offers_screen.dart';
 import '../../maintenance/screens/maintenance_home.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -646,9 +647,33 @@ class _PropertyDiscoveryPageState extends State<PropertyDiscoveryPage> {
                       ),
                     );
                   },
-                                ),
+                ),
 
-                                  ListTile(
+                ListTile(
+                  leading: const Icon(
+                    Icons.description_outlined,
+                    color: _gold,
+                  ),
+                  title: const Text(
+                    'My Applications & Offers',
+                    style: TextStyle(
+                      color: _dark,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            const MyApplicationsOffersScreen(),
+                      ),
+                    );
+                  },
+                ),
+
+                ListTile(
                   leading: const Icon(
                     Icons.build_outlined,
                     color: _gold,

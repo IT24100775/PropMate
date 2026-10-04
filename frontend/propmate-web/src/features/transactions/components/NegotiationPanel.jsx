@@ -23,6 +23,7 @@ export default function NegotiationPanel({
     const [offers, setOffers] = useState([]);
     const [messages, setMessages] = useState([]);
     const [agreement, setAgreement] = useState(null);
+    const [submittingCounter, setSubmittingCounter] = useState(false);
 
     // Form data
     const [message, setMessage] = useState("");
@@ -125,6 +126,11 @@ export default function NegotiationPanel({
     // =========================
 
     const counter = async () => {
+        // Prevent repeated clicks from creating duplicate counter-offers.
+        if (submittingCounter) {
+            return;
+        }
+
         if (!canCounter) {
             setError(
                 "Counter-offers are not available for this transaction."
@@ -133,6 +139,7 @@ export default function NegotiationPanel({
         }
 
         try {
+            setSubmittingCounter(true);
             setError("");
 
             if (rental) {
@@ -157,7 +164,9 @@ export default function NegotiationPanel({
                 });
             } else {
                 if (!amount || Number(amount) <= 0) {
-                    setError("Enter a valid offer amount.");
+                    setError(
+                        "Enter a valid offer amount."
+                    );
                     return;
                 }
 
@@ -175,6 +184,8 @@ export default function NegotiationPanel({
             await load();
         } catch (err) {
             setError(err.message);
+        } finally {
+            setSubmittingCounter(false);
         }
     };
 
@@ -601,9 +612,15 @@ export default function NegotiationPanel({
                                 type="button"
                                 className="c3-primary-button"
                                 onClick={counter}
+                                disabled={submittingCounter}
                             >
-                                Send counter-offer
-                                <span>→</span>
+                                {submittingCounter
+                                    ? "Sending..."
+                                    : "Send counter-offer"}
+
+                                {!submittingCounter && (
+                                    <span>→</span>
+                                )}
                             </button>
                         </>
                     ) : (

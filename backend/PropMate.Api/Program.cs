@@ -116,7 +116,10 @@ builder.Services.AddHttpClient<
         client.Timeout = TimeSpan.FromSeconds(90);
     });
 
-    // Component 3 - Transaction Negotiation Agent
+    // ----------------------------------------------------
+    // Transaction Negotiation Agent
+    // ----------------------------------------------------
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient<
     IAgentWorkflowClient, 
     AgentWorkflowClient>(

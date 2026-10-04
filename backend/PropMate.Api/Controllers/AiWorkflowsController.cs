@@ -47,8 +47,8 @@ public class AiWorkflowsController : ControllerBase
         }
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<ActionResult<AgentWorkflowResponseDto>> Get(int id, CancellationToken cancellationToken)
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<AgentWorkflowResponseDto>> Get(Guid id, CancellationToken cancellationToken)
     {
         try
         {
@@ -61,10 +61,10 @@ public class AiWorkflowsController : ControllerBase
         }
     }
 
-    [HttpPost("{id:int}/approvals/{approvalId:int}/decision")]
+    [HttpPost("{id:guid}/approvals/{approvalId:int}/decision")]
     [Authorize(Roles = "OwnerAgent")]
     public async Task<ActionResult<AgentWorkflowResponseDto>> Decide(
-        int id,
+        Guid id,
         int approvalId,
         [FromBody] DecideAgentApprovalDto dto,
         CancellationToken cancellationToken)
