@@ -108,7 +108,7 @@ builder.Services.AddHttpClient<
         }
 
         client.BaseAddress = new Uri(baseUrl);
-        client.Timeout = TimeSpan.FromSeconds(15);
+        client.Timeout = TimeSpan.FromSeconds(90);
     });
 
     // Component 3 - Transaction Negotiation Agent
