@@ -90,6 +90,11 @@ builder.Services
 builder.Services.AddAuthorization();
 
 // ----------------------------------------------------
+// Property Discovery AI Service
+// ----------------------------------------------------
+builder.Services.AddHttpClient<IAgentService, AgentService>();
+
+// ----------------------------------------------------
 // Property Verification AI Service
 // ----------------------------------------------------
 
