@@ -4,6 +4,7 @@ import '../services/favourite_service.dart';
 import '../../transactions/screens/rental_application_screen.dart';
 import '../../transactions/screens/purchase_offer_screen.dart';
 import 'viewing_slots.dart';
+import 'property_map.dart';
 
 class PropertyDetailsPage extends StatefulWidget {
   final Property property;
@@ -271,6 +272,16 @@ class _State extends State<PropertyDetailsPage> {
                             Icons.location_on_outlined,
                             '',
                             'LOCATION',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => PropertyMapPage(
+                                    property: property,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ],
@@ -516,48 +527,52 @@ class _State extends State<PropertyDetailsPage> {
   Widget _buildFact(
     IconData icon,
     String value,
-    String label,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 16,
-        horizontal: 6,
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            color: _gold,
-            size: 21,
-          ),
+    String label, {
+    VoidCallback? onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 16,
+          horizontal: 6,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              color: _gold,
+              size: 21,
+            ),
 
-          const SizedBox(height: 7),
+            const SizedBox(height: 7),
 
-          if (value.isNotEmpty)
+            if (value.isNotEmpty)
+              Text(
+                value,
+                style: const TextStyle(
+                  color: _dark,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+
+            if (value.isNotEmpty)
+              const SizedBox(height: 2),
+
             Text(
-              value,
+              label,
+              textAlign: TextAlign.center,
               style: const TextStyle(
-                color: _dark,
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
+                color: _mutedText,
+                fontSize: 9,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.7,
               ),
             ),
-
-          if (value.isNotEmpty)
-            const SizedBox(height: 2),
-
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: _mutedText,
-              fontSize: 9,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.7,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
