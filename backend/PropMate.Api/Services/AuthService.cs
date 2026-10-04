@@ -27,6 +27,14 @@ public class AuthService : IAuthService
     {
         var email = dto.Email.Trim().ToLower();
 
+        if (!Enum.TryParse<UserRole>(dto.Role, true, out var requestedRole) ||
+            (requestedRole != UserRole.BuyerRenter &&
+            requestedRole != UserRole.OwnerAgent))
+        {
+            throw new InvalidOperationException(
+                "Invalid registration role.");
+        }
+
         var emailExists = await _context.Users
             .AnyAsync(x => x.Email == email);
 
@@ -41,7 +49,7 @@ public class AuthService : IAuthService
             FirstName = dto.FirstName.Trim(),
             LastName = dto.LastName.Trim(),
             Email = email,
-            Role = UserRole.BuyerRenter,
+            Role = requestedRole,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };

@@ -36,8 +36,8 @@ class MobileAuthService {
 
   /// Register a new Buyer/Renter account.
   ///
-  /// The ASP.NET backend automatically assigns
-  /// UserRole.BuyerRenter to newly registered users.
+  /// Registers a new Buyer/Renter account.
+  /// The mobile app explicitly requests the BuyerRenter role.
   static Future<void> register({
     required String firstName,
     required String lastName,
@@ -51,6 +51,7 @@ class MobileAuthService {
         'lastName': lastName.trim(),
         'email': email.trim(),
         'password': password,
+        'role': 'BuyerRenter',
       },
     );
 
