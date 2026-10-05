@@ -44,6 +44,12 @@ const emptyTechnician = {
 
 };
 
+const emptyExpense = {
+  maintenanceRequestId: "",
+  amount: "",
+  description: "",
+};
+
 
 
 const views = [
@@ -137,11 +143,15 @@ function StakeholderDashboard() {
 
   const [showTechnicianForm, setShowTechnicianForm] = useState(false);
 
+  const [showExpenseForm, setShowExpenseForm] = useState(false);
+
   const [editingTechnicianId, setEditingTechnicianId] = useState(null);
 
   const [requestForm, setRequestForm] = useState(emptyRequest);
 
   const [technicianForm, setTechnicianForm] = useState(emptyTechnician);
+
+  const [expenseForm, setExpenseForm] = useState(emptyExpense);
 
 
 
@@ -435,6 +445,42 @@ function StakeholderDashboard() {
 
   };
 
+  const createExpense = async (event) => {
+    event.preventDefault();
+
+    try {
+      setError("");
+
+      await maintenanceApi.addExpense(
+        Number(expenseForm.maintenanceRequestId),
+        {
+          amount: Number(expenseForm.amount),
+          description: expenseForm.description,
+          recordedBy: Number(user.userId),
+        }
+      );
+
+      setExpenseForm(emptyExpense);
+      setShowExpenseForm(false);
+      setMessage("Expense added successfully.");
+
+      const rows = await Promise.all(
+        requests.map(async (request) => {
+          const data = await maintenanceApi.getExpenses(request.id);
+
+          return unwrap(data).map((item) => ({
+            ...item,
+            request,
+          }));
+        })
+      );
+
+      setExpenseRows(rows.flat());
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
 
 
   const saveTechnician = async (event) => {
@@ -504,7 +550,7 @@ function StakeholderDashboard() {
 
     <div className="stats-grid dashboard-stats"><div className="stat-card stat-ink"><span>Total requests</span><strong>{stats.total}</strong><small>All maintenance activity</small></div><div className="stat-card stat-amber"><span>Pending review</span><strong>{stats.pending}</strong><small>Need your attention</small></div><div className="stat-card stat-blue"><span>In progress</span><strong>{stats.progress}</strong><small>Assigned or scheduled</small></div><div className="stat-card stat-green"><span>Technicians</span><strong>{technicians.length}</strong><small>{stats.available} currently available</small></div></div>
 
-    <div className="home-grid"><section className="panel activity-panel"><div className="panel-heading"><div><p className="eyebrow">LIVE QUEUE</p><h2>Recent maintenance</h2></div><button className="text-button" onClick={() => setActiveView("requests")}>View all</button></div>{loading ? <div className="empty-state">Loading activity...</div> : renderRequestTable(requests.slice(0, 5))}</section><section className="panel pulse-panel"><div className="panel-heading"><div><p className="eyebrow">PORTFOLIO PULSE</p><h2>At a glance</h2></div></div><div className="pulse-list"><div><span>Resolved requests</span><strong>{stats.resolved}</strong></div><div><span>Tracked expenses</span><strong>${stats.expenses.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong></div><div><span>Technician coverage</span><strong>{technicians.length ? `${Math.round((stats.available / technicians.length) * 100)}%` : "0%"}</strong></div></div><div className="pulse-note"><span className="signal-dot" /> Data is synced with the operations database.</div></section></div>
+    <div className="home-grid"><section className="panel activity-panel"><div className="panel-heading"><div><p className="eyebrow">LIVE QUEUE</p><h2>Recent maintenance</h2></div><button className="text-button" onClick={() => setActiveView("requests")}>View all</button></div>{loading ? <div className="empty-state">Loading activity...</div> : renderRequestTable(requests.slice(0, 5))}</section><section className="panel pulse-panel"><div className="panel-heading"><div><p className="eyebrow">PORTFOLIO PULSE</p><h2>At a glance</h2></div></div><div className="pulse-list"><div><span>Resolved requests</span><strong>{stats.resolved}</strong></div><div><span>Tracked expenses</span><strong>LKR {stats.expenses.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong></div><div><span>Technician coverage</span><strong>{technicians.length ? `${Math.round((stats.available / technicians.length) * 100)}%` : "0%"}</strong></div></div><div className="pulse-note"><span className="signal-dot" /> Data is synced with the operations database.</div></section></div>
 
   </>;
 
@@ -518,7 +564,38 @@ function StakeholderDashboard() {
 
 
 
-  const renderExpenses = () => { const total = expenseRows.reduce((sum, row) => sum + Number(row.amount || 0), 0); return <><div className="page-title-row"><div><p className="eyebrow">FINANCE</p><h1>Expenses</h1><p className="lede">A clear view of maintenance spend by request.</p></div><div className="headline-number"><span>Total tracked</span><strong>${total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong></div></div><section className="panel"><div className="panel-heading"><div><h2>Expense ledger</h2><p>Costs recorded against each maintenance request.</p></div></div>{sectionLoading ? <div className="empty-state">Loading expense records...</div> : <div className="table-wrapper"><table><thead><tr><th>Request</th><th>Issue</th><th>Description</th><th>Amount</th><th>Recorded</th></tr></thead><tbody>{expenseRows.map((row, index) => <tr key={row.id || `${row.request.id}-${index}`}><td><strong>#{row.request.id}</strong></td><td>{row.request.description}</td><td>{row.description || "Maintenance expense"}</td><td className="amount-cell">${Number(row.amount || 0).toFixed(2)}</td><td>{row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "-"}</td></tr>)}{!expenseRows.length && <tr><td colSpan="5"><div className="empty-state">No expense records found.</div></td></tr>}</tbody></table></div>}</section></>; };
+  const renderExpenses = () => {
+    const total = expenseRows.reduce((sum, row) => sum + Number(row.amount || 0), 0); return <><div className="page-title-row">
+      <div>
+        <p className="eyebrow">FINANCE</p>
+        <h1>Expenses</h1>
+        <p className="lede">
+          A clear view of maintenance spend by request.
+        </p>
+      </div>
+
+      <div className="page-title-actions">
+        <div className="headline-number">
+          <span>Total tracked</span>
+          <strong>
+            LKR {total.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+            })}
+          </strong>
+        </div>
+
+        <button
+          className="primary-button"
+          onClick={() => setShowExpenseForm(true)}
+        >
+          <span>+</span> Add expense
+        </button>
+      </div>
+    </div><section className="panel"><div className="panel-heading"><div><h2>Expense ledger</h2><p>Costs recorded against each maintenance request.</p></div></div>{sectionLoading ? <div className="empty-state">Loading expense records...</div> : <div className="table-wrapper"><table><thead><tr><th>Request</th><th>Issue</th><th>Description</th><th>Amount</th><th>Recorded</th></tr></thead><tbody>{expenseRows.map((row, index) => <tr key={row.id || `${row.request.id}-${index}`}><td><strong>#{row.request.id}</strong></td><td>{row.request.description}</td><td>{row.description || "Maintenance expense"}</td><td className="amount-cell">LKR {Number(row.amount || 0).toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}</td><td>{row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "-"}</td></tr>)}{!expenseRows.length && <tr><td colSpan="5"><div className="empty-state">No expense records found.</div></td></tr>}</tbody></table></div>}</section></>;
+  };
 
 
 
@@ -664,7 +741,118 @@ function StakeholderDashboard() {
         </select>
       </label><label>Tenant ID<input type="number" required value={requestForm.tenantId} onChange={(event) => setRequestForm({ ...requestForm, tenantId: event.target.value })} /></label><label>Description<textarea required value={requestForm.description} onChange={(event) => setRequestForm({ ...requestForm, description: event.target.value })} /></label><div className="form-grid"><label>Category<select value={requestForm.category} onChange={(event) => setRequestForm({ ...requestForm, category: event.target.value })}><option>General</option><option>Plumbing</option><option>Electrical</option><option>HVAC</option><option>Appliance</option><option>Structural</option></select></label><label>Priority<select value={requestForm.priority} onChange={(event) => setRequestForm({ ...requestForm, priority: event.target.value })}><option>LOW</option><option>MEDIUM</option><option>HIGH</option></select></label></div><div className="modal-actions"><button type="button" className="secondary-button" onClick={() => setShowRequestForm(false)}>Cancel</button><button className="primary-button">Create request</button></div></form></div></div>}
 
+      {showExpenseForm && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <div className="modal-header">
+              <div>
+                <p className="eyebrow">NEW EXPENSE</p>
+                <h2>Add maintenance expense</h2>
+              </div>
 
+              <button
+                type="button"
+                onClick={() => setShowExpenseForm(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={createExpense}>
+              <label>
+                Maintenance request
+                <select
+                  required
+                  value={expenseForm.maintenanceRequestId}
+                  onChange={(event) =>
+                    setExpenseForm({
+                      ...expenseForm,
+                      maintenanceRequestId: event.target.value,
+                    })
+                  }
+                >
+                  <option value="">
+                    Select a maintenance request
+                  </option>
+
+                  {requests.map((request) => {
+                    const property = getPropertyById(
+                      properties,
+                      request.propertyId
+                    );
+
+                    return (
+                      <option
+                        key={request.id}
+                        value={request.id}
+                      >
+                        #{request.id} —{" "}
+                        {property?.title ||
+                          `Property ${request.propertyId}`}{" "}
+                        — {request.description}
+                      </option>
+                    );
+                  })}
+                </select>
+              </label>
+
+              <label>
+                Description
+                <input
+                  required
+                  type="text"
+                  placeholder="e.g. Replacement kitchen tap"
+                  value={expenseForm.description}
+                  onChange={(event) =>
+                    setExpenseForm({
+                      ...expenseForm,
+                      description: event.target.value,
+                    })
+                  }
+                />
+              </label>
+
+              <label>
+                Amount (LKR)
+                <input
+                  required
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  placeholder="e.g. 8500"
+                  value={expenseForm.amount}
+                  onChange={(event) =>
+                    setExpenseForm({
+                      ...expenseForm,
+                      amount: event.target.value,
+                    })
+                  }
+                />
+              </label>
+
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={() => {
+                    setExpenseForm(emptyExpense);
+                    setShowExpenseForm(false);
+                  }}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  className="primary-button"
+                >
+                  Add expense
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {showTechnicianForm && <div className="modal-overlay"><div className="modal"><div className="modal-header"><div><p className="eyebrow">TEAM DIRECTORY</p><h2>{editingTechnicianId ? "Edit technician" : "Add technician"}</h2></div><button onClick={() => setShowTechnicianForm(false)}>×</button></div><form onSubmit={saveTechnician}><label>Name<input required value={technicianForm.name} onChange={(event) => setTechnicianForm({ ...technicianForm, name: event.target.value })} /></label><div className="form-grid"><label>Phone<input required value={technicianForm.phone} onChange={(event) => setTechnicianForm({ ...technicianForm, phone: event.target.value })} /></label><label>Email<input type="email" required value={technicianForm.email} onChange={(event) => setTechnicianForm({ ...technicianForm, email: event.target.value })} /></label></div><label>Specialization<input required placeholder="e.g. Plumbing" value={technicianForm.specialization} onChange={(event) => setTechnicianForm({ ...technicianForm, specialization: event.target.value })} /></label><label>Availability<select value={technicianForm.availabilityStatus} onChange={(event) => setTechnicianForm({ ...technicianForm, availabilityStatus: event.target.value })}><option>AVAILABLE</option><option>BUSY</option><option>UNAVAILABLE</option></select></label><div className="modal-actions"><button type="button" className="secondary-button" onClick={() => setShowTechnicianForm(false)}>Cancel</button><button className="primary-button">{editingTechnicianId ? "Save changes" : "Add technician"}</button></div></form></div></div>}
 
@@ -696,7 +884,12 @@ function StakeholderDashboard() {
             })()}
           </strong>
         </div>
-        <div className="detail-row"><span>Tenant</span><strong>{selectedRequest.tenantId}</strong></div><div className="detail-row"><span>Category</span><strong>{selectedRequest.category}</strong></div></div><div><h3>Expense records</h3>{requestExpenses.length ? requestExpenses.map((expense) => <div className="mini-row" key={expense.id}><span>{expense.description}</span><strong>${Number(expense.amount || 0).toFixed(2)}</strong></div>) : <p className="muted">No expenses recorded.</p>}</div></div><div className="detail-history"><h3>Recent history</h3>{requestHistory.length ? requestHistory.map((event, index) => <div className="mini-history" key={event.id || index}><span className="history-marker" /><div><strong>{event.status || event.newStatus || "Updated"}</strong><p>{event.comment || event.description || event.action || "Request updated."}</p></div></div>) : <p className="muted">No history recorded.</p>}</div></div></div>}
+        <div className="detail-row"><span>Tenant</span><strong>{selectedRequest.tenantId}</strong></div><div className="detail-row"><span>Category</span><strong>{selectedRequest.category}</strong></div></div><div><h3>Expense records</h3>{requestExpenses.length ? requestExpenses.map((expense) => <div className="mini-row" key={expense.id}><span>{expense.description}</span><strong>
+          LKR {Number(expense.amount || 0).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
+        </strong></div>) : <p className="muted">No expenses recorded.</p>}</div></div><div className="detail-history"><h3>Recent history</h3>{requestHistory.length ? requestHistory.map((event, index) => <div className="mini-history" key={event.id || index}><span className="history-marker" /><div><strong>{event.status || event.newStatus || "Updated"}</strong><p>{event.comment || event.description || event.action || "Request updated."}</p></div></div>) : <p className="muted">No history recorded.</p>}</div></div></div>}
     </div>
   );
 }
