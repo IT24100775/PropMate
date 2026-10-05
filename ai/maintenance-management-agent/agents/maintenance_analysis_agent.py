@@ -61,7 +61,23 @@ class MaintenanceAnalysisAgent:
                 "The issue appears to involve a water leak or plumbing system "
                 "failure, so plumbing assistance is required."
             )
-        elif "electric" in text or "power" in text or "outlet" in text or "circuit" in text:
+        elif any(
+            keyword in text
+            for keyword in [
+                "electric",
+                "power",
+                "outlet",
+                "circuit",
+                "fan",
+                "switch",
+                "socket",
+                "wiring",
+                "wire",
+                "plug",
+                "breaker",
+                "light",
+            ]
+        ):
             category = "ELECTRICAL"
             priority = "HIGH"
             specialization = "ELECTRICIAN"
