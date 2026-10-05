@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using PropMate.Api.Enums;
+using System.Text.Json.Serialization;
 
 namespace PropMate.Api.DTOs.AgenticAI;
 
@@ -27,6 +28,7 @@ public class DecideAgentApprovalDto
 public class AgentWorkflowResponseDto
 {
     public int Id { get; set; }
+    [JsonPropertyName("workflow_id")]
     public Guid WorkflowId { get; set; }
     public int InitiatedByUserId { get; set; }
     public string Objective { get; set; } = string.Empty;
