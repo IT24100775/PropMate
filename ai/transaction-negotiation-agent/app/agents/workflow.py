@@ -148,19 +148,45 @@ def run(
 
                     prepared_counter_offer = w.tool_calls[-1]
 
+                    transaction_snapshot = next(
+                        (
+                            call.output
+                            for call in reversed(w.tool_calls)
+                            if call.tool_name == "get_transaction_snapshot"
+                            and call.succeeded
+                        ),
+                        None
+                    )
+
+                    negotiation_history = next(
+                        (
+                            call.output
+                            for call in reversed(w.tool_calls)
+                            if call.tool_name == "get_negotiation_history"
+                            and call.succeeded
+                        ),
+                        None
+                    )
+
                     proposal = structured_agent_output(
                         step.agent_role,
                         req.objective,
                         {
                             "target_type": req.target_type.value,
                             "target_id": req.target_id,
+                            "transaction_snapshot": transaction_snapshot,
+                            "negotiation_history": negotiation_history,
                             "prepared_counter_offer": prepared_counter_offer.model_dump()
                         },
                         (
-                            "proposed high-impact counter-offer action using the prepared "
-                            "counter-offer data exactly; preserve all required transaction "
-                            "fields and values; include the action payload, reason, and "
-                            "required approval"
+                            "propose one concrete counter-offer using only the supplied "
+                            "transaction snapshot and negotiation history; do not invent "
+                            "missing financial or contractual facts; for RentalApplication "
+                            "the action payload must contain monthlyRent, moveInDate, "
+                            "durationMonths, and conditions; for PurchaseOffer the action "
+                            "payload must contain offerAmount and conditions; return the "
+                            "counter-offer under action_payload together with the reason "
+                            "and required approval"
                         )
                     )
 
