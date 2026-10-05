@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import '../../../auth/services/mobile_auth_service.dart';
 import '../models/transaction_models.dart';
 import '../services/component3_api.dart';
 import '../widgets/ai_assistant_panel.dart';
@@ -34,6 +34,7 @@ class _Component3NegotiationScreenState
   DateTime? moveIn;
 
   bool loading = true;
+  int? currentUserId;
 
   List<dynamic> offers = [];
   List<NegotiationMessage> messages = [];
@@ -47,6 +48,8 @@ class _Component3NegotiationScreenState
 
   Future<void> load() async {
     try {
+      final userId = await MobileAuthService.getUserId();
+
       final o = widget.rental
           ? await api.rentalOffers(widget.transactionId)
           : await api.purchaseOffers(widget.transactionId);
@@ -64,6 +67,7 @@ class _Component3NegotiationScreenState
           offers = o;
           messages = m;
           agreement = a;
+          currentUserId = userId;
           loading = false;
         });
       }
@@ -230,9 +234,10 @@ class _Component3NegotiationScreenState
                       ),
                       isThreeLine: true,
                       trailing: o.status
-                              .toString()
-                              .toLowerCase()
-                              .contains('pending')
+                          .toString()
+                          .toLowerCase()
+                          .contains('pending') &&
+                      o.proposedByUserId != currentUserId
                           ? TextButton(
                               onPressed: () => accept(o),
                               child: const Text('Accept'),
@@ -242,6 +247,7 @@ class _Component3NegotiationScreenState
                   ),
                 ),
 
+              if (agreement == null) ...[
                 const Divider(),
 
                 Text(
@@ -307,7 +313,7 @@ class _Component3NegotiationScreenState
                 ),
 
                 const SizedBox(height: 18),
-
+              ],
                 Text(
                   'Messages',
                   style: Theme.of(context).textTheme.titleLarge,
@@ -426,7 +432,7 @@ class _Component3NegotiationScreenState
 
             const SizedBox(height: 12),
 
-            if (!buyer || !seller)
+            if (!buyer)
               ElevatedButton(
                 onPressed: confirm,
                 child: const Text(

@@ -319,6 +319,7 @@ export default function NegotiationPanel({
                                 : "PurchaseOffer"
                         }
                         targetId={id}
+                        onWorkflowCompleted={load}
                     />
                 </div>
             )}
@@ -344,6 +345,7 @@ export default function NegotiationPanel({
                                 : "PurchaseOffer"
                         }
                         targetId={id}
+                        onWorkflowCompleted={load}
                     />
                 </div>
             )}
@@ -357,17 +359,11 @@ export default function NegotiationPanel({
             {transaction && (
                 <div className="c3-transaction-state">
                     <span>
-                        Transaction
-                        <strong>
-                            {transaction.status}
-                        </strong>
+                        Transaction: <strong>{transaction.status}</strong>
                     </span>
 
                     <span>
-                        Negotiation
-                        <strong>
-                            {transaction.negotiationStatus}
-                        </strong>
+                        Negotiation: <strong>{transaction.negotiationStatus}</strong>
                     </span>
                 </div>
             )}
