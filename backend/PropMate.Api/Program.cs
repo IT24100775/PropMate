@@ -207,3 +207,5 @@ await PropertyManagerSeeder.SeedAsync(
     app.Configuration);
 
 app.Run();
+
+public partial class Program { }

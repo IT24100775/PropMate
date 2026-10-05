@@ -1,0 +1,33 @@
+name: PropMate CI
+
+on:
+  push:
+    branches:
+      - main
+      - testing-and-ci
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  backend-tests:
+    name: ASP.NET Core Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore backend/PropMate.Api.Tests/PropMate.Api.Tests.csproj
+
+      - name: Build
+        run: dotnet build backend/PropMate.Api.Tests/PropMate.Api.Tests.csproj --no-restore --configuration Release
+
+      - name: Run backend tests
+        run: dotnet test backend/PropMate.Api.Tests/PropMate.Api.Tests.csproj --no-build --configuration Release --verbosity normal
