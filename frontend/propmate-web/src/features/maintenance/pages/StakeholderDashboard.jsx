@@ -72,7 +72,10 @@ const statusClass = (status) => `badge status-${status?.toLowerCase().replaceAll
 
 const priorityClass = (priority) => `badge priority-${priority?.toLowerCase()}`;
 
-
+const getPropertyById = (properties, propertyId) =>
+  properties.find(
+    (property) => Number(property.id) === Number(propertyId)
+  );
 
 function StakeholderDashboard() {
 
@@ -95,6 +98,8 @@ function StakeholderDashboard() {
   const [requests, setRequests] = useState([]);
 
   const [technicians, setTechnicians] = useState([]);
+
+  const [properties, setProperties] = useState([]);
 
   const [expenseRows, setExpenseRows] = useState([]);
 
@@ -148,17 +153,27 @@ function StakeholderDashboard() {
 
       setError("");
 
-      const [requestData, technicianData] = await Promise.all([
+      const API_URL =
+        import.meta.env.VITE_API_URL || "http://localhost:5235/api";
 
-        maintenanceApi.getAll(),
+      const [requestData, technicianData, propertyResponse] =
+        await Promise.all([
+          maintenanceApi.getAll(),
+          maintenanceApi.getTechnicians(),
+          fetch(`${API_URL}/PropertyListings`),
+        ]);
 
-        maintenanceApi.getTechnicians(),
+      if (!propertyResponse.ok) {
+        throw new Error("Failed to load properties.");
+      }
 
-      ]);
+      const propertyData = await propertyResponse.json();
 
       setRequests(unwrap(requestData));
 
       setTechnicians(unwrap(technicianData));
+
+      setProperties(unwrap(propertyData));
 
     } catch (err) {
 
@@ -470,7 +485,10 @@ function StakeholderDashboard() {
 
     <div className="table-wrapper"><table><thead><tr><th>Request</th><th>Issue</th><th>Category</th><th>Priority</th><th>Status</th><th>Created</th><th /></tr></thead><tbody>
 
-      {rows.map((request) => <tr key={request.id}><td><strong className="request-id">#{request.id}</strong><span className="cell-subtitle">Property {request.propertyId}</span></td><td className="issue-cell">{request.description}</td><td>{request.category}</td><td><span className={priorityClass(request.priority)}>{request.priority}</span></td><td><span className={statusClass(request.status)}>{request.status}</span></td><td>{request.createdAt ? new Date(request.createdAt).toLocaleDateString() : "-"}</td><td><button className="text-button" onClick={() => openRequest(request.id)}>View details</button></td></tr>)}
+      {rows.map((request) => <tr key={request.id}><td><strong className="request-id">#{request.id}</strong><span className="cell-subtitle">
+        {getPropertyById(properties, request.propertyId)?.title ||
+          `Property ${request.propertyId}`}
+      </span></td><td className="issue-cell">{request.description}</td><td>{request.category}</td><td><span className={priorityClass(request.priority)}>{request.priority}</span></td><td><span className={statusClass(request.status)}>{request.status}</span></td><td>{request.createdAt ? new Date(request.createdAt).toLocaleDateString() : "-"}</td><td><button className="text-button" onClick={() => openRequest(request.id)}>View details</button></td></tr>)}
 
       {!rows.length && <tr><td colSpan="7"><div className="empty-state">No maintenance requests match this view.</div></td></tr>}
 
@@ -624,7 +642,27 @@ function StakeholderDashboard() {
         </div>
       </main>
 
-      {showRequestForm && <div className="modal-overlay"><div className="modal"><div className="modal-header"><div><p className="eyebrow">NEW ITEM</p><h2>Create maintenance request</h2></div><button onClick={() => setShowRequestForm(false)}>×</button></div><form onSubmit={createRequest}><label>Property ID<input type="number" required value={requestForm.propertyId} onChange={(event) => setRequestForm({ ...requestForm, propertyId: event.target.value })} /></label><label>Tenant ID<input type="number" required value={requestForm.tenantId} onChange={(event) => setRequestForm({ ...requestForm, tenantId: event.target.value })} /></label><label>Description<textarea required value={requestForm.description} onChange={(event) => setRequestForm({ ...requestForm, description: event.target.value })} /></label><div className="form-grid"><label>Category<select value={requestForm.category} onChange={(event) => setRequestForm({ ...requestForm, category: event.target.value })}><option>General</option><option>Plumbing</option><option>Electrical</option><option>HVAC</option><option>Appliance</option><option>Structural</option></select></label><label>Priority<select value={requestForm.priority} onChange={(event) => setRequestForm({ ...requestForm, priority: event.target.value })}><option>LOW</option><option>MEDIUM</option><option>HIGH</option></select></label></div><div className="modal-actions"><button type="button" className="secondary-button" onClick={() => setShowRequestForm(false)}>Cancel</button><button className="primary-button">Create request</button></div></form></div></div>}
+      {showRequestForm && <div className="modal-overlay"><div className="modal"><div className="modal-header"><div><p className="eyebrow">NEW ITEM</p><h2>Create maintenance request</h2></div><button onClick={() => setShowRequestForm(false)}>×</button></div><form onSubmit={createRequest}><label>
+        Property
+        <select
+          required
+          value={requestForm.propertyId}
+          onChange={(event) =>
+            setRequestForm({
+              ...requestForm,
+              propertyId: event.target.value,
+            })
+          }
+        >
+          <option value="">Select a property</option>
+
+          {properties.map((property) => (
+            <option key={property.id} value={property.id}>
+              {property.title} — {property.city}
+            </option>
+          ))}
+        </select>
+      </label><label>Tenant ID<input type="number" required value={requestForm.tenantId} onChange={(event) => setRequestForm({ ...requestForm, tenantId: event.target.value })} /></label><label>Description<textarea required value={requestForm.description} onChange={(event) => setRequestForm({ ...requestForm, description: event.target.value })} /></label><div className="form-grid"><label>Category<select value={requestForm.category} onChange={(event) => setRequestForm({ ...requestForm, category: event.target.value })}><option>General</option><option>Plumbing</option><option>Electrical</option><option>HVAC</option><option>Appliance</option><option>Structural</option></select></label><label>Priority<select value={requestForm.priority} onChange={(event) => setRequestForm({ ...requestForm, priority: event.target.value })}><option>LOW</option><option>MEDIUM</option><option>HIGH</option></select></label></div><div className="modal-actions"><button type="button" className="secondary-button" onClick={() => setShowRequestForm(false)}>Cancel</button><button className="primary-button">Create request</button></div></form></div></div>}
 
 
 
@@ -632,7 +670,33 @@ function StakeholderDashboard() {
 
 
 
-      {selectedRequest && <div className="modal-overlay"><div className="modal large-modal"><div className="modal-header"><div><p className="eyebrow">REQUEST DETAIL</p><h2>Maintenance request #{selectedRequest.id}</h2></div><button onClick={() => setSelectedRequest(null)}>×</button></div><div className="detail-banner"><span className={statusClass(selectedRequest.status)}>{selectedRequest.status}</span><span className={priorityClass(selectedRequest.priority)}>{selectedRequest.priority} priority</span><strong>{selectedRequest.description}</strong></div>{renderAiPanel()}<div className="detail-grid"><div><h3>Request information</h3><div className="detail-row"><span>Property</span><strong>{selectedRequest.propertyId}</strong></div><div className="detail-row"><span>Tenant</span><strong>{selectedRequest.tenantId}</strong></div><div className="detail-row"><span>Category</span><strong>{selectedRequest.category}</strong></div></div><div><h3>Expense records</h3>{requestExpenses.length ? requestExpenses.map((expense) => <div className="mini-row" key={expense.id}><span>{expense.description}</span><strong>${Number(expense.amount || 0).toFixed(2)}</strong></div>) : <p className="muted">No expenses recorded.</p>}</div></div><div className="detail-history"><h3>Recent history</h3>{requestHistory.length ? requestHistory.map((event, index) => <div className="mini-history" key={event.id || index}><span className="history-marker" /><div><strong>{event.status || event.newStatus || "Updated"}</strong><p>{event.comment || event.description || event.action || "Request updated."}</p></div></div>) : <p className="muted">No history recorded.</p>}</div></div></div>}
+      {selectedRequest && <div className="modal-overlay"><div className="modal large-modal"><div className="modal-header"><div><p className="eyebrow">REQUEST DETAIL</p><h2>Maintenance request #{selectedRequest.id}</h2></div><button onClick={() => setSelectedRequest(null)}>×</button></div><div className="detail-banner"><span className={statusClass(selectedRequest.status)}>{selectedRequest.status}</span><span className={priorityClass(selectedRequest.priority)}>{selectedRequest.priority} priority</span><strong>{selectedRequest.description}</strong></div>{renderAiPanel()}<div className="detail-grid"><div><h3>Request information</h3><div className="detail-row">
+        <span>Property</span>
+        <strong>
+          {getPropertyById(
+            properties,
+            selectedRequest.propertyId
+          )?.title || `Property ${selectedRequest.propertyId}`}
+        </strong>
+      </div>
+        <div className="detail-row">
+          <span>Location</span>
+          <strong>
+            {(() => {
+              const property = getPropertyById(
+                properties,
+                selectedRequest.propertyId
+              );
+
+              if (!property) return "-";
+
+              return [property.address, property.city]
+                .filter(Boolean)
+                .join(", ");
+            })()}
+          </strong>
+        </div>
+        <div className="detail-row"><span>Tenant</span><strong>{selectedRequest.tenantId}</strong></div><div className="detail-row"><span>Category</span><strong>{selectedRequest.category}</strong></div></div><div><h3>Expense records</h3>{requestExpenses.length ? requestExpenses.map((expense) => <div className="mini-row" key={expense.id}><span>{expense.description}</span><strong>${Number(expense.amount || 0).toFixed(2)}</strong></div>) : <p className="muted">No expenses recorded.</p>}</div></div><div className="detail-history"><h3>Recent history</h3>{requestHistory.length ? requestHistory.map((event, index) => <div className="mini-history" key={event.id || index}><span className="history-marker" /><div><strong>{event.status || event.newStatus || "Updated"}</strong><p>{event.comment || event.description || event.action || "Request updated."}</p></div></div>) : <p className="muted">No history recorded.</p>}</div></div></div>}
     </div>
   );
 }
