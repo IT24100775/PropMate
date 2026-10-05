@@ -146,14 +146,22 @@ def run(
                         authorization
                     )
 
+                    prepared_counter_offer = w.tool_calls[-1]
+
                     proposal = structured_agent_output(
                         step.agent_role,
                         req.objective,
                         {
                             "target_type": req.target_type.value,
-                            "target_id": req.target_id
+                            "target_id": req.target_id,
+                            "prepared_counter_offer": prepared_counter_offer.model_dump()
                         },
-                        "proposed high-impact action, action payload, reason, required approval"
+                        (
+                            "proposed high-impact counter-offer action using the prepared "
+                            "counter-offer data exactly; preserve all required transaction "
+                            "fields and values; include the action payload, reason, and "
+                            "required approval"
+                        )
                     )
 
                     step.output_json = proposal
