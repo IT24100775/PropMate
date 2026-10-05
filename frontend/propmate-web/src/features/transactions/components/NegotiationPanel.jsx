@@ -15,7 +15,7 @@ export default function NegotiationPanel({
         localStorage.getItem("propmate_user") || "null"
     );
 
-    const currentUserId = Number(savedUser?.id);
+    const currentUserId = Number(savedUser?.userId);
     const currentRole = savedUser?.role;
 
     // Transaction data
