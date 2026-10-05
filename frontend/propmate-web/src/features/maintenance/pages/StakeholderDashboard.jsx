@@ -131,6 +131,11 @@ function StakeholderDashboard() {
 
   const [priorityFilter, setPriorityFilter] = useState("");
 
+  const [statusForm, setStatusForm] = useState({
+    status: "",
+    comment: "",
+  });
+
   const [loading, setLoading] = useState(true);
 
   const [sectionLoading, setSectionLoading] = useState(false);
@@ -423,7 +428,41 @@ function StakeholderDashboard() {
 
   };
 
+  const updateRequestStatus = async () => {
+    if (!selectedRequest || !statusForm.status) {
+      setError("Please select a status.");
+      return;
+    }
 
+    try {
+      setError("");
+
+      await maintenanceApi.updateStatus(selectedRequest.id, {
+        status: statusForm.status,
+        changedBy: user?.userId ?? 0,
+        comment: statusForm.comment.trim(),
+      });
+
+      setMessage("Maintenance request status updated successfully.");
+
+      // Refresh the selected request and its history
+      const updatedRequest = await maintenanceApi.getById(selectedRequest.id);
+      const updatedHistory = await maintenanceApi.getHistory(selectedRequest.id);
+
+      setSelectedRequest(updatedRequest);
+      setRequestHistory(updatedHistory || []);
+
+      // Refresh dashboard/request list
+      await loadData();
+
+      setStatusForm({
+        status: "",
+        comment: "",
+      });
+    } catch (err) {
+      setError(err.message || "Failed to update maintenance request status.");
+    }
+  };
 
   const createRequest = async (event) => {
 
@@ -858,7 +897,55 @@ function StakeholderDashboard() {
 
 
 
-      {selectedRequest && <div className="modal-overlay"><div className="modal large-modal"><div className="modal-header"><div><p className="eyebrow">REQUEST DETAIL</p><h2>Maintenance request #{selectedRequest.id}</h2></div><button onClick={() => setSelectedRequest(null)}>×</button></div><div className="detail-banner"><span className={statusClass(selectedRequest.status)}>{selectedRequest.status}</span><span className={priorityClass(selectedRequest.priority)}>{selectedRequest.priority} priority</span><strong>{selectedRequest.description}</strong></div>{renderAiPanel()}<div className="detail-grid"><div><h3>Request information</h3><div className="detail-row">
+      {selectedRequest && <div className="modal-overlay"><div className="modal large-modal"><div className="modal-header"><div><p className="eyebrow">REQUEST DETAIL</p><h2>Maintenance request #{selectedRequest.id}</h2></div><button onClick={() => setSelectedRequest(null)}>×</button></div><div className="detail-banner"><span className={statusClass(selectedRequest.status)}>{selectedRequest.status}</span><span className={priorityClass(selectedRequest.priority)}>{selectedRequest.priority} priority</span><strong>{selectedRequest.description}</strong></div>{renderAiPanel()}<div className="status-update-section">
+        <h3>Update request status</h3>
+
+        <div className="form-grid">
+          <label>
+            Status
+            <select
+              value={statusForm.status}
+              onChange={(event) =>
+                setStatusForm({
+                  ...statusForm,
+                  status: event.target.value,
+                })
+              }
+            >
+              <option value="">Select status</option>
+              <option value="PENDING">Pending</option>
+              <option value="ASSIGNED">Assigned</option>
+              <option value="SCHEDULED">Scheduled</option>
+              <option value="IN_PROGRESS">In Progress</option>
+              <option value="RESOLVED">Resolved</option>
+              <option value="REJECTED">Rejected</option>
+            </select>
+          </label>
+
+          <label>
+            Comment
+            <input
+              type="text"
+              placeholder="Add an update note..."
+              value={statusForm.comment}
+              onChange={(event) =>
+                setStatusForm({
+                  ...statusForm,
+                  comment: event.target.value,
+                })
+              }
+            />
+          </label>
+        </div>
+
+        <button
+          type="button"
+          className="primary-button"
+          onClick={updateRequestStatus}
+        >
+          Update Status
+        </button>
+      </div><div className="detail-grid"><div><h3>Request information</h3><div className="detail-row">
         <span>Property</span>
         <strong>
           {getPropertyById(
