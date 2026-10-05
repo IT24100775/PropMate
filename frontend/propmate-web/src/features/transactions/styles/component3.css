@@ -1028,3 +1028,16 @@
         width: 100%;
     }
 }
+
+.c3-transaction-state {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 4px;
+}
+
+.c3-transaction-state span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
