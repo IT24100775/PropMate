@@ -52,7 +52,21 @@ class MaintenanceAnalysisAgent:
     def _fallback_analysis(self, description: str) -> MaintenanceAnalysis:
         text = description.lower()
 
-        if "water" in text or "leak" in text or "pipe" in text:
+        if any(
+            keyword in text
+            for keyword in [
+                "water",
+                "leak",
+                "pipe",
+                "tap",
+                "faucet",
+                "sink",
+                "toilet",
+                "drain",
+                "shower",
+                "plumbing",
+            ]
+        ):
             category = "PLUMBING"
             priority = "HIGH"
             specialization = "PLUMBER"
