@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../auth/services/mobile_auth_service.dart';
 import '../models/transaction_models.dart';
 import '../services/component3_api.dart';
-import '../widgets/ai_assistant_panel.dart';
 
 class Component3NegotiationScreen extends StatefulWidget {
   final bool rental;
@@ -205,13 +204,6 @@ class _Component3NegotiationScreenState
           : ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                Component3AiAssistantPanel(
-                  transactionType: widget.rental
-                      ? 'Rental negotiation'
-                      : 'Purchase negotiation',
-                  transactionId: widget.transactionId,
-                ),
-
                 if (agreement != null) _agreement(),
 
                 const SizedBox(height: 12),
