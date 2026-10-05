@@ -59,40 +59,12 @@ discovery, negotiation, and maintenance decisions.
 
 ## 4. User Roles
 
-  ------------------------------------------------------------------------
-  Role                    Primary Application     Responsibilities
-  ----------------------- ----------------------- ------------------------
-  **Buyer/Renter**        Flutter Mobile          Discover properties,
-                                                  view details/maps, save
-                                                  favourites, book
-                                                  viewings, submit
-                                                  applications/offers,
-                                                  negotiate, and confirm
-                                                  agreements.
-
-  **Owner/Agent**         React Web               Create/manage listings,
-                                                  submit for verification,
-                                                  manage viewings, review
-                                                  applications/offers,
-                                                  negotiate, and confirm
-                                                  agreements.
-
-  **Admin**               React Web               Review AI verification
-                                                  evidence,
-                                                  approve/reject/request
-                                                  revisions,
-                                                  publish/unpublish
-                                                  listings, and oversee
-                                                  relevant transaction
-                                                  functions.
-
-  **Property Manager**    React Web               Manage maintenance
-                                                  requests, technicians,
-                                                  AI recommendations,
-                                                  scheduling, status
-                                                  changes, expenses, and
-                                                  history.
-  ------------------------------------------------------------------------
+| Role | Primary Application | Responsibilities |
+|---|---|---|
+| **Buyer/Renter** | Flutter Mobile | Discover properties, view details/maps, save favourites, book viewings, submit applications/offers, negotiate, and confirm agreements. |
+| **Owner/Agent** | React Web | Create/manage listings, submit for verification, manage viewings, review applications/offers, negotiate, and confirm agreements. |
+| **Admin** | React Web | Review AI verification evidence, approve/reject/request revisions, publish/unpublish listings, and oversee relevant transaction functions. |
+| **Property Manager** | React Web | Manage maintenance requests, technicians, AI recommendations, scheduling, status changes, expenses, and history. |
 
 ## 5. Core Features
 
@@ -141,58 +113,19 @@ discovery, negotiation, and maintenance decisions.
 
 ## 6. Technology Stack and Justification
 
-  -----------------------------------------------------------------------
-  Technology              Usage                   Justification
-  ----------------------- ----------------------- -----------------------
-  React + Vite            Web frontend            Component-based
-                                                  development and fast
-                                                  modern web tooling.
-
-  Flutter / Dart          Buyer/Renter mobile app Cross-platform mobile
-                                                  development from one
-                                                  codebase.
-
-  ASP.NET Core Web API /  Main backend            Strongly typed APIs,
-  C#                                              DI, authentication,
-                                                  validation, and EF Core
-                                                  integration.
-
-  Entity Framework Core   Data access             ORM support,
-                                                  migrations, and
-                                                  maintainable database
-                                                  access.
-
-  PostgreSQL / Supabase   Cloud database          Reliable managed
-                                                  relational storage.
-
-  Python + FastAPI        AI services             Lightweight independent
-                                                  APIs suitable for
-                                                  agent/tool
-                                                  orchestration.
-
-  Google Gemini           AI reasoning            Generative reasoning,
-                                                  interpretation,
-                                                  classification, and
-                                                  recommendations where
-                                                  configured.
-
-  JWT                     Authentication          Stateless
-                                                  authentication and
-                                                  role-based
-                                                  authorization.
-
-  Swagger / OpenAPI       API docs/testing        Interactive endpoint
-                                                  documentation and
-                                                  testing.
-
-  Render                  Backend/AI hosting      Deployment of the API
-                                                  and independent Python
-                                                  services.
-
-  Vercel                  React hosting           Production hosting for
-                                                  the Vite/React
-                                                  frontend.
-  -----------------------------------------------------------------------
+| Technology | Usage | Justification |
+|---|---|---|
+| React + Vite | Web frontend | Component-based development and fast modern web tooling. |
+| Flutter / Dart | Buyer/Renter mobile app | Cross-platform mobile development from one codebase. |
+| ASP.NET Core Web API / C# | Main backend | Strongly typed APIs, DI, authentication, validation, and EF Core integration. |
+| Entity Framework Core | Data access | ORM support, migrations, and maintainable database access. |
+| PostgreSQL / Supabase | Cloud database | Reliable managed relational storage. |
+| Python + FastAPI | AI services | Lightweight independent APIs suitable for agent/tool orchestration. |
+| Google Gemini | AI reasoning | Generative reasoning, interpretation, classification, and recommendations where configured. |
+| JWT | Authentication | Stateless authentication and role-based authorization. |
+| Swagger / OpenAPI | API docs/testing | Interactive endpoint documentation and testing. |
+| Render | Backend/AI hosting | Deployment of the API and independent Python services. |
+| Vercel | React hosting | Production hosting for the Vite/React frontend. |
 
 ## 7. System Architecture
 
@@ -219,36 +152,12 @@ flowchart TB
 
 ## 8. Agentic AI Architecture
 
-  -----------------------------------------------------------------------
-  Component               AI Service              Main Purpose
-  ----------------------- ----------------------- -----------------------
-  Property Listing &      Property Listing        Assess completeness,
-  Approval                Verification Agent      legitimacy, risk, and
-                                                  supporting evidence;
-                                                  provide a
-                                                  recommendation for
-                                                  human review.
-
-  Property Discovery &    Property Discovery      Interpret
-  Viewing                 Agent                   natural-language
-                                                  requirements and find
-                                                  suitable published
-                                                  properties.
-
-  Applications, Offers &  Transaction Negotiation Inspect transaction
-  Transactions            Agent                   context/history and
-                                                  propose negotiation
-                                                  actions requiring human
-                                                  approval before
-                                                  execution.
-
-  Maintenance Management  Maintenance Management  Classify issues,
-                          Agent                   identify
-                                                  specialization, find
-                                                  technicians, validate
-                                                  scheduling, and request
-                                                  human approval.
-  -----------------------------------------------------------------------
+| Component | AI Service | Main Purpose |
+|---|---|---|
+| Property Listing & Approval | Property Listing Verification Agent | Assess completeness, legitimacy, risk, and supporting evidence; provide a recommendation for human review. |
+| Property Discovery & Viewing | Property Discovery Agent | Interpret natural-language requirements and find suitable published properties. |
+| Applications, Offers & Transactions | Transaction Negotiation Agent | Inspect transaction context/history and propose negotiation actions requiring human approval before execution. |
+| Maintenance Management | Maintenance Management Agent | Classify issues, identify specialization, find technicians, validate scheduling, and request human approval. |
 
 General pattern:
 
@@ -587,71 +496,40 @@ intentionally ready for production.
 
 ## 19. Live URLs
 
-  -------------------------------------------------------------------------------------------------
-  Service                             URL
-  ----------------------------------- -------------------------------------------------------------
-  React Web                           https://prop-mate-two.vercel.app
-
-  ASP.NET Core API                    https://propmate-api-m5rt.onrender.com
-
-  API Base                            https://propmate-api-m5rt.onrender.com/api
-
-  Property Verification Agent         https://propmate-property-verification-agent.onrender.com
-
-  Property Discovery Agent            https://propmate-property-discovery-agent.onrender.com
-
-  Transaction Negotiation Agent       https://propmate-transaction-negotiation-agent.onrender.com
-
-  Maintenance Management Agent        https://propmate-maintenance-management-agent.onrender.com
-
-  Mobile Application                  Android APK - available from the project release/submission
-                                      package.
-  -------------------------------------------------------------------------------------------------
+| Service | URL |
+|---|---|
+| React Web | https://prop-mate-two.vercel.app |
+| ASP.NET Core API | https://propmate-api-m5rt.onrender.com |
+| API Base | https://propmate-api-m5rt.onrender.com/api |
+| Property Verification Agent | https://propmate-property-verification-agent.onrender.com |
+| Property Discovery Agent | https://propmate-property-discovery-agent.onrender.com |
+| Transaction Negotiation Agent | https://propmate-transaction-negotiation-agent.onrender.com |
+| Maintenance Management Agent | https://propmate-maintenance-management-agent.onrender.com |
+| Mobile Application | Android APK - available from the project release/submission package. |
 
 > Render free-tier services may require a short warm-up period after
 > inactivity.
 
 ## 20. Test Accounts
 
-  --------------------------------------------------------------------------------
-  Role                    Email                            Password
-  ----------------------- -------------------------------- -----------------------
-  Buyer/Renter            `buyer@propmate.com`             `Buyer123!`
-
-  Owner/Agent             `owner@propmate.com`             `Owner123!`
-
-  Admin                   `admin@propmate.com`             `Admin123!`
-
-  Property Manager        `propertymanager@propmate.com`   `PropertyManager123!`
-  --------------------------------------------------------------------------------
+| Role | Email | Password |
+|---|---|---|
+| Buyer/Renter | `buyer@propmate.com` | `Buyer123!` |
+| Owner/Agent | `owner@propmate.com` | `Owner123!` |
+| Admin | `admin@propmate.com` | `Admin123!` |
+| Property Manager | `propertymanager@propmate.com` | `PropertyManager123!` |
 
 These credentials are dedicated demonstration accounts and must not be
 reused as real user credentials.
 
 ## 21. Individual Contributions
 
-  -----------------------------------------------------------------------
-  Member                  IT Number               Contribution
-  ----------------------- ----------------------- -----------------------
-  **Riwaz F. N. M.**      IT24100775              Property Listing &
-                                                  Approval + Property
-                                                  Listing Verification
-                                                  Agent
-
-  **Gunasekara R. P. I.   IT24100795              Property Discovery &
-  M**                                             Viewing + Property
-                                                  Discovery Agent
-
-  **Rosayro De M. C. J**  IT24101618              Applications, Offers &
-                                                  Transactions +
-                                                  Transaction Negotiation
-                                                  Agent
-
-  **Ilma M. S. F**        IT24103987              Maintenance
-                                                  Management +
-                                                  Maintenance Management
-                                                  Agent
-  -----------------------------------------------------------------------
+| Member | IT Number | Contribution |
+|---|---|---|
+| **Riwaz F. N. M.** | IT24100775 | Property Listing & Approval + Property Listing Verification Agent |
+| **Gunasekara R. P. I. M** | IT24100795 | Property Discovery & Viewing + Property Discovery Agent |
+| **Rosayro De M. C. J** | IT24101618 | Applications, Offers & Transactions + Transaction Negotiation Agent |
+| **Ilma M. S. F** | IT24103987 | Maintenance Management + Maintenance Management Agent |
 
 ## 22. Key Challenges and Solutions
 
