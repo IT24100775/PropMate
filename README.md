@@ -505,7 +505,7 @@ intentionally ready for production.
 | Property Discovery Agent | https://propmate-property-discovery-agent.onrender.com |
 | Transaction Negotiation Agent | https://propmate-transaction-negotiation-agent.onrender.com |
 | Maintenance Management Agent | https://propmate-maintenance-management-agent.onrender.com |
-| Mobile Application | Android APK - available from the project release/submission package. |
+| Mobile Application | https://drive.google.com/drive/folders/1evgZX6PvNGJht_FchpF7797Wqj-78dwt?usp=sharing |
 
 > Render free-tier services may require a short warm-up period after
 > inactivity.
